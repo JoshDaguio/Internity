@@ -15,6 +15,13 @@ return new class extends Migration
             $table->id();
             $table->string('status');
         });
+
+        // Insert predefined statuses
+        DB::table('application_statuses')->insert([
+            ['id' => 1, 'status' => 'To Review'],
+            ['id' => 2, 'status' => 'Accepted'],
+            ['id' => 3, 'status' => 'Rejected'],
+        ]);
     }
 
     /**

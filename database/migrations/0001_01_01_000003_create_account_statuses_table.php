@@ -15,6 +15,12 @@ return new class extends Migration
             $table->id();
             $table->string('status');
         });
+        
+        // Insert predefined statuses
+        DB::table('account_statuses')->insert([
+            ['id' => 1, 'status' => 'Active'],
+            ['id' => 2, 'status' => 'Inactive'],
+        ]);
     }
 
     /**
