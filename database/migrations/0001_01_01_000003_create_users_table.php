@@ -17,11 +17,21 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
-            $table->foreignId('role_id')->constrained('roles'); // Foreign key for role
+            $table->foreignId('role_id')->constrained('roles');
             $table->foreignId('status_id')->constrained('account_statuses');
             $table->rememberToken();
             $table->timestamps();
         });
+
+        DB::table('users')->insert([
+            'name' => 'admin',
+            'email' => 'admin@gmail.com',
+            'password' => Hash::make('admin123'), // Hash the password
+            'role_id' => 1, // Super Admin
+            'status_id' => 1, // Active
+            'created_at' => now(),
+            'updated_at' => now()
+        ]);
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {
             $table->string('email')->primary();

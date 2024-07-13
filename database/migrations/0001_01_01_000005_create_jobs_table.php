@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('jobs', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('company_id')->constrained('users');
+            $table->foreignId('company_id')->constrained('users'); // Foreign key for company user
             $table->string('title');
             $table->string('industry');
             $table->integer('positions_available');
@@ -33,5 +33,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('jobs');
+        Schema::dropIfExists('job_batches');
+        Schema::dropIfExists('failed_jobs');
     }
 };
