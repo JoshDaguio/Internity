@@ -1,52 +1,174 @@
-<x-guest-layout>
-    <form method="POST" action="{{ route('register') }}">
-        @csrf
+<!DOCTYPE html>
+<html lang="en">
 
-        <!-- Name -->
-        <div>
-            <x-input-label for="name" :value="__('Name')" />
-            <x-text-input id="name" class="block mt-1 w-full" type="text" name="name" :value="old('name')" required autofocus autocomplete="name" />
-            <x-input-error :messages="$errors->get('name')" class="mt-2" />
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+  <title>Register</title>
+  <meta content="" name="description">
+  <meta content="" name="keywords">
+
+  <!-- Favicons -->
+  <link href="{{ asset('assets/img/favicon.png') }}" rel="icon">
+  <link href="{{ asset('assets/img/apple-touch-icon.png') }}" rel="apple-touch-icon">
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.gstatic.com" rel="preconnect">
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
+
+  <!-- Vendor CSS Files -->
+  <link href="{{ asset('assets/vendor/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
+  <link href="{{ asset('assets/vendor/bootstrap-icons/bootstrap-icons.css') }}" rel="stylesheet">
+  <link href="{{ asset('assets/vendor/boxicons/css/boxicons.min.css') }}" rel="stylesheet">
+  <link href="{{ asset('assets/vendor/quill/quill.snow.css') }}" rel="stylesheet">
+  <link href="{{ asset('assets/vendor/quill/quill.bubble.css') }}" rel="stylesheet">
+  <link href="{{ asset('assets/vendor/remixicon/remixicon.css') }}" rel="stylesheet">
+  <link href="{{ asset('assets/vendor/simple-datatables/style.css') }}" rel="stylesheet">
+
+  <!-- Template Main CSS File -->
+  <link href="{{ asset('assets/css/style.css') }}" rel="stylesheet">
+
+  <style>
+    body {
+      background-color: #B30600;
+    }
+
+    .logo span {
+      color: white;
+      font-family: 'Poppins', sans-serif;
+      font-size: 40px;
+    }
+
+    .card-body,
+    .card-title,
+    .text-center {
+      color: black;
+    }
+
+    .btn-primary {
+      background-color: #B30600;
+      border-color: #B30600;
+    }
+
+    .btn-primary:hover {
+      background-color: #900400;
+      border-color: #900400;
+    }
+
+    a {
+      color: #B30600;
+    }
+
+    a:hover {
+      color: #900400;
+    }
+  </style>
+</head>
+
+<body>
+
+  <main>
+    <div class="container">
+
+      <section class="section register min-vh-100 d-flex flex-column align-items-center justify-content-center py-4">
+        <div class="container">
+          <div class="row justify-content-center">
+            <div class="col-lg-4 col-md-6 d-flex flex-column align-items-center justify-content-center">
+
+              <div class="d-flex justify-content-center py-4">
+                <a class="logo d-flex align-items-center w-auto">
+                  <span class="d-none d-lg-block">Internity</span>
+                </a>
+              </div><!-- End Logo -->
+
+              <div class="card mb-3">
+
+                <div class="card-body">
+
+                  <div class="pt-4 pb-2">
+                    <h5 class="card-title text-center pb-0 fs-4">Create an Account</h5>
+                    <p class="text-center small">Enter your personal details to create account</p>
+                  </div>
+
+                  <form method="POST" action="{{ route('register') }}" class="row g-3 needs-validation" novalidate>
+                      @csrf
+
+                      <!-- Name -->
+                      <div class="col-12">
+                          <label for="name" class="form-label">{{ __('Name') }}</label>
+                          <div class="input-group has-validation">
+                              <input type="text" name="name" class="form-control" id="name" :value="old('name')" required autofocus autocomplete="name">
+                              <div class="invalid-feedback">Please enter your name!</div>
+                          </div>
+                          <x-input-error :messages="$errors->get('name')" class="mt-2" />
+                      </div>
+
+                      <!-- Email Address -->
+                      <div class="col-12 mt-4">
+                          <label for="email" class="form-label">{{ __('Email') }}</label>
+                          <div class="input-group has-validation">
+                              <input type="email" name="email" class="form-control" id="email" :value="old('email')" required autocomplete="username">
+                              <div class="invalid-feedback">Please enter a valid Email address!</div>
+                          </div>
+                          <x-input-error :messages="$errors->get('email')" class="mt-2" />
+                      </div>
+
+                      <!-- Password -->
+                      <div class="col-12 mt-4">
+                          <label for="password" class="form-label">{{ __('Password') }}</label>
+                          <div class="input-group has-validation">
+                              <input type="password" name="password" class="form-control" id="password" required autocomplete="new-password">
+                              <div class="invalid-feedback">Please enter your password!</div>
+                          </div>
+                          <x-input-error :messages="$errors->get('password')" class="mt-2" />
+                      </div>
+
+                      <!-- Confirm Password -->
+                      <div class="col-12 mt-4">
+                          <label for="password_confirmation" class="form-label">{{ __('Confirm Password') }}</label>
+                          <div class="input-group has-validation">
+                              <input type="password" name="password_confirmation" class="form-control" id="password_confirmation" required autocomplete="new-password">
+                              <div class="invalid-feedback">Please confirm your password!</div>
+                          </div>
+                          <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
+                      </div>
+
+                      <div class="col-12 mt-4">
+                          <button class="btn btn-primary w-100" type="submit">{{ __('Register') }}</button>
+                      </div>
+
+                      <div class="col-12 mt-4">
+                          <p class="small mb-0">Already have an account? <a href="{{ route('login') }}">Log in</a></p>
+                      </div>
+                  </form>
+
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <!-- Email Address -->
-        <div class="mt-4">
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autocomplete="username" />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
-        </div>
+      </section>
 
-        <!-- Password -->
-        <div class="mt-4">
-            <x-input-label for="password" :value="__('Password')" />
+    </div>
+  </main><!-- End #main -->
 
-            <x-text-input id="password" class="block mt-1 w-full"
-                            type="password"
-                            name="password"
-                            required autocomplete="new-password" />
+  <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
 
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
-        </div>
+  <!-- Vendor JS Files -->
+  <script src="{{ asset('assets/vendor/apexcharts/apexcharts.min.js') }}"></script>
+  <script src="{{ asset('assets/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+  <script src="{{ asset('assets/vendor/chart.js/chart.umd.js') }}"></script>
+  <script src="{{ asset('assets/vendor/echarts/echarts.min.js') }}"></script>
+  <script src="{{ asset('assets/vendor/quill/quill.js') }}"></script>
+  <script src="{{ asset('assets/vendor/simple-datatables/simple-datatables.js') }}"></script>
+  <script src="{{ asset('assets/vendor/tinymce/tinymce.min.js') }}"></script>
+  <script src="{{ asset('assets/vendor/php-email-form/validate.js') }}"></script>
 
-        <!-- Confirm Password -->
-        <div class="mt-4">
-            <x-input-label for="password_confirmation" :value="__('Confirm Password')" />
+  <!-- Template Main JS File -->
+  <script src="{{ asset('assets/js/main.js') }}"></script>
 
-            <x-text-input id="password_confirmation" class="block mt-1 w-full"
-                            type="password"
-                            name="password_confirmation" required autocomplete="new-password" />
+</body>
 
-            <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
-        </div>
-
-        <div class="flex items-center justify-end mt-4">
-            <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('login') }}">
-                {{ __('Already registered?') }}
-            </a>
-
-            <x-primary-button class="ms-4">
-                {{ __('Register') }}
-            </x-primary-button>
-        </div>
-    </form>
-</x-guest-layout>
+</html>
