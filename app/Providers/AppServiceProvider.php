@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -19,6 +20,18 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        View::composer('layouts.app', function ($view) {
+            $user = auth()->user(); // Fetch the currently authenticated user
+            $sidebar = '';
+
+            switch ($user->role_id) {
+                case '1':
+                    $sidebar = 'super_admin.partials.sidebar';
+                    break;
+                // Add more cases as needed for sidebars each roles
+            }
+
+            $view->with('sidebar', $sidebar); // Pass the sidebar name to the view
+        });
     }
 }
