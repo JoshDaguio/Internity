@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\Auth;
 
-class Super_admin
+class Student
 {
     /**
      * Handle an incoming request.
@@ -16,8 +16,12 @@ class Super_admin
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if(Auth::user()->role_id != 1)
+        if(Auth::user()->role_id != 5)
         {
+            if(Auth::user()->role_id === 1)
+            {
+            return redirect('super_admin/dashboard');
+            }
             if(Auth::user()->role_id === 2)
             {
             return redirect('admin/dashboard');
@@ -29,10 +33,6 @@ class Super_admin
             if(Auth::user()->role_id === 4)
             {
             return redirect('company/dashboard');
-            }
-            if(Auth::user()->role_id === 5)
-            {
-            return redirect('student/dashboard');
             }
         }
         return $next($request);

@@ -28,7 +28,18 @@ class AppServiceProvider extends ServiceProvider
                 case '1':
                     $sidebar = 'super_admin.partials.sidebar';
                     break;
-                // Add more cases as needed for sidebars each roles
+                case '2':
+                    $sidebar = 'admin.partials.sidebar';
+                    break;
+                case '3':
+                    $sidebar = 'faculty.partials.sidebar';
+                    break;
+                case '4':
+                    $sidebar = 'company.partials.sidebar';
+                    break;
+                case '5':
+                    $sidebar = 'student.partials.sidebar';
+                    break;
             }
 
             $view->with('sidebar', $sidebar); // Pass the sidebar name to the view

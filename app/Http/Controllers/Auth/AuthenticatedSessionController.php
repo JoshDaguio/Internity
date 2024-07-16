@@ -29,10 +29,28 @@ class AuthenticatedSessionController extends Controller
         $request->session()->regenerate();
 
         //authentication for roles
-        if($request->user()->role_id == 1){
+        if($request->user()->role_id == 1)
+        {
             return redirect('super_admin/dashboard');
-        } //and else if for each roles
-        else{
+        } 
+        else if ($request->user()->role_id == 2)
+        {
+            return redirect('admin/dashboard');
+        } 
+        else if ($request->user()->role_id == 3)
+        {
+            return redirect('faculty/dashboard');
+        } 
+        else if ($request->user()->role_id == 4)
+        {
+            return redirect('company/dashboard');
+        } 
+        else if ($request->user()->role_id == 5)
+        {
+            return redirect('student/dashboard');
+        }
+        else
+        {
             return redirect()->intended(route('dashboard', absolute: false));
         }
     }

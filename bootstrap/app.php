@@ -12,8 +12,11 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->alias([
-            'super_admin' => \App\Http\Middleware\Super_admin::class
-            //add for each roles once middlewares for each roles are set up
+            'super_admin' => \App\Http\Middleware\Super_admin::class,
+            'admin' => \App\Http\Middleware\Admin::class,
+            'faculty' => \App\Http\Middleware\Faculty::class,
+            'company' => \App\Http\Middleware\Company::class,
+            'student' => \App\Http\Middleware\Student::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
