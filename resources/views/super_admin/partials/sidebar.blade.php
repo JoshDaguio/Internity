@@ -5,7 +5,7 @@
 <ul class="sidebar-nav" id="sidebar-nav">
 
   <li class="nav-item">
-    <a class="nav-link " href="index.html">
+    <a class="nav-link {{ request()->is('admin/dashboard') ? '' : 'collapsed' }}" href="{{ url('super_admin/dashboard') }}">
       <i class="bi bi-grid"></i>
       <span>Dashboard</span>
     </a>
@@ -14,7 +14,7 @@
   <li class="nav-heading">Profile Management</li>
 
   <li class="nav-item">
-    <a class="nav-link collapsed" href="{{ route('profile.profile') }}">
+    <a class="nav-link {{ request()->routeIs('profile.profile') ? '' : 'collapsed' }}" href="{{ route('profile.profile') }}">
       <i class="bi bi-person"></i>
       <span>{{ __('Profile') }}</span>  
     </a>
@@ -111,7 +111,27 @@
         </a>
       </li>
     </ul>
-  </li><!-- End Admin Nav -->
+  </li><!-- End Courses Nav -->
+
+  <li class="nav-heading">Violation Management</li>
+
+  <li class="nav-item">
+    <a class="nav-link collapsed" data-bs-target="#violations-nav" data-bs-toggle="collapse" href="#">
+      <i class="bi bi-menu-button-wide"></i><span>Violation and Penalties</span><i class="bi bi-chevron-down ms-auto"></i>
+    </a>
+    <ul id="violations-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+      <li>
+        <a href="components-alerts.html">
+          <i class="bi bi-circle"></i><span>View Violation</span>
+        </a>
+      </li>
+      <li>
+        <a href="components-alerts.html">
+          <i class="bi bi-circle"></i><span>Add Violations</span>
+        </a>
+      </li>
+    </ul>
+  </li><!-- End Violation and Penatlies Nav -->
   
 
   <li class="nav-heading">Account Management</li>

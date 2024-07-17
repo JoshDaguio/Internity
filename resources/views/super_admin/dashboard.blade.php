@@ -242,21 +242,21 @@
                         <td>Brandon Jacob</td>
                         <td><a href="#" class="text-primary">At praesentium minu</a></td>
                         <td>$64</td>
-                        <td><span class="badge bg-success">Approved</span></td>
+                        <td><span class="badge bg-success">Accepted</span></td>
                       </tr>
                       <tr>
                         <th scope="row"><a href="#">#2147</a></th>
                         <td>Bridie Kessler</td>
                         <td><a href="#" class="text-primary">Blanditiis dolor omnis similique</a></td>
                         <td>$47</td>
-                        <td><span class="badge bg-warning">Pending</span></td>
+                        <td><span class="badge bg-warning">To Review</span></td>
                       </tr>
                       <tr>
                         <th scope="row"><a href="#">#2049</a></th>
                         <td>Ashleigh Langosh</td>
                         <td><a href="#" class="text-primary">At recusandae consectetur</a></td>
                         <td>$147</td>
-                        <td><span class="badge bg-success">Approved</span></td>
+                        <td><span class="badge bg-success">Accepted</span></td>
                       </tr>
                       <tr>
                         <th scope="row"><a href="#">#2644</a></th>
@@ -270,7 +270,7 @@
                         <td>Raheem Lehner</td>
                         <td><a href="#" class="text-primary">Sunt similique distinctio</a></td>
                         <td>$165</td>
-                        <td><span class="badge bg-success">Approved</span></td>
+                        <td><span class="badge bg-success">Accepted</span></td>
                       </tr>
                     </tbody>
                   </table>

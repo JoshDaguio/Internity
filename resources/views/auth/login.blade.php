@@ -100,6 +100,7 @@
                       <div class="col-12">
                           <label for="email" class="form-label">{{ __('Email') }}</label>
                           <div class="input-group has-validation">
+                              <span class="input-group-text" id="inputGroupPrepend">@</span>
                               <input type="email" name="email" class="form-control" id="email" :value="old('email')" required autofocus>
                               <div class="invalid-feedback">Please enter your email.</div>
                           </div>
@@ -109,8 +110,11 @@
                       <!-- Password -->
                       <div class="col-12 mt-4">
                           <label for="password" class="form-label">{{ __('Password') }}</label>
-                          <input type="password" name="password" class="form-control" id="password" required>
-                          <div class="invalid-feedback">Please enter your password!</div>
+                          <div class="input-group has-validation">
+                            <span class="input-group-text" id="inputGroupPrepend">*</span>
+                            <input type="password" name="password" class="form-control" id="password" required>
+                            <div class="invalid-feedback">Please enter your password!</div>
+                          </div>
                           <x-input-error :messages="$errors->get('password')" class="mt-2" />
                       </div>
 
