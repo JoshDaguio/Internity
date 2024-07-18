@@ -96,37 +96,55 @@
   <li class="nav-heading">Course Management</li>
 
   <li class="nav-item">
-    <a class="nav-link collapsed" data-bs-target="#course-nav" data-bs-toggle="collapse" href="#">
+    <a class="nav-link {{ request()->routeIs('courses.index', 'courses.create', 'courses.edit') ? '' : 'collapsed' }}" data-bs-target="#course-nav" data-bs-toggle="collapse" href="#">
       <i class="bi bi-menu-button-wide"></i><span>Courses</span><i class="bi bi-chevron-down ms-auto"></i>
     </a>
-    <ul id="course-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+    <ul id="course-nav" class="nav-content {{ request()->routeIs('courses.index', 'courses.create', 'courses.edit') ? '' : 'collapse' }}" data-bs-parent="#sidebar-nav">
       <li>
-        <a href="components-alerts.html">
+        <a href="{{ route('courses.index') }}" class="{{ Request::routeIs('courses.index') ? 'active' : '' }}">
           <i class="bi bi-circle"></i><span>View Courses</span>
         </a>
       </li>
       <li>
-        <a href="components-alerts.html">
+        <a href="{{ route('courses.create') }}" class="{{ Request::routeIs('courses.create') ? 'active' : '' }}">
           <i class="bi bi-circle"></i><span>Add Course</span>
         </a>
       </li>
     </ul>
-  </li><!-- End Courses Nav -->
+  </li><!-- End Course Nav -->
 
-  <li class="nav-heading">Violation Management</li>
+  <li class="nav-heading">Internship Management</li>
 
   <li class="nav-item">
-    <a class="nav-link collapsed" data-bs-target="#violations-nav" data-bs-toggle="collapse" href="#">
+    <a class="nav-link {{ request()->routeIs('internship_hours.index', 'internship_hours.create', 'internship_hours.edit') ? '' : 'collapsed' }}" data-bs-target="#hours-nav" data-bs-toggle="collapse" href="#">
+      <i class="bi bi-menu-button-wide"></i><span>Internship Hours</span><i class="bi bi-chevron-down ms-auto"></i>
+    </a>
+    <ul id="hours-nav" class="nav-content {{ request()->routeIs('internship_hours.index', 'internship_hours.create','internship_hours.edit') ? '' : 'collapse' }} " data-bs-parent="#sidebar-nav">
+      <li>
+        <a href="{{ route('internship_hours.index') }}" class="{{ Request::routeIs('internship_hours.index') ? 'active' : '' }}">
+          <i class="bi bi-circle"></i><span>View Internship Hours</span>
+        </a>
+      </li>
+      <li>
+        <a href="{{ route('internship_hours.create') }}" class="{{ Request::routeIs('internship_hours.create') ? 'active' : '' }}">
+          <i class="bi bi-circle"></i><span>Add Internship Hours</span>
+        </a>
+      </li>
+    </ul>
+  </li><!-- End Internship Hours Nav -->
+
+  <li class="nav-item">
+    <a class="nav-link {{ request()->routeIs('penalties.index', 'penalties.create', 'penalties.edit', 'penalties.show') ? '' : 'collapsed' }}" data-bs-target="#violations-nav" data-bs-toggle="collapse" href="#">
       <i class="bi bi-menu-button-wide"></i><span>Violation and Penalties</span><i class="bi bi-chevron-down ms-auto"></i>
     </a>
-    <ul id="violations-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+    <ul id="violations-nav" class="nav-content {{ request()->routeIs('penalties.index', 'penalties.create', 'penalties.edit', 'penalties.show') ? '' : 'collapse' }} " data-bs-parent="#sidebar-nav">
       <li>
-        <a href="components-alerts.html">
+        <a href="{{ route('penalties.index') }}" class="{{ Request::routeIs('penalties.index') ? 'active' : '' }}">
           <i class="bi bi-circle"></i><span>View Violation</span>
         </a>
       </li>
       <li>
-        <a href="components-alerts.html">
+        <a href="{{ route('penalties.create') }}" class="{{ Request::routeIs('penalties.create') ? 'active' : '' }}">
           <i class="bi bi-circle"></i><span>Add Violations</span>
         </a>
       </li>
