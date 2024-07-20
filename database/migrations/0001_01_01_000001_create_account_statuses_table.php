@@ -15,6 +15,7 @@ return new class extends Migration
         Schema::create('account_statuses', function (Blueprint $table) {
             $table->id()->primary(); // Set id as primary key and integer
             $table->string('status');
+            $table->timestamps();
         });
 
         // Insert predefined statuses

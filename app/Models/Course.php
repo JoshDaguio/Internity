@@ -14,6 +14,4 @@ class Course extends Model
         'course_name',
         // Add other fillable attributes as needed
     ];
-
-    public $timestamps = false;
 }

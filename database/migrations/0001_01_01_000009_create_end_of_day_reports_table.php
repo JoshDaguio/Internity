@@ -21,6 +21,7 @@ return new class extends Migration
             $table->text('main_challenges');
             $table->text('plans_for_tomorrow');
             $table->timestamp('date_submitted');
+            $table->timestamps();
         });
     }
 

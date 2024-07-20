@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('password');
             $table->foreignId('role_id')->constrained('roles');
             $table->foreignId('status_id')->constrained('account_statuses');
+            $table->foreignId('course_id')->nullable()->constrained('courses');
             $table->rememberToken();
             $table->timestamps();
         });

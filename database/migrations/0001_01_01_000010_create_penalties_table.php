@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('violation');
             $table->integer('penalty_hours');
+            $table->timestamps();
         });
     }
 

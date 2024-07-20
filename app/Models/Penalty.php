@@ -13,6 +13,4 @@ class Penalty extends Model
         'violation',
         'penalty_hours',
     ];
-
-    public $timestamps = false;
 }
