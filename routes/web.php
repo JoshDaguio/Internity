@@ -10,6 +10,7 @@ use App\Http\Controllers\StudentController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\InternshipHoursController;
 use App\Http\Controllers\PenaltyController;
+use App\Http\Controllers\JobController;
 
 
 
@@ -79,4 +80,15 @@ Route::middleware(['auth', 'administrative'])->group(function () {
     Route::get('/penalties/{penalty}/edit', [PenaltyController::class, 'edit'])->name('penalties.edit');
     Route::patch('/penalties/{penalty}', [PenaltyController::class, 'update'])->name('penalties.update');
     Route::delete('/penalties/{penalty}', [PenaltyController::class, 'destroy'])->name('penalties.destroy');
+});
+
+//Jobs CRUD. Only Super Admin/Admin and Company
+Route::middleware(['auth', 'job_access'])->group(function () {
+    Route::get('/jobs', [JobController::class, 'index'])->name('jobs.index');
+    Route::get('/jobs/create', [JobController::class, 'create'])->name('jobs.create');
+    Route::post('/jobs', [JobController::class, 'store'])->name('jobs.store');
+    Route::get('/jobs/{job}', [JobController::class, 'show'])->name('jobs.show');
+    Route::get('/jobs/{job}/edit', [JobController::class, 'edit'])->name('jobs.edit');
+    Route::patch('/jobs/{job}', [JobController::class, 'update'])->name('jobs.update');
+    Route::delete('/jobs/{job}', [JobController::class, 'destroy'])->name('jobs.destroy');
 });
