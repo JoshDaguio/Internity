@@ -24,7 +24,7 @@
   <li class="nav-heading">Internship Management</li>
 
   <li class="nav-item">
-    <a class="nav-link collapased" href="#">
+    <a class="nav-link collapsed" href="#">
       <i class="bi bi-person"></i>
       <span>Requirements</span>  
     </a>

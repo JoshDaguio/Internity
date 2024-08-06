@@ -28,8 +28,8 @@
         <div class="mb-3">
             <label for="work_type" class="form-label">Work Type</label>
             <select id="work_type" name="work_type" class="form-control" required>
-                <option value="remote">Remote</option>
-                <option value="on-site">On-site</option>
+                <option value="Remote">Remote</option>
+                <option value="On-site">On-site</option>
             </select>
         </div>
 

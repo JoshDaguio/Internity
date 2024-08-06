@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('industry');
             $table->integer('positions_available');
             $table->string('location');
-            $table->enum('work_type', ['remote', 'on-site']);
+            $table->enum('work_type', ['Remote', 'On-site']);
             $table->string('schedule');
             $table->text('description');
             $table->text('qualification');
