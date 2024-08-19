@@ -59,22 +59,23 @@
   </li><!-- End Company Nav -->
 
   <li class="nav-item">
-    <a class="nav-link collapsed" data-bs-target="#student-nav" data-bs-toggle="collapse" href="#">
+    <a class="nav-link {{ request()->routeIs('registrations.pending', 'students.list') ? '' : 'collapsed' }}" data-bs-target="#student-nav" data-bs-toggle="collapse" href="#">
       <i class="bi bi-menu-button-wide"></i><span>Student</span><i class="bi bi-chevron-down ms-auto"></i>
     </a>
-    <ul id="student-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+    <ul id="student-nav" class="nav-content {{ request()->routeIs('registrations.pending', 'students.list') ? '' : 'collapse' }} " data-bs-parent="#sidebar-nav">
       <li>
-        <a href="components-alerts.html">
-          <i class="bi bi-circle"></i><span>View Students</span>
+        <a href="{{ route('registrations.pending') }}" class="{{ Request::routeIs('registrations.pending') ? 'active' : '' }}">
+          <i class="bi bi-circle"></i><span>Student Registration</span>
         </a>
       </li>
       <li>
-        <a href="components-alerts.html">
-          <i class="bi bi-circle"></i><span>Add Students</span>
+        <a href="{{ route('students.list') }}" class="{{ Request::routeIs('students.list') ? 'active' : '' }}">
+          <i class="bi bi-circle"></i><span>Student List</span>
         </a>
       </li>
     </ul>
   </li><!-- End Student Nav -->
+  
 
   <li class="nav-heading">Course Management</li>
 

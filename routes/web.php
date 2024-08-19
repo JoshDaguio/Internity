@@ -11,6 +11,8 @@ use App\Http\Controllers\CourseController;
 use App\Http\Controllers\InternshipHoursController;
 use App\Http\Controllers\PenaltyController;
 use App\Http\Controllers\JobController;
+use App\Http\Controllers\AdminAccountController;
+
 
 
 
@@ -91,4 +93,26 @@ Route::middleware(['auth', 'job_access'])->group(function () {
     Route::get('/jobs/{job}/edit', [JobController::class, 'edit'])->name('jobs.edit');
     Route::patch('/jobs/{job}', [JobController::class, 'update'])->name('jobs.update');
     Route::delete('/jobs/{job}', [JobController::class, 'destroy'])->name('jobs.destroy');
+});
+
+//Student Registration Process
+Route::middleware(['auth', 'administrative'])->group(function () {
+    Route::get('/registrations/pending', [AdminController::class, 'pendingRegistrations'])->name('registrations.pending');
+    Route::post('/registrations/approve/{user}', [AdminController::class, 'approveRegistration'])->name('registrations.approve');
+    Route::get('/students/list', [AdminController::class, 'approvedStudents'])->name('students.list');
+});
+
+Route::get('/register/success', function () {
+    return view('auth.register-success');
+})->name('register.success');
+
+//Admin Account CRUD. Only Super Admin
+Route::middleware(['auth', 'super_admin'])->group(function () {
+    Route::get('/admin-accounts', [AdminAccountController::class, 'index'])->name('admin-accounts.index');
+    Route::get('/admin-accounts/create', [AdminAccountController::class, 'create'])->name('admin-accounts.create');
+    Route::post('/admin-accounts', [AdminAccountController::class, 'store'])->name('admin-accounts.store');
+    Route::get('/admin-accounts/{admin}/edit', [AdminAccountController::class, 'edit'])->name('admin-accounts.edit');
+    Route::patch('/admin-accounts/{admin}', [AdminAccountController::class, 'update'])->name('admin-accounts.update');
+    Route::delete('/admin-accounts/{admin}', [AdminAccountController::class, 'destroy'])->name('admin-accounts.destroy');
+    Route::patch('/admin-accounts/{admin}/reactivate', [AdminAccountController::class, 'reactivate'])->name('admin-accounts.reactivate');
 });

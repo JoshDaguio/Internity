@@ -94,19 +94,39 @@
                   <form method="POST" action="{{ route('register') }}" class="row g-3 needs-validation" novalidate>
                       @csrf
 
-                      <!-- Name -->
+                      <!-- First Name -->
                       <div class="col-12">
-                          <label for="name" class="form-label">{{ __('Name') }}</label>
+                          <label for="first_name" class="form-label">First Name</label>
                           <div class="input-group has-validation">
-                              <input type="text" name="name" class="form-control" id="name" :value="old('name')" required autofocus autocomplete="name">
-                              <div class="invalid-feedback">Please enter your name!</div>
+                              <input type="text" name="first_name" class="form-control" id="first_name" :value="old('first_name')" required autofocus autocomplete="first_name">
+                              <div class="invalid-feedback">Please enter your first name!</div>
                           </div>
-                          <x-input-error :messages="$errors->get('name')" class="mt-2" />
+                          <x-input-error :messages="$errors->get('first_name')" class="mt-2" />
+                      </div>
+
+                      <!-- Last Name -->
+                      <div class="col-12 mt-4">
+                          <label for="last_name" class="form-label">Last Name</label>
+                          <div class="input-group has-validation">
+                              <input type="text" name="last_name" class="form-control" id="last_name" :value="old('last_name')" required autocomplete="last_name">
+                              <div class="invalid-feedback">Please enter your last name!</div>
+                          </div>
+                          <x-input-error :messages="$errors->get('last_name')" class="mt-2" />
+                      </div>
+
+                      <!-- ID Number -->
+                      <div class="col-12 mt-4">
+                          <label for="id_number" class="form-label">ID Number</label>
+                          <div class="input-group has-validation">
+                              <input type="text" name="id_number" class="form-control" id="id_number" :value="old('id_number')" required autocomplete="id_number">
+                              <div class="invalid-feedback">Please enter your ID number!</div>
+                          </div>
+                          <x-input-error :messages="$errors->get('id_number')" class="mt-2" />
                       </div>
 
                       <!-- Email Address -->
                       <div class="col-12 mt-4">
-                          <label for="email" class="form-label">{{ __('Email') }}</label>
+                          <label for="email" class="form-label">Email</label>
                           <div class="input-group has-validation">
                               <input type="email" name="email" class="form-control" id="email" :value="old('email')" required autocomplete="username">
                               <div class="invalid-feedback">Please enter a valid Email address!</div>
@@ -114,28 +134,23 @@
                           <x-input-error :messages="$errors->get('email')" class="mt-2" />
                       </div>
 
-                      <!-- Password -->
+                      <!-- Course -->
                       <div class="col-12 mt-4">
-                          <label for="password" class="form-label">{{ __('Password') }}</label>
+                          <label for="course_id" class="form-label">Course</label>
                           <div class="input-group has-validation">
-                              <input type="password" name="password" class="form-control" id="password" required autocomplete="new-password">
-                              <div class="invalid-feedback">Please enter your password!</div>
+                              <select name="course_id" class="form-select" id="course_id" required>
+                                  <option value="" disabled selected>Select your course</option>
+                                  @foreach($courses as $course)
+                                      <option value="{{ $course->id }}">{{ $course->course_code }}</option>
+                                  @endforeach
+                              </select>
+                              <div class="invalid-feedback">Please select your course!</div>
                           </div>
-                          <x-input-error :messages="$errors->get('password')" class="mt-2" />
-                      </div>
-
-                      <!-- Confirm Password -->
-                      <div class="col-12 mt-4">
-                          <label for="password_confirmation" class="form-label">{{ __('Confirm Password') }}</label>
-                          <div class="input-group has-validation">
-                              <input type="password" name="password_confirmation" class="form-control" id="password_confirmation" required autocomplete="new-password">
-                              <div class="invalid-feedback">Please confirm your password!</div>
-                          </div>
-                          <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
+                          <x-input-error :messages="$errors->get('course_id')" class="mt-2" />
                       </div>
 
                       <div class="col-12 mt-4">
-                          <button class="btn btn-primary w-100" type="submit">{{ __('Register') }}</button>
+                          <button class="btn btn-primary w-100" type="submit">Register</button>
                       </div>
 
                       <div class="col-12 mt-4">

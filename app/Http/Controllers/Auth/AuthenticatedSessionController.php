@@ -26,6 +26,12 @@ class AuthenticatedSessionController extends Controller
     {
         $request->authenticate();
 
+        // Check if the authenticated user is inactive
+        if ($request->user()->status_id == 2) { // Assuming 2 is the ID for inactive status
+            Auth::logout(); // Log out the user if they are inactive
+            return redirect()->route('login')->withErrors(['email' => 'This account is inactive.']);
+        }
+
         $request->session()->regenerate();
 
         //authentication for roles

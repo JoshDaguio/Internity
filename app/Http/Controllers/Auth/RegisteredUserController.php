@@ -3,13 +3,11 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\Profile;
 use App\Models\User;
-use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rules;
 use Illuminate\View\View;
 
 class RegisteredUserController extends Controller
@@ -19,7 +17,8 @@ class RegisteredUserController extends Controller
      */
     public function create(): View
     {
-        return view('auth.register');
+        $courses = \App\Models\Course::all();
+        return view('auth.register', compact('courses'));
     }
 
     /**
@@ -30,21 +29,31 @@ class RegisteredUserController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'first_name' => ['required', 'string', 'max:255'],
+            'last_name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'id_number' => ['required', 'string', 'max:255', 'unique:profiles'],
+            'course_id' => ['required', 'exists:courses,id'],
         ]);
 
+        // Create the profile first
+        $profile = Profile::create([
+            'first_name' => $request->first_name,
+            'last_name' => $request->last_name,
+            'id_number' => $request->id_number,
+        ]);
+
+        // Create the user and link the profile
         $user = User::create([
-            'name' => $request->name,
+            'name' => $request->first_name,
             'email' => $request->email,
-            'password' => Hash::make($request->password),
+            'password' => Hash::make('aufCCSInternship'), // Default password
+            'course_id' => $request->course_id,
+            'role_id' => 5, // Student role
+            'status_id' => 2, // Inactive status
+            'profile_id' => $profile->id, // Link the profile
         ]);
 
-        event(new Registered($user));
-
-        Auth::login($user);
-
-        return redirect(route('dashboard', absolute: false));
+        return redirect()->route('register.success');
     }
 }

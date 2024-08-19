@@ -11,6 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
+        //for user profile
+        Schema::create('profiles', function (Blueprint $table) {
+            $table->id();
+            $table->string('first_name');
+            $table->string('last_name');
+            $table->string('id_number')->unique();
+            $table->timestamps();
+        });
+
+        //users account
         Schema::create('users', function (Blueprint $table) {
             $table->id();
             $table->string('name');
@@ -20,6 +30,7 @@ return new class extends Migration
             $table->foreignId('role_id')->constrained('roles');
             $table->foreignId('status_id')->constrained('account_statuses');
             $table->foreignId('course_id')->nullable()->constrained('courses');
+            $table->foreignId('profile_id')->nullable()->constrained('profiles');
             $table->rememberToken();
             $table->timestamps();
         });
@@ -91,8 +102,13 @@ return new class extends Migration
      */
     public function down(): void
     {
+        Schema::disableForeignKeyConstraints();
+
+        Schema::dropIfExists('profiles');
         Schema::dropIfExists('users');
         Schema::dropIfExists('password_reset_tokens');
         Schema::dropIfExists('sessions');
+
+        Schema::enableForeignKeyConstraints();
     }
 };
