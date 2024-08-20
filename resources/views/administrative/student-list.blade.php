@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('body')
-    <h1>Approved Students</h1>
+    <h1>Student List</h1>
     <table class="table">
         <thead>
             <tr>

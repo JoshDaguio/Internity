@@ -96,7 +96,7 @@ Route::middleware(['auth', 'job_access'])->group(function () {
 });
 
 //Student Registration Process
-Route::middleware(['auth', 'administrative'])->group(function () {
+Route::middleware(['auth', 'facultyaccess'])->group(function () {
     Route::get('/registrations/pending', [AdminController::class, 'pendingRegistrations'])->name('registrations.pending');
     Route::post('/registrations/approve/{user}', [AdminController::class, 'approveRegistration'])->name('registrations.approve');
     Route::get('/students/list', [AdminController::class, 'approvedStudents'])->name('students.list');

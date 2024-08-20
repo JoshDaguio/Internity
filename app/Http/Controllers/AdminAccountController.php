@@ -84,7 +84,7 @@ class AdminAccountController extends Controller
     public function destroy(User $admin)
     {
         // Set the admin's status to inactive instead of deleting
-        $admin->update(['status_id' => 2]); // Assuming 2 is the ID for the inactive status
+        $admin->update(['status_id' => 2]); // Status 1 is Inactive
 
         return redirect()->route('admin-accounts.index')->with('success', 'Admin account deactivated successfully.');
     }
@@ -92,7 +92,7 @@ class AdminAccountController extends Controller
     public function reactivate(User $admin)
     {
         // Set the admin's status to active
-        $admin->update(['status_id' => 1]); // Assuming 1 is the ID for the active status
+        $admin->update(['status_id' => 1]); // Status 1 is Active
 
         return redirect()->route('admin-accounts.index')->with('success', 'Admin account reactivated successfully.');
     }

@@ -2,6 +2,15 @@
 
 @section('body')
     <h1>Pending Student Registrations</h1>
+
+    @if(session('success'))
+        <div class="alert alert-success">{{ session('success') }}</div>
+    @endif
+    
+    @if(session('error'))
+        <div class="alert alert-danger">{{ session('error') }}</div>
+    @endif
+
     <table class="table">
         <thead>
             <tr>
@@ -14,7 +23,7 @@
             </tr>
         </thead>
         <tbody>
-            @foreach($pendingRegistrations as $registration)
+            @forelse($pendingRegistrations as $registration)
                 <tr>
                     <td>{{ $registration->profile->id_number }}</td>
                     <td>{{ $registration->profile->last_name }}</td>
@@ -28,7 +37,11 @@
                         </form>
                     </td>
                 </tr>
-            @endforeach
+            @empty
+                <tr>
+                    <td colspan="6">No pending registrations found.</td>
+                </tr>
+            @endforelse
         </tbody>
     </table>
 @endsection

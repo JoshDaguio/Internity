@@ -19,6 +19,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'student' => \App\Http\Middleware\Student::class,
             'administrative' => \App\Http\Middleware\Administrative::class,
             'job_access' => \App\Http\Middleware\JobAccess::class,
+            'facultyaccess' => \App\Http\Middleware\FacultyAccess::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
