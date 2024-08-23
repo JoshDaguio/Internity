@@ -12,8 +12,7 @@ use App\Http\Controllers\InternshipHoursController;
 use App\Http\Controllers\PenaltyController;
 use App\Http\Controllers\JobController;
 use App\Http\Controllers\AdminAccountController;
-
-
+use App\Http\Controllers\EndOfDayReportController;
 
 
 Route::get('/', function () {
@@ -102,6 +101,8 @@ Route::middleware(['auth', 'facultyaccess'])->group(function () {
     Route::get('/students/list', [AdminController::class, 'approvedStudents'])->name('students.list');
 });
 
+
+//Registration Success - Currently not working
 Route::get('/register/success', function () {
     return view('auth.register-success');
 })->name('register.success');
@@ -115,4 +116,16 @@ Route::middleware(['auth', 'super_admin'])->group(function () {
     Route::patch('/admin-accounts/{admin}', [AdminAccountController::class, 'update'])->name('admin-accounts.update');
     Route::delete('/admin-accounts/{admin}', [AdminAccountController::class, 'destroy'])->name('admin-accounts.destroy');
     Route::patch('/admin-accounts/{admin}/reactivate', [AdminAccountController::class, 'reactivate'])->name('admin-accounts.reactivate');
+});
+
+
+//EOD Reports CRUD for all roles with their respective access rights
+Route::middleware(['auth'])->group(function () {
+    // Students can create and view their own reports
+    Route::get('/end_of_day_reports', [EndOfDayReportController::class, 'index'])->name('end_of_day_reports.index');
+    Route::get('/end_of_day_reports/create', [EndOfDayReportController::class, 'create'])->name('end_of_day_reports.create');
+    Route::post('/end_of_day_reports', [EndOfDayReportController::class, 'store'])->name('end_of_day_reports.store');
+    
+    // Show specific report for the user (student, super admin, admin, faculty)
+    Route::get('/end_of_day_reports/{report}', [EndOfDayReportController::class, 'show'])->name('end_of_day_reports.show');
 });

@@ -66,22 +66,23 @@
   </li><!-- End Daily Time Record Nav -->
 
   <li class="nav-item">
-    <a class="nav-link collapsed" data-bs-target="#eod-nav" data-bs-toggle="collapse" href="#">
+    <a class="nav-link {{ request()->routeIs('end_of_day_reports.create', 'end_of_day_reports.index') ? '' : 'collapsed' }}" data-bs-target="#eod-nav" data-bs-toggle="collapse" href="#">
       <i class="bi bi-menu-button-wide"></i><span>Reports</span><i class="bi bi-chevron-down ms-auto"></i>
     </a>
-    <ul id="eod-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+    <ul id="eod-nav" class="nav-content {{ request()->routeIs('end_of_day_reports.create', 'end_of_day_reports.index') ? '' : 'collapse' }}" data-bs-parent="#sidebar-nav">
       <li>
-        <a href="components-alerts.html">
-          <i class="bi bi-circle"></i><span>End of Day Report</span>
+        <a href="{{ route('end_of_day_reports.create') }}" class="{{ Request::routeIs('end_of_day_reports.create') ? 'active' : '' }}">
+          <i class="bi bi-circle"></i><span>Create Daily Report</span>
         </a>
       </li>
       <li>
-        <a href="components-alerts.html">
-          <i class="bi bi-circle"></i><span>Monthly Reports</span>
+        <a href="{{ route('end_of_day_reports.index') }}" class="{{ Request::routeIs('end_of_day_reports.index') ? 'active' : '' }}">
+          <i class="bi bi-circle"></i><span>View Reports</span>
         </a>
       </li>
     </ul>
   </li><!-- End Report Nav -->
+
 
   <li class="nav-item">
     <a class="nav-link collapsed" href="#">

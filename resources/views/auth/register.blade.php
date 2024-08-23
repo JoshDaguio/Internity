@@ -87,8 +87,8 @@
                 <div class="card-body">
 
                   <div class="pt-4 pb-2">
-                    <h5 class="card-title text-center pb-0 fs-4">Create an Account</h5>
-                    <p class="text-center small">Enter your personal details to create account</p>
+                    <h5 class="card-title text-center pb-0 fs-4">Register Account</h5>
+                    <p class="text-center small">Enter your student details to register account</p>
                   </div>
 
                   <form method="POST" action="{{ route('register') }}" class="row g-3 needs-validation" novalidate>

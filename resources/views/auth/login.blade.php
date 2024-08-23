@@ -139,7 +139,7 @@
                       </div>
 
                       <div class="col-12 mt-4">
-                          <p class="small mb-0">Student with no account? <a href="{{ route('register') }}">Create an account</a></p>
+                          <p class="small mb-0">Student with no account? <a href="{{ route('register') }}">Register an account</a></p>
                       </div>
                   </form>
 
