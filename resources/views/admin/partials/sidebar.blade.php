@@ -117,6 +117,25 @@
   </ul>
 </li><!-- End Internship Hours Nav -->
 
+<li class="nav-item">
+    <a class="nav-link {{ request()->routeIs('file_uploads.create', 'file_uploads.index') ? '' : 'collapsed' }}" data-bs-target="#file-nav" data-bs-toggle="collapse" href="#">
+        <i class="bi bi-file-earmark"></i><span>File Management</span><i class="bi bi-chevron-down ms-auto"></i>
+    </a>
+    <ul id="file-nav" class="nav-content {{ request()->routeIs('file_uploads.create', 'file_uploads.index') ? '' : 'collapse' }}" data-bs-parent="#sidebar-nav">
+        <li>
+            <a href="{{ route('file_uploads.create') }}" class="{{ Request::routeIs('file_uploads.create') ? 'active' : '' }}">
+                <i class="bi bi-circle"></i><span>Upload File</span>
+            </a>
+        </li>
+        <li>
+            <a href="{{ route('file_uploads.index') }}" class="{{ Request::routeIs('file_uploads.index') ? 'active' : '' }}">
+                <i class="bi bi-circle"></i><span>View Files</span>
+            </a>
+        </li>
+    </ul>
+</li><!-- End File Management Nav -->
+
+
   <li class="nav-item">
     <a class="nav-link {{ request()->routeIs('penalties.index', 'penalties.create', 'penalties.edit', 'penalties.show') ? '' : 'collapsed' }}" data-bs-target="#violations-nav" data-bs-toggle="collapse" href="#">
       <i class="bi bi-menu-button-wide"></i><span>Violation and Penalties</span><i class="bi bi-chevron-down ms-auto"></i>

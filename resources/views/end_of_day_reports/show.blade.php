@@ -6,7 +6,7 @@
     <table class="table">
         <thead>
             <tr>
-                <th>Task Description</th>
+                <th>Task Completed</th>
                 <th>Time Spent</th>
             </tr>
         </thead>
@@ -22,10 +22,6 @@
 
     <table class="table mt-4">
         <tr>
-            <th>Date Submitted:</th>
-            <td>{{ \Carbon\Carbon::parse($report->date_submitted)->format('F d, Y') }}</td>
-        </tr>
-        <tr>
             <th>Key Successes:</th>
             <td>{{ $report->key_successes }}</td>
         </tr>
@@ -36,6 +32,10 @@
         <tr>
             <th>Plans for Tomorrow:</th>
             <td>{{ $report->plans_for_tomorrow }}</td>
+        </tr>
+        <tr>
+            <th>Date Submitted:</th>
+            <td>{{ \Carbon\Carbon::parse($report->date_submitted)->format('F d, Y') }}</td>
         </tr>
     </table>
 

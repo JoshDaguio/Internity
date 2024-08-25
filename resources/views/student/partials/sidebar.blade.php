@@ -66,22 +66,23 @@
   </li><!-- End Daily Time Record Nav -->
 
   <li class="nav-item">
-    <a class="nav-link {{ request()->routeIs('end_of_day_reports.create', 'end_of_day_reports.index') ? '' : 'collapsed' }}" data-bs-target="#eod-nav" data-bs-toggle="collapse" href="#">
-      <i class="bi bi-menu-button-wide"></i><span>Reports</span><i class="bi bi-chevron-down ms-auto"></i>
+    <a class="nav-link {{ request()->routeIs('end_of_day_reports.create', 'end_of_day_reports.index', 'end_of_day_reports.compile.monthly') ? '' : 'collapsed' }}" data-bs-target="#eod-nav" data-bs-toggle="collapse" href="#">
+        <i class="bi bi-menu-button-wide"></i><span>Reports</span><i class="bi bi-chevron-down ms-auto"></i>
     </a>
-    <ul id="eod-nav" class="nav-content {{ request()->routeIs('end_of_day_reports.create', 'end_of_day_reports.index') ? '' : 'collapse' }}" data-bs-parent="#sidebar-nav">
-      <li>
-        <a href="{{ route('end_of_day_reports.create') }}" class="{{ Request::routeIs('end_of_day_reports.create') ? 'active' : '' }}">
-          <i class="bi bi-circle"></i><span>Create Daily Report</span>
-        </a>
-      </li>
-      <li>
-        <a href="{{ route('end_of_day_reports.index') }}" class="{{ Request::routeIs('end_of_day_reports.index') ? 'active' : '' }}">
-          <i class="bi bi-circle"></i><span>View Reports</span>
-        </a>
-      </li>
+    <ul id="eod-nav" class="nav-content {{ request()->routeIs('end_of_day_reports.create', 'end_of_day_reports.index', 'end_of_day_reports.compile.monthly') ? '' : 'collapse' }}" data-bs-parent="#sidebar-nav">
+        <li>
+            <a href="{{ route('end_of_day_reports.create') }}" class="{{ Request::routeIs('end_of_day_reports.create') ? 'active' : '' }}">
+                <i class="bi bi-circle"></i><span>Create Daily Report</span>
+            </a>
+        </li>
+        <li>
+            <a href="{{ route('end_of_day_reports.index') }}" class="{{ Request::routeIs('end_of_day_reports.index', 'end_of_day_reports.compile.monthly') ? 'active' : '' }}">
+                <i class="bi bi-circle"></i><span>View Reports</span>
+            </a>
+        </li>
     </ul>
-  </li><!-- End Report Nav -->
+</li><!-- End Report Nav -->
+
 
 
   <li class="nav-item">
@@ -92,11 +93,11 @@
   </li><!-- End Request Nav -->
 
   <li class="nav-item">
-    <a class="nav-link collapsed" href="#">
-      <i class="bi bi-person"></i>
+    <a class="nav-link {{ request()->routeIs('file_uploads.index') ? '' : 'collapsed' }}" href="{{ route('file_uploads.index') }}">
+      <i class="bi bi-file-earmark"></i>
       <span>Files</span>  
     </a>
-  </li><!-- End File Nav -->
+</li><!-- End File Nav -->
 
   <li class="nav-heading">Account Management</li>
 

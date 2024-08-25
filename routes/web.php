@@ -13,6 +13,7 @@ use App\Http\Controllers\PenaltyController;
 use App\Http\Controllers\JobController;
 use App\Http\Controllers\AdminAccountController;
 use App\Http\Controllers\EndOfDayReportController;
+use App\Http\Controllers\FileUploadController;
 
 
 Route::get('/', function () {
@@ -121,11 +122,34 @@ Route::middleware(['auth', 'super_admin'])->group(function () {
 
 //EOD Reports CRUD for all roles with their respective access rights
 Route::middleware(['auth'])->group(function () {
-    // Students can create and view their own reports
+    //Students Create and View Reports
     Route::get('/end_of_day_reports', [EndOfDayReportController::class, 'index'])->name('end_of_day_reports.index');
     Route::get('/end_of_day_reports/create', [EndOfDayReportController::class, 'create'])->name('end_of_day_reports.create');
     Route::post('/end_of_day_reports', [EndOfDayReportController::class, 'store'])->name('end_of_day_reports.store');
     
-    // Show specific report for the user (student, super admin, admin, faculty)
+    //Show specific report for the user (student, super admin, admin, faculty)
     Route::get('/end_of_day_reports/{report}', [EndOfDayReportController::class, 'show'])->name('end_of_day_reports.show');
+
+    //Generate and View Monthly Compilation for Students
+    Route::get('/end_of_day_reports/compile/monthly', [EndOfDayReportController::class, 'compileMonthly'])->name('end_of_day_reports.compile.monthly');
+    
+    //Download the Monthly Compilation as PDF
+    Route::get('/end_of_day_reports/download/monthly', [EndOfDayReportController::class, 'downloadMonthlyPDF'])->name('end_of_day_reports.download.monthly');
+});
+
+
+//File Uploads and Downloads
+//Super Admins and Admins Can Upload files
+Route::middleware(['auth', 'administrative'])->group(function () {
+    Route::get('/file_uploads', [FileUploadController::class, 'index'])->name('file_uploads.index');
+    Route::get('/file_uploads/create', [FileUploadController::class, 'create'])->name('file_uploads.create');
+    Route::post('/file_uploads', [FileUploadController::class, 'store'])->name('file_uploads.store');
+    Route::delete('/file_uploads/{file}', [FileUploadController::class, 'destroy'])->name('file_uploads.destroy');
+    Route::get('/file_uploads/preview/{file}', [FileUploadController::class, 'preview'])->name('file_uploads.preview');
+});
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/file_uploads', [FileUploadController::class, 'index'])->name('file_uploads.index');
+    Route::get('/file_uploads/download/{file}', [FileUploadController::class, 'download'])->name('file_uploads.download');
+    Route::get('/file_uploads/preview/{file}', [FileUploadController::class, 'preview'])->name('file_uploads.preview');
 });

@@ -8,18 +8,26 @@ use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class EndOfDayReportController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $reports = EndOfDayReport::where('student_id', Auth::id())
-        ->orderBy('date_submitted', 'desc')
-        ->get();
+        $query = EndOfDayReport::where('student_id', Auth::id());
 
+        if ($request->has('filter') && $request->filter === 'week') {
+            $query->where('date_submitted', '>=', Carbon::now()->subDays(7));
+        } elseif ($request->has('filter') && $request->filter === 'month') {
+            $query->whereYear('date_submitted', Carbon::now()->year)
+                  ->whereMonth('date_submitted', Carbon::now()->month);
+        }
+    
+        $reports = $query->orderBy('date_submitted', 'desc')->get();
+    
         return view('end_of_day_reports.index', compact('reports'));
     }
 
@@ -98,6 +106,38 @@ class EndOfDayReportController extends Controller
         }
     
         return view('end_of_day_reports.show', compact('report'));
+    }
+
+    public function compileMonthly()
+    {
+        $currentMonth = Carbon::now()->month;
+        $currentYear = Carbon::now()->year;
+        
+        $reports = EndOfDayReport::where('student_id', Auth::id())
+            ->whereMonth('date_submitted', $currentMonth)
+            ->whereYear('date_submitted', $currentYear)
+            ->orderBy('date_submitted', 'asc')
+            ->get();
+
+        return view('end_of_day_reports.monthly_compilation', compact('reports', 'currentMonth', 'currentYear'));
+    }
+
+    public function downloadMonthlyPDF()
+    {
+        $currentMonth = Carbon::now()->month;
+        $currentYear = Carbon::now()->year;
+        
+        $reports = EndOfDayReport::where('student_id', Auth::id())
+            ->whereMonth('date_submitted', $currentMonth)
+            ->whereYear('date_submitted', $currentYear)
+            ->orderBy('date_submitted', 'asc')
+            ->get();
+
+        $profile = Auth::user()->profile;
+        $studentName = $profile->last_name . ', ' . $profile->first_name;
+        $pdf = Pdf::loadView('end_of_day_reports.pdf.monthly_compilation', compact('reports', 'currentMonth', 'currentYear', 'studentName'));
+        
+        return $pdf->download("{$studentName}_{$currentMonth}_{$currentYear}_Monthly_Report.pdf");
     }
 
     /**
