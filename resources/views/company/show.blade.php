@@ -6,12 +6,16 @@
 
     <table class="table table-bordered">
         <tr>
-            <th>Name:</th>
+            <th>Company Name:</th>
             <td>{{ $company->name }}</td>
         </tr>
         <tr>
             <th>Email:</th>
             <td>{{ $company->email }}</td>
+        </tr>
+        <tr>
+            <th>Contact Person:</th>
+            <td>{{ $company->profile->first_name }} {{ $company->profile->last_name }}</td>
         </tr>
     </table>
 

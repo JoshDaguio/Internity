@@ -1,5 +1,5 @@
 <section>
-    <form method="post" action="{{ route('password.update') }}">
+    <form id="password-update-form" method="post" action="{{ route('password.update') }}">
         @csrf
         @method('put')
 
@@ -34,7 +34,10 @@
         </div>
 
         <div class="text-center">
-            <button type="submit" class="btn btn-primary">{{ __('Change Password') }}</button>
+            <!-- Button to trigger the modal -->
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#confirmPasswordChangeModal">
+                {{ __('Change Password') }}
+            </button>
         </div>
 
         @if (session('status') === 'password-updated')
@@ -44,3 +47,28 @@
         @endif
     </form>
 </section>
+
+<!-- Modal -->
+<div class="modal fade" id="confirmPasswordChangeModal" tabindex="-1" aria-labelledby="confirmPasswordChangeModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmPasswordChangeModalLabel">Confirm Password Change</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to change your password?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="confirm-change-password">Confirm</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('confirm-change-password').addEventListener('click', function () {
+        document.getElementById('password-update-form').submit();
+    });
+</script>

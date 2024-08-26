@@ -112,6 +112,7 @@ Route::middleware(['auth', 'administrative'])->group(function () {
     Route::get('/company/{company}/edit', [CompanyController::class, 'edit'])->name('company.edit');
     Route::patch('/company/{company}', [CompanyController::class, 'update'])->name('company.update');
     Route::delete('/company/{company}', [CompanyController::class, 'destroy'])->name('company.destroy');
+    Route::patch('/company/{company}/reactivate', [CompanyController::class, 'reactivate'])->name('company.reactivate');
 });
 
 //Student Registration Process

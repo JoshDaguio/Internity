@@ -59,22 +59,23 @@
   </li><!-- End Faculty Nav -->
 
   <li class="nav-item">
-    <a class="nav-link collapsed" data-bs-target="#company-nav" data-bs-toggle="collapse" href="#">
-      <i class="bi bi-menu-button-wide"></i><span>Company</span><i class="bi bi-chevron-down ms-auto"></i>
+    <a class="nav-link {{ request()->routeIs('company.index', 'company.create') ? '' : 'collapsed' }}" data-bs-target="#company-nav" data-bs-toggle="collapse" href="#">
+        <i class="bi bi-menu-button-wide"></i><span>Company</span><i class="bi bi-chevron-down ms-auto"></i>
     </a>
-    <ul id="company-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
-      <li>
-        <a href="{{ route('company.index') }}">
-          <i class="bi bi-circle"></i><span>View Companies</span>
-        </a>
-      </li>
-      <li>
-        <a href="{{ route('company.create') }}">
-          <i class="bi bi-circle"></i><span>Add Company</span>
-        </a>
-      </li>
+    <ul id="company-nav" class="nav-content {{ request()->routeIs('company.index', 'company.create') ? '' : 'collapse' }}" data-bs-parent="#sidebar-nav">
+        <li>
+            <a href="{{ route('company.index') }}" class="{{ Request::routeIs('company.index') ? 'active' : '' }}">
+                <i class="bi bi-circle"></i><span>View Companies</span>
+            </a>
+        </li>
+        <li>
+            <a href="{{ route('company.create') }}" class="{{ Request::routeIs('company.create') ? 'active' : '' }}">
+                <i class="bi bi-circle"></i><span>Add Company</span>
+            </a>
+        </li>
     </ul>
-  </li><!-- End Company Nav -->
+</li><!-- End Company Nav -->
+
 
   <li class="nav-item">
     <a class="nav-link {{ request()->routeIs('faculty.index', 'faculty.create', 'faculty.show', 'faculty.edit') ? '' : 'collapsed' }}" data-bs-target="#faculty-nav" data-bs-toggle="collapse" href="#">

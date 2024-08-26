@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 use App\Models\User;
+use App\Models\Profile;
 use Illuminate\Support\Facades\Hash;
 
 use Illuminate\Http\Request;
@@ -26,17 +27,26 @@ class CompanyController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users',
-            'password' => 'required|string|min:8',
+            'first_name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
         ]);
 
-        // Create a new company user in the 'users' table
-        $company = new User();
-        $company->name = $request->name;
-        $company->email = $request->email;
-        $company->password = Hash::make($request->password); // Store hashed password
-        $company->role_id = 4; // Set role_id to 4 for company accounts
-        $company->status_id = 1; // Assuming 1 is the default active status in the 'account_statuses' table
-        $company->save();
+        // Create profile for the contact person
+        $profile = Profile::create([
+            'first_name' => $request->first_name,
+            'last_name' => $request->last_name,
+            'id_number' => null, // No ID number for companies
+        ]);
+
+        // Create company account
+        User::create([
+            'name' => $request->name, // Company name
+            'email' => $request->email,
+            'password' => Hash::make('aufCCSInternshipCompany'), // Default password for companies
+            'role_id' => 4, // Company role
+            'status_id' => 1, // Active status
+            'profile_id' => $profile->id,
+        ]);
 
         return redirect()->route('company.index')->with('success', 'Company account created successfully.');
     }
@@ -67,29 +77,44 @@ class CompanyController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $company->id,
-            'password' => 'nullable|string|min:8',
+            'first_name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
         ]);
 
-        //Update Company's information in 'User' Table
-        $company->name = $request->name;
-        $company->email = $request->email;
-        if ($request->filled('password')){
-            $company->password = Hash::make($request->password);
-        }  
-        $company->save();
+        // Update profile for the contact person
+        $company->profile->update([
+            'first_name' => $request->first_name,
+            'last_name' => $request->last_name,
+        ]);
 
-        return redirect()->route('company.index')->with('success', 'Company Updated Successfully!');
+        // Update company account
+        $company->update([
+            'name' => $request->name, // Company name
+            'email' => $request->email,
+            'password' => $request->filled('password') ? Hash::make($request->password) : $company->password,
+        ]);
+
+        return redirect()->route('company.index')->with('success', 'Company account updated successfully.');
     }
 
     public function destroy(User $company)
     {
-        if ($company->role_id !==4){
+        if ($company->role_id !== 4) {
             abort(404);
         }
 
-        $company->delete();
+        // Set the company's status to inactive instead of deleting
+        $company->update(['status_id' => 2]); // 2 means Inactive
 
-        return redirect()->route('company.index')->with('success', 'Company deleted successfully!');
+        return redirect()->route('company.index')->with('success', 'Company account deactivated successfully.');
+    }
+
+    public function reactivate(User $company)
+    {
+        // Set the company's status to active
+        $company->update(['status_id' => 1]); // 1 means Active
+
+        return redirect()->route('company.index')->with('success', 'Company account reactivated successfully.');
     }
 
 }

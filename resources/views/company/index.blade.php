@@ -8,8 +8,9 @@
     <table class="table mt-3">
         <thead>
             <tr>
-                <th>Name</th>
+                <th>Company Name</th>
                 <th>Email</th>
+                <th>Status</th>
                 <th>Actions</th>
             </tr>
         </thead>
@@ -18,16 +19,46 @@
                 <tr>
                     <td>{{ $company->name }}</td>
                     <td>{{ $company->email }}</td>
+                    <td>{{ $company->status_id == 1 ? 'Active' : 'Inactive' }}</td>
                     <td>
-                        <a href="{{ route('company.show', $company->id) }}" class="btn btn-info">View</a>
-                        <a href="{{ route('company.edit', $company->id) }}" class="btn btn-warning">Edit</a>
-                        <form action="{{ route('company.destroy', $company->id) }}" method="POST" style="display:inline-block;">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure?')">Delete</button>
-                        </form>
+                        @if($company->status_id == 1)
+                            <a href="{{ route('company.show', $company->id) }}" class="btn btn-info">View</a>
+                            <a href="{{ route('company.edit', $company->id) }}" class="btn btn-warning">Edit</a>
+                            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deactivateModal-{{ $company->id }}">
+                                Deactivate
+                            </button>
+                        @else
+                            <form action="{{ route('company.reactivate', $company->id) }}" method="POST" style="display:inline-block;">
+                                @csrf
+                                @method('PATCH')
+                                <button type="submit" class="btn btn-success">Reactivate</button>
+                            </form>
+                        @endif
                     </td>
                 </tr>
+
+                <!-- Deactivate Modal -->
+                <div class="modal fade" id="deactivateModal-{{ $company->id }}" tabindex="-1" aria-labelledby="deactivateModalLabel-{{ $company->id }}" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="deactivateModalLabel-{{ $company->id }}">Deactivate Company</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                Are you sure you want to deactivate this company account?
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                <form action="{{ route('company.destroy', $company->id) }}" method="POST" style="display:inline-block;">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-danger">Deactivate</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             @endforeach
         </tbody>
     </table>
