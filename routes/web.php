@@ -37,18 +37,14 @@ route::get('super_admin/dashboard',[SuperAdminController::class,'index'])->
     middleware(['auth','super_admin']);
 route::get('admin/dashboard',[AdminController::class,'index'])->
     middleware(['auth','admin']);
-route::get('faculty/dashboard',[FacultyController::class,'index'])->
-    middleware(['auth','faculty']);
-route::get('company/dashboard',[CompanyController::class,'index'])->
-    middleware(['auth','company']);
 route::get('student/dashboard',[StudentController::class,'index'])->
     middleware(['auth','student']);
 
 //paste for each roles
 route::get('/super_admin/dashboard', [SuperAdminController::class, 'index'])->middleware(['auth','super_admin'])->name('super_admin.dashboard');
 route::get('/admin/dashboard', [AdminController::class, 'index'])->middleware(['auth','admin'])->name('admin.dashboard');
-route::get('/faculty/dashboard', [FacultyController::class, 'index'])->middleware(['auth','faculty'])->name('faculty.dashboard');
-route::get('/company/dashboard', [CompanyController::class, 'index'])->middleware(['auth','company'])->name('company.dashboard');
+route::get('/faculty/dashboard', [FacultyController::class, 'dashboard'])->middleware(['auth','faculty'])->name('faculty.dashboard');
+route::get('/company/dashboard', [CompanyController::class, 'dashboard'])->middleware(['auth','company'])->name('company.dashboard');
 route::get('/student/dashboard', [StudentController::class, 'index'])->middleware(['auth','student'])->name('student.dashboard');
 
 //Course CRUD. Only Super Admin/Admin
@@ -93,6 +89,28 @@ Route::middleware(['auth', 'job_access'])->group(function () {
     Route::get('/jobs/{job}/edit', [JobController::class, 'edit'])->name('jobs.edit');
     Route::patch('/jobs/{job}', [JobController::class, 'update'])->name('jobs.update');
     Route::delete('/jobs/{job}', [JobController::class, 'destroy'])->name('jobs.destroy');
+});
+
+// Faculty CRUD. Only Super Admin/Admin
+Route::middleware(['auth', 'administrative'])->group(function () {
+    Route::get('/faculty', [FacultyController::class, 'index'])->name('faculty.index');
+    Route::get('/faculty/create', [FacultyController::class, 'create'])->name('faculty.create');
+    Route::post('/faculty', [FacultyController::class, 'store'])->name('faculty.store');
+    Route::get('/faculty/{faculty}', [FacultyController::class, 'show'])->name('faculty.show');
+    Route::get('/faculty/{faculty}/edit', [FacultyController::class, 'edit'])->name('faculty.edit');
+    Route::patch('/faculty/{faculty}', [FacultyController::class, 'update'])->name('faculty.update');
+    Route::delete('/faculty/{faculty}', [FacultyController::class, 'destroy'])->name('faculty.destroy');
+});
+
+// Company CRUD. Only Super Admin/Admin
+Route::middleware(['auth', 'administrative'])->group(function () {
+    Route::get('/company', [CompanyController::class, 'index'])->name('company.index');
+    Route::get('/company/create', [CompanyController::class, 'create'])->name('company.create');
+    Route::post('/company', [CompanyController::class, 'store'])->name('company.store');
+    Route::get('/company/{company}', [CompanyController::class, 'show'])->name('company.show');
+    Route::get('/company/{company}/edit', [CompanyController::class, 'edit'])->name('company.edit');
+    Route::patch('/company/{company}', [CompanyController::class, 'update'])->name('company.update');
+    Route::delete('/company/{company}', [CompanyController::class, 'destroy'])->name('company.destroy');
 });
 
 //Student Registration Process

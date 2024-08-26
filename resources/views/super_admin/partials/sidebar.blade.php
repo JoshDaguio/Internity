@@ -47,11 +47,11 @@
     </a>
     <ul id="faculty-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
       <li>
-        <a href="components-alerts.html">
+        <a href="{{ route('faculty.index') }}">
           <i class="bi bi-circle"></i><span>View Faculties</span>
         </a>
         <li>
-        <a href="components-alerts.html">
+        <a href="{{ route('faculty.create') }}">
           <i class="bi bi-circle"></i><span>Add Faculty</span>
         </a>
       </li>
@@ -64,12 +64,12 @@
     </a>
     <ul id="company-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
       <li>
-        <a href="components-alerts.html">
+        <a href="{{ route('company.index') }}">
           <i class="bi bi-circle"></i><span>View Companies</span>
         </a>
       </li>
       <li>
-        <a href="components-alerts.html">
+        <a href="{{ route('company.create') }}">
           <i class="bi bi-circle"></i><span>Add Company</span>
         </a>
       </li>

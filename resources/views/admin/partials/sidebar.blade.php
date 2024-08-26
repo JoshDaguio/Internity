@@ -23,40 +23,43 @@
 
   <li class="nav-heading">User Management</li>
 
+  
   <li class="nav-item">
     <a class="nav-link collapsed" data-bs-target="#faculty-nav" data-bs-toggle="collapse" href="#">
-      <i class="bi bi-menu-button-wide"></i><span>Faculty</span><i class="bi bi-chevron-down ms-auto"></i>
+        <i class="bi bi-menu-button-wide"></i><span>Faculty</span><i class="bi bi-chevron-down ms-auto"></i>
     </a>
     <ul id="faculty-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
-      <li>
-        <a href="components-alerts.html">
-          <i class="bi bi-circle"></i><span>View Faculties</span>
-        </a>
         <li>
-        <a href="components-alerts.html">
-          <i class="bi bi-circle"></i><span>Add Faculty</span>
-        </a>
-      </li>
+            <a href="{{ route('faculty.index') }}">
+                <i class="bi bi-circle"></i><span>View Faculties</span>
+            </a>
+        </li>
+        <li>
+            <a href="{{ route('faculty.create') }}">
+                <i class="bi bi-circle"></i><span>Add Faculty</span>
+            </a>
+        </li>
     </ul>
-  </li><!-- End Faculty Nav -->
+</li><!-- End Faculty Nav -->
 
-  <li class="nav-item">
+<li class="nav-item">
     <a class="nav-link collapsed" data-bs-target="#company-nav" data-bs-toggle="collapse" href="#">
       <i class="bi bi-menu-button-wide"></i><span>Company</span><i class="bi bi-chevron-down ms-auto"></i>
     </a>
     <ul id="company-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
       <li>
-        <a href="components-alerts.html">
+        <a href="{{ route('company.index') }}">
           <i class="bi bi-circle"></i><span>View Companies</span>
         </a>
       </li>
       <li>
-        <a href="components-alerts.html">
+        <a href="{{ route('company.create') }}">
           <i class="bi bi-circle"></i><span>Add Company</span>
         </a>
       </li>
     </ul>
   </li><!-- End Company Nav -->
+
 
   <li class="nav-item">
     <a class="nav-link {{ request()->routeIs('registrations.pending', 'students.list') ? '' : 'collapsed' }}" data-bs-target="#student-nav" data-bs-toggle="collapse" href="#">
