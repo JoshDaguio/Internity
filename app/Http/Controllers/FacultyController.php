@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Course;
 use App\Models\User;
+use App\Models\Profile;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
@@ -17,28 +18,8 @@ class FacultyController extends Controller
 
     public function index(Request $request)
     {
-        $query = User::where('role_id', 3);
-
-        // Filter by course
-        if ($request->filled('course_id')) {
-            $query->where('course_id', $request->course_id);
-        }
-
-        // Filter by whether a faculty has a course assigned
-        if ($request->has('no_course')) {
-            $query->whereNull('course_id');
-        } elseif ($request->has('has_course')) {
-            $query->whereNotNull('course_id');
-        }
-
-        // Sorting
-        if ($request->filled('sort_by') && in_array($request->sort_by, ['name', 'email'])) {
-            $query->orderBy($request->sort_by, $request->get('order', 'asc'));
-        }
-
-        $faculties = $query->get();
-        $courses = Course::all();
-
+        $faculties = User::where('role_id', 3)->get(); // Fetch only faculty accounts
+        $courses = Course::all(); // Get all courses for filtering
         return view('faculty.index', compact('faculties', 'courses'));
     }
 
@@ -51,23 +32,32 @@ class FacultyController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users',
-            'password' => 'required|string|min:8',
-            'course_id' => 'required|exists:courses,id',
+            'first_name' => ['required', 'string', 'max:255'],
+            'last_name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'id_number' => ['required', 'string', 'max:255', 'unique:profiles'],
+            'course_id' => ['required', 'exists:courses,id'],
         ]);
 
-        // Create a new faculty member in the 'users' table
-        $faculty = new User();
-        $faculty->name = $request->name;
-        $faculty->email = $request->email;
-        $faculty->password = Hash::make($request->password); // Store hashed password
-        $faculty->role_id = 3; // Set role_id to 3 for faculty
-        $faculty->status_id = 1; // Assuming 1 is the default active status in the 'account_statuses' table
-        $faculty->course_id = $request->course_id;
-        $faculty->save();
+        // Create profile
+        $profile = Profile::create([
+            'first_name' => $request->first_name,
+            'last_name' => $request->last_name,
+            'id_number' => $request->id_number,
+        ]);
 
-        return redirect()->route('faculty.index')->with('success', 'Faculty created successfully.');
+        // Create faculty account
+        User::create([
+            'name' => $request->first_name,
+            'email' => $request->email,
+            'password' => Hash::make('aufCCSInternshipFaculty'), // Default password for faculty
+            'role_id' => 3, // Faculty role
+            'status_id' => 1, // Active status
+            'profile_id' => $profile->id,
+            'course_id' => $request->course_id,
+        ]);
+
+        return redirect()->route('faculty.index')->with('success', 'Faculty account created successfully.');
     }
 
     public function show(User $faculty)
@@ -79,10 +69,9 @@ class FacultyController extends Controller
         return view('faculty.show', compact('faculty'));
     }
 
-    public function edit($id)
+    public function edit(User $faculty)
     {
-        $faculty = User::where('role_id', 3)->findOrFail($id);
-        $courses = Course::all();  // This will work now
+        $courses = Course::all(); // Get all courses for dropdown
         return view('faculty.edit', compact('faculty', 'courses'));
     }   
 
@@ -90,36 +79,46 @@ class FacultyController extends Controller
     public function update(Request $request, User $faculty)
     {
         $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email,' . $faculty->id,
-            'password' => 'nullable|string|min:8',
-            'course_id' => 'required|exists:courses,id',
+            'first_name' => ['required', 'string', 'max:255'],
+            'last_name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email,' . $faculty->id],
+            'id_number' => ['required', 'string', 'max:255', 'unique:profiles,id_number,' . $faculty->profile_id],
+            'password' => ['nullable', 'string', 'min:8', 'confirmed'],
+            'course_id' => ['required', 'exists:courses,id'],
         ]);
 
-        // Update the faculty member in the 'users' table
-        $faculty->name = $request->name;
-        $faculty->email = $request->email;
-        if ($request->filled('password')) {
-            $faculty->password = Hash::make($request->password);
-        }
-        $faculty->course_id = $request->course_id;
-        $faculty->save();
+        // Update profile
+        $faculty->profile->update([
+            'first_name' => $request->first_name,
+            'last_name' => $request->last_name,
+            'id_number' => $request->id_number,
+        ]);
 
-        return redirect()->route('faculty.index')->with('success', 'Faculty updated successfully.');
+        // Update faculty account
+        $faculty->update([
+            'name' => $request->first_name,
+            'email' => $request->email,
+            'password' => $request->password ? Hash::make($request->password) : $faculty->password,
+            'course_id' => $request->course_id,
+        ]);
+
+        return redirect()->route('faculty.index')->with('success', 'Faculty account updated successfully.');
     }
 
     public function destroy(User $faculty)
     {
-        // Ensure we are deleting a faculty user (role_id = 3)
-        if ($faculty->role_id !== 3) {
-            abort(404);
-        }
+        // Set the faculty's status to inactive instead of deleting
+        $faculty->update(['status_id' => 2]); // Status 2 is Inactive
 
-        // Delete the faculty member from the 'users' table
-        $faculty->delete();
-
-        return redirect()->route('faculty.index')->with('success', 'Faculty deleted successfully.');
+        return redirect()->route('faculty.index')->with('success', 'Faculty account deactivated successfully.');
     }
 
+    public function reactivate(User $faculty)
+    {
+        // Set the faculty's status to active
+        $faculty->update(['status_id' => 1]); // Status 1 is Active
+
+        return redirect()->route('faculty.index')->with('success', 'Faculty account reactivated successfully.');
+    }
     
 }

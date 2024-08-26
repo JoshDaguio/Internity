@@ -25,22 +25,23 @@
 
   
   <li class="nav-item">
-    <a class="nav-link collapsed" data-bs-target="#faculty-nav" data-bs-toggle="collapse" href="#">
+    <a class="nav-link {{ request()->routeIs('faculty.index', 'faculty.create', 'faculty.show', 'faculty.edit') ? '' : 'collapsed' }}" data-bs-target="#faculty-nav" data-bs-toggle="collapse" href="#">
         <i class="bi bi-menu-button-wide"></i><span>Faculty</span><i class="bi bi-chevron-down ms-auto"></i>
     </a>
-    <ul id="faculty-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+    <ul id="faculty-nav" class="nav-content {{ request()->routeIs('faculty.index', 'faculty.create', 'faculty.show', 'faculty.edit') ? '' : 'collapse' }}" data-bs-parent="#sidebar-nav">
         <li>
-            <a href="{{ route('faculty.index') }}">
+            <a href="{{ route('faculty.index') }}" class="{{ Request::routeIs('faculty.index') ? 'active' : '' }}">
                 <i class="bi bi-circle"></i><span>View Faculties</span>
             </a>
         </li>
         <li>
-            <a href="{{ route('faculty.create') }}">
+            <a href="{{ route('faculty.create') }}" class="{{ Request::routeIs('faculty.create') ? 'active' : '' }}">
                 <i class="bi bi-circle"></i><span>Add Faculty</span>
             </a>
         </li>
     </ul>
 </li><!-- End Faculty Nav -->
+
 
 <li class="nav-item">
     <a class="nav-link collapsed" data-bs-target="#company-nav" data-bs-toggle="collapse" href="#">

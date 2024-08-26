@@ -2,7 +2,7 @@
 
 @section('body')
     <h1>Admin Accounts</h1>
-    <a href="{{ route('admin-accounts.create') }}" class="btn btn-primary">Create New Admin</a>
+    <a href="{{ route('admin-accounts.create') }}" class="btn btn-primary mb-3">Create New Admin</a>
     <table class="table">
         <thead>
             <tr>
@@ -18,7 +18,7 @@
                 <tr>
                     <td>
                         @if($admin->profile)
-                            {{ $admin->profile->first_name }} {{ $admin->profile->last_name }}
+                            {{ $admin->profile->first_name ?? 'N/A' }} {{ $admin->profile->last_name ?? '' }}
                         @else
                             N/A
                         @endif
@@ -26,7 +26,7 @@
                     <td>{{ $admin->email }}</td>
                     <td>
                         @if($admin->profile)
-                            {{ $admin->profile->id_number }}
+                            {{ $admin->profile->id_number ?? 'N/A' }}
                         @else
                             N/A
                         @endif
@@ -37,13 +37,34 @@
                     <td>
                         @if($admin->status_id == 1)
                             <a href="{{ route('admin-accounts.edit', $admin) }}" class="btn btn-warning">Edit</a>
-                            <form action="{{ route('admin-accounts.destroy', $admin) }}" method="POST" style="display:inline-block;">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure?')">Deactivate</button>
-                            </form>
+                            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deactivateModal-{{ $admin->id }}">
+                                Deactivate
+                            </button>
+
+                            <!-- Modal -->
+                            <div class="modal fade" id="deactivateModal-{{ $admin->id }}" tabindex="-1" aria-labelledby="deactivateModalLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="deactivateModalLabel">Deactivate Admin Account</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            Are you sure you want to deactivate this admin account?
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                            <form action="{{ route('admin-accounts.destroy', $admin) }}" method="POST" style="display:inline;">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn btn-danger">Deactivate</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         @else
-                            <form action="{{ route('admin-accounts.reactivate', $admin) }}" method="POST" style="display:inline-block;">
+                            <form action="{{ route('admin-accounts.reactivate', $admin) }}" method="POST" style="display:inline;">
                                 @csrf
                                 @method('PATCH')
                                 <button type="submit" class="btn btn-success">Reactivate</button>

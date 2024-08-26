@@ -77,22 +77,23 @@
   </li><!-- End Company Nav -->
 
   <li class="nav-item">
-    <a class="nav-link {{ request()->routeIs('registrations.pending', 'students.list') ? '' : 'collapsed' }}" data-bs-target="#student-nav" data-bs-toggle="collapse" href="#">
-      <i class="bi bi-menu-button-wide"></i><span>Student</span><i class="bi bi-chevron-down ms-auto"></i>
+    <a class="nav-link {{ request()->routeIs('faculty.index', 'faculty.create', 'faculty.show', 'faculty.edit') ? '' : 'collapsed' }}" data-bs-target="#faculty-nav" data-bs-toggle="collapse" href="#">
+        <i class="bi bi-menu-button-wide"></i><span>Faculty</span><i class="bi bi-chevron-down ms-auto"></i>
     </a>
-    <ul id="student-nav" class="nav-content {{ request()->routeIs('registrations.pending', 'students.list') ? '' : 'collapse' }} " data-bs-parent="#sidebar-nav">
-      <li>
-        <a href="{{ route('registrations.pending') }}" class="{{ Request::routeIs('registrations.pending') ? 'active' : '' }}">
-          <i class="bi bi-circle"></i><span>Student Registration</span>
-        </a>
-      </li>
-      <li>
-        <a href="{{ route('students.list') }}" class="{{ Request::routeIs('students.list') ? 'active' : '' }}">
-          <i class="bi bi-circle"></i><span>Student List</span>
-        </a>
-      </li>
+    <ul id="faculty-nav" class="nav-content {{ request()->routeIs('faculty.index', 'faculty.create', 'faculty.show', 'faculty.edit') ? '' : 'collapse' }}" data-bs-parent="#sidebar-nav">
+        <li>
+            <a href="{{ route('faculty.index') }}" class="{{ Request::routeIs('faculty.index') ? 'active' : '' }}">
+                <i class="bi bi-circle"></i><span>View Faculties</span>
+            </a>
+        </li>
+        <li>
+            <a href="{{ route('faculty.create') }}" class="{{ Request::routeIs('faculty.create') ? 'active' : '' }}">
+                <i class="bi bi-circle"></i><span>Add Faculty</span>
+            </a>
+        </li>
     </ul>
-  </li><!-- End Student Nav -->
+</li><!-- End Faculty Nav -->
+
 
   <li class="nav-heading">Course Management</li>
 

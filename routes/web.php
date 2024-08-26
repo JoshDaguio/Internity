@@ -100,6 +100,7 @@ Route::middleware(['auth', 'administrative'])->group(function () {
     Route::get('/faculty/{faculty}/edit', [FacultyController::class, 'edit'])->name('faculty.edit');
     Route::patch('/faculty/{faculty}', [FacultyController::class, 'update'])->name('faculty.update');
     Route::delete('/faculty/{faculty}', [FacultyController::class, 'destroy'])->name('faculty.destroy');
+    Route::patch('/faculty/{faculty}/reactivate', [FacultyController::class, 'reactivate'])->name('faculty.reactivate');
 });
 
 // Company CRUD. Only Super Admin/Admin

@@ -1,37 +1,38 @@
 @extends('layouts.app')
 
 @section('body')
-<div class="container">
-    <h1>Edit Faculty</h1>
-
-    @if ($errors->any())
-        <div class="alert alert-danger">
-            <ul>
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-    @endif
-
-    <form action="{{ route('faculty.update', $faculty->id) }}" method="POST">
+    <h1>Edit Faculty Account</h1>
+    <form action="{{ route('faculty.update', $faculty) }}" method="POST">
         @csrf
         @method('PATCH')
+        
+        <!-- First Name -->
         <div class="mb-3">
-            <label for="name" class="form-label">Name</label>
-            <input type="text" name="name" class="form-control" id="name" value="{{ old('name', $faculty->name) }}" required>
+            <label for="first_name" class="form-label">First Name</label>
+            <input type="text" class="form-control" id="first_name" name="first_name" value="{{ $faculty->profile->first_name ?? '' }}" required>
         </div>
+        
+        <!-- Last Name -->
+        <div class="mb-3">
+            <label for="last_name" class="form-label">Last Name</label>
+            <input type="text" class="form-control" id="last_name" name="last_name" value="{{ $faculty->profile->last_name ?? '' }}" required>
+        </div>
+        
+        <!-- ID Number -->
+        <div class="mb-3">
+            <label for="id_number" class="form-label">ID Number</label>
+            <input type="text" class="form-control" id="id_number" name="id_number" value="{{ $faculty->profile->id_number ?? '' }}" required>
+        </div>
+        
+        <!-- Email -->
         <div class="mb-3">
             <label for="email" class="form-label">Email</label>
-            <input type="email" name="email" class="form-control" id="email" value="{{ old('email', $faculty->email) }}" required>
-        </div>
-        <div class="mb-3">
-            <label for="password" class="form-label">Password (leave blank to keep current password)</label>
-            <input type="password" name="password" class="form-control" id="password">
-        </div>
+            <input type="email" class="form-control" id="email" name="email" value="{{ $faculty->email }}" required>
+        </div>        
+        <!-- Course Selection -->
         <div class="mb-3">
             <label for="course_id" class="form-label">Course</label>
-            <select name="course_id" id="course_id" class="form-select" required>
+            <select name="course_id" id="course_id" class="form-control">
                 @foreach($courses as $course)
                     <option value="{{ $course->id }}" {{ $course->id == $faculty->course_id ? 'selected' : '' }}>
                         {{ $course->course_name }}
@@ -39,8 +40,8 @@
                 @endforeach
             </select>
         </div>
-        <button type="submit" class="btn btn-primary">Update Faculty</button>
-
+        
+        <!-- Submit Button -->
+        <button type="submit" class="btn btn-primary">Update</button>
     </form>
-</div>
 @endsection
