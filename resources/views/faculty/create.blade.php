@@ -4,6 +4,9 @@
 <div class="container">
     <h1>Add New Faculty</h1>
 
+    <!-- Back Button -->
+    <a href="{{ route('faculty.index') }}" class="btn btn-secondary mb-3">Back to Faculty List</a>
+
     <!-- Display Validation Errors -->
     @if ($errors->any())
         <div class="alert alert-danger">

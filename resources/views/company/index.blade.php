@@ -3,8 +3,21 @@
 @section('body')
 <div class="container">
     <h1>Company List</h1>
-    <a href="{{ route('company.create') }}" class="btn btn-primary">Add New Company</a>
-    
+
+    <a href="{{ route('company.create') }}" class="btn btn-primary mb-3">Add New Company</a>
+
+    <!-- Filter by Status -->
+    <form method="GET" action="{{ route('company.index') }}" class="mb-3">
+        <div class="d-flex">
+            <select name="status_id" id="status_id" class="form-control me-2">
+                <option value="">All Statuses</option>
+                <option value="1" {{ request('status_id') == '1' ? 'selected' : '' }}>Active</option>
+                <option value="2" {{ request('status_id') == '2' ? 'selected' : '' }}>Inactive</option>
+            </select>
+            <button type="submit" class="btn btn-secondary">Apply</button>
+        </div>
+    </form>
+
     <table class="table mt-3">
         <thead>
             <tr>

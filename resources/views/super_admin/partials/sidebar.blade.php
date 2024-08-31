@@ -41,80 +41,49 @@
   </li><!-- End Admin Nav -->
 
 
+  <li class="nav-heading">User Management</li>
+
   <li class="nav-item">
-    <a class="nav-link collapsed" data-bs-target="#faculty-nav" data-bs-toggle="collapse" href="#">
-      <i class="bi bi-menu-button-wide"></i><span>Faculty</span><i class="bi bi-chevron-down ms-auto"></i>
+    <a class="nav-link {{ request()->routeIs('registrations.pending', 'students.list') ? '' : 'collapsed' }}" data-bs-target="#student-nav" data-bs-toggle="collapse" href="#">
+      <i class="bi bi-menu-button-wide"></i><span>Student</span><i class="bi bi-chevron-down ms-auto"></i>
     </a>
-    <ul id="faculty-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+    <ul id="student-nav" class="nav-content {{ request()->routeIs('registrations.pending', 'students.list') ? '' : 'collapse' }} " data-bs-parent="#sidebar-nav">
       <li>
-        <a href="{{ route('faculty.index') }}">
-          <i class="bi bi-circle"></i><span>View Faculties</span>
+        <a href="{{ route('registrations.pending') }}" class="{{ Request::routeIs('registrations.pending') ? 'active' : '' }}">
+          <i class="bi bi-circle"></i><span>Student Registration</span>
         </a>
-        <li>
-        <a href="{{ route('faculty.create') }}">
-          <i class="bi bi-circle"></i><span>Add Faculty</span>
+      </li>
+      <li>
+        <a href="{{ route('students.list') }}" class="{{ Request::routeIs('students.list') ? 'active' : '' }}">
+          <i class="bi bi-circle"></i><span>Student List</span>
         </a>
       </li>
     </ul>
-  </li><!-- End Faculty Nav -->
+  </li><!-- End Student Nav -->
 
   <li class="nav-item">
-    <a class="nav-link {{ request()->routeIs('company.index', 'company.create') ? '' : 'collapsed' }}" data-bs-target="#company-nav" data-bs-toggle="collapse" href="#">
-        <i class="bi bi-menu-button-wide"></i><span>Company</span><i class="bi bi-chevron-down ms-auto"></i>
+    <a class="nav-link {{ request()->routeIs('company.index', 'company.create', 'company.show', 'company.edit') ? '' : 'collapsed' }}" href="{{ route('company.index') }}">
+      <i class="bi bi-person"></i>
+      <span>Company</span>  
     </a>
-    <ul id="company-nav" class="nav-content {{ request()->routeIs('company.index', 'company.create') ? '' : 'collapse' }}" data-bs-parent="#sidebar-nav">
-        <li>
-            <a href="{{ route('company.index') }}" class="{{ Request::routeIs('company.index') ? 'active' : '' }}">
-                <i class="bi bi-circle"></i><span>View Companies</span>
-            </a>
-        </li>
-        <li>
-            <a href="{{ route('company.create') }}" class="{{ Request::routeIs('company.create') ? 'active' : '' }}">
-                <i class="bi bi-circle"></i><span>Add Company</span>
-            </a>
-        </li>
-    </ul>
-</li><!-- End Company Nav -->
-
+  </li><!-- End Company Page Nav -->
 
   <li class="nav-item">
-    <a class="nav-link {{ request()->routeIs('faculty.index', 'faculty.create', 'faculty.show', 'faculty.edit') ? '' : 'collapsed' }}" data-bs-target="#faculty-nav" data-bs-toggle="collapse" href="#">
-        <i class="bi bi-menu-button-wide"></i><span>Faculty</span><i class="bi bi-chevron-down ms-auto"></i>
+    <a class="nav-link {{ request()->routeIs('faculty.index', 'faculty.create', 'faculty.show', 'faculty.edit') ? '' : 'collapsed' }}" href="{{ route('faculty.index') }}">
+      <i class="bi bi-person"></i>
+      <span>Faculty</span>  
     </a>
-    <ul id="faculty-nav" class="nav-content {{ request()->routeIs('faculty.index', 'faculty.create', 'faculty.show', 'faculty.edit') ? '' : 'collapse' }}" data-bs-parent="#sidebar-nav">
-        <li>
-            <a href="{{ route('faculty.index') }}" class="{{ Request::routeIs('faculty.index') ? 'active' : '' }}">
-                <i class="bi bi-circle"></i><span>View Faculties</span>
-            </a>
-        </li>
-        <li>
-            <a href="{{ route('faculty.create') }}" class="{{ Request::routeIs('faculty.create') ? 'active' : '' }}">
-                <i class="bi bi-circle"></i><span>Add Faculty</span>
-            </a>
-        </li>
-    </ul>
-</li><!-- End Faculty Nav -->
+  </li><!-- End Faculty Page Nav -->
 
 
   <li class="nav-heading">Course Management</li>
 
   <li class="nav-item">
-    <a class="nav-link {{ request()->routeIs('courses.index', 'courses.create', 'courses.edit') ? '' : 'collapsed' }}" data-bs-target="#course-nav" data-bs-toggle="collapse" href="#">
-      <i class="bi bi-menu-button-wide"></i><span>Courses</span><i class="bi bi-chevron-down ms-auto"></i>
+    <a class="nav-link {{ request()->routeIs('courses.index', 'courses.create', 'courses.show', 'courses.edit') ? '' : 'collapsed' }}" href="{{ route('courses.index') }}">
+      <i class="bi bi-person"></i>
+      <span>Courses</span>  
     </a>
-    <ul id="course-nav" class="nav-content {{ request()->routeIs('courses.index', 'courses.create', 'courses.edit') ? '' : 'collapse' }}" data-bs-parent="#sidebar-nav">
-      <li>
-        <a href="{{ route('courses.index') }}" class="{{ Request::routeIs('courses.index') ? 'active' : '' }}">
-          <i class="bi bi-circle"></i><span>View Courses</span>
-        </a>
-      </li>
-      <li>
-        <a href="{{ route('courses.create') }}" class="{{ Request::routeIs('courses.create') ? 'active' : '' }}">
-          <i class="bi bi-circle"></i><span>Add Course</span>
-        </a>
-      </li>
-    </ul>
-  </li><!-- End Course Nav -->
+  </li><!-- End Courses Nav -->
 
   <li class="nav-heading">Internship Management</li>
 

@@ -11,5 +11,6 @@
         @method('DELETE')
         <button type="submit" class="btn btn-danger">Delete</button>
     </form>
+    <a href="{{ route('courses.index') }}" class="btn btn-secondary">Back to List</a>
 </div>
 @endsection

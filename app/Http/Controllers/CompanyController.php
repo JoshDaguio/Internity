@@ -15,10 +15,17 @@ class CompanyController extends Controller
         // You can pass any necessary data to the dashboard view
         return view('company.dashboard');
     }
-    public function index()
+    public function index(Request $request)
     {
-        $companies = User::where('role_id', 4)->get();
+        $query = User::where('role_id', 4); // Assuming role_id 4 is for companies
 
+        // Apply the status filter
+        if ($request->has('status_id') && in_array($request->status_id, ['1', '2'])) {
+            $query->where('status_id', $request->status_id);
+        }
+    
+        $companies = $query->get();
+    
         return view('company.index', compact('companies'));
     }
 
@@ -78,6 +85,7 @@ class CompanyController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $company->id,
             'first_name' => 'required|string|max:255',
+            'password' => ['nullable', 'string', 'min:8'],
             'last_name' => 'required|string|max:255',
         ]);
 
@@ -91,8 +99,12 @@ class CompanyController extends Controller
         $company->update([
             'name' => $request->name, // Company name
             'email' => $request->email,
-            'password' => $request->filled('password') ? Hash::make($request->password) : $company->password,
         ]);
+
+        if ($request->filled('password')) {
+            $company->password = Hash::make($request->password);
+            $company->save();
+        }
 
         return redirect()->route('company.index')->with('success', 'Company account updated successfully.');
     }

@@ -2,6 +2,7 @@
 @section('body')
 <div class="container">
     <h1>Create Course</h1>
+    <a href="{{ route('courses.index') }}" class="btn btn-secondary mb-3">Back to Course List</a>
     <form action="{{ route('courses.store') }}" method="POST">
         @csrf
         <div class="mb-3">

@@ -50,7 +50,7 @@ class RegisteredUserController extends Controller
             'password' => Hash::make('aufCCSInternship'), // Default password
             'course_id' => $request->course_id,
             'role_id' => 5, // Student role
-            'status_id' => 2, // Inactive status
+            'status_id' => 3, // Pending registration status
             'profile_id' => $profile->id, // Link the profile
         ]);
 

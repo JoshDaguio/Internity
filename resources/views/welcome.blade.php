@@ -48,20 +48,17 @@
             border-radius: 5px;
             border: 2px solid #B30600;
             transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .btn-icon i {
+            margin-right: 10px;
         }
         .btn-icon:hover {
             color: white;
             background-color: #B30600;
             border: 2px solid #B30600;
-        }
-        .btn-icon span {
-            display: none;
-            margin-left: 10px;
-            font-size: 16px;
-            font-weight: 600;
-        }
-        .btn-icon:hover span {
-            display: inline;
         }
         footer {
             position: fixed;
@@ -82,17 +79,17 @@
                 @auth
                     <a href="{{ url('/dashboard') }}" class="btn-icon">
                         <i class="fas fa-tachometer-alt"></i>
-                        <span>Dashboard</span>
+                        Dashboard
                     </a>
                 @else
                     <a href="{{ route('login') }}" class="btn-icon">
                         <i class="fas fa-sign-in-alt"></i>
-                        <span>Log in</span>
+                        Log in
                     </a>
                     @if (Route::has('register'))
                         <a href="{{ route('register') }}" class="btn-icon">
                             <i class="fas fa-user-plus"></i>
-                            <span>Register</span>
+                            Register
                         </a>
                     @endif
                 @endauth

@@ -43,6 +43,7 @@
         </div>
 
         <button type="submit" class="btn btn-primary">Update Company</button>
+        <a href="{{ route('company.index') }}" class="btn btn-secondary">Cancel</a>
     </form>
 </div>
 @endsection

@@ -18,8 +18,19 @@ class FacultyController extends Controller
 
     public function index(Request $request)
     {
-        $faculties = User::where('role_id', 3)->get(); // Fetch only faculty accounts
-        $courses = Course::all(); // Get all courses for filtering
+        $query = User::where('role_id', 3); // Ensure we're querying only faculty accounts
+
+        if ($request->filled('course_id')) {
+            $query->where('course_id', $request->course_id);
+        }
+
+        if ($request->filled('status_id')) {
+            $query->where('status_id', $request->status_id);
+        }
+    
+        $faculties = $query->get();
+        $courses = Course::all();
+    
         return view('faculty.index', compact('faculties', 'courses'));
     }
 
@@ -83,25 +94,30 @@ class FacultyController extends Controller
             'last_name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email,' . $faculty->id],
             'id_number' => ['required', 'string', 'max:255', 'unique:profiles,id_number,' . $faculty->profile_id],
-            'password' => ['nullable', 'string', 'min:8', 'confirmed'],
+            'password' => ['nullable', 'string', 'min:8'], // Removed the 'confirmed' rule
             'course_id' => ['required', 'exists:courses,id'],
         ]);
-
+    
         // Update profile
         $faculty->profile->update([
             'first_name' => $request->first_name,
             'last_name' => $request->last_name,
             'id_number' => $request->id_number,
         ]);
-
+    
         // Update faculty account
         $faculty->update([
             'name' => $request->first_name,
             'email' => $request->email,
-            'password' => $request->password ? Hash::make($request->password) : $faculty->password,
             'course_id' => $request->course_id,
         ]);
-
+    
+        // If password is provided, update it
+        if ($request->filled('password')) {
+            $faculty->password = Hash::make($request->password);
+            $faculty->save();
+        }
+    
         return redirect()->route('faculty.index')->with('success', 'Faculty account updated successfully.');
     }
 

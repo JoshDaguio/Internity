@@ -69,6 +69,7 @@ Route::middleware(['auth', 'administrative'])->group(function () {
     Route::delete('/internship_hours/{internship_hours}', [InternshipHoursController::class, 'destroy'])->name('internship_hours.destroy');
 });
 
+
 //Penalty CRUD. Only Super Admin/Admin
 Route::middleware(['auth', 'administrative'])->group(function () {
     Route::get('/penalties', [PenaltyController::class, 'index'])->name('penalties.index');
@@ -120,6 +121,12 @@ Route::middleware(['auth', 'facultyaccess'])->group(function () {
     Route::get('/registrations/pending', [AdminController::class, 'pendingRegistrations'])->name('registrations.pending');
     Route::post('/registrations/approve/{user}', [AdminController::class, 'approveRegistration'])->name('registrations.approve');
     Route::get('/students/list', [AdminController::class, 'approvedStudents'])->name('students.list');
+
+    Route::get('/students/{student}/show', [AdminController::class, 'showStudent'])->name('students.show');
+    Route::get('/students/{student}/edit', [AdminController::class, 'editStudent'])->name('students.edit');
+    Route::patch('/students/{student}', [AdminController::class, 'updateStudent'])->name('students.update');
+    Route::delete('/students/{student}/deactivate', [AdminController::class, 'deactivateStudent'])->name('students.deactivate');
+    Route::patch('/students/{student}/reactivate', [AdminController::class, 'reactivateStudent'])->name('students.reactivate');
 });
 
 

@@ -2,7 +2,7 @@
 
 @section('body')
     <h1>Faculty Accounts</h1>
-    <a href="{{ route('faculty.create') }}" class="btn btn-primary mb-3">Create New Faculty</a>
+    <a href="{{ route('faculty.create') }}" class="btn btn-primary mb-3">Add New Faculty</a>
     
     <form method="GET" action="{{ route('faculty.index') }}" class="mb-3">
         <div class="d-flex">
@@ -14,7 +14,14 @@
                     </option>
                 @endforeach
             </select>
-            <button type="submit" class="btn btn-secondary">Filter</button>
+
+            <select name="status_id" id="status_id" class="form-control me-2">
+                <option value="">All Statuses</option>
+                <option value="1" {{ request('status_id') == '1' ? 'selected' : '' }}>Active</option>
+                <option value="2" {{ request('status_id') == '2' ? 'selected' : '' }}>Inactive</option>
+            </select>
+
+            <button type="submit" class="btn btn-secondary">Apply</button>
         </div>
     </form>
     
@@ -47,7 +54,7 @@
                             N/A
                         @endif
                     </td>
-                    <td>{{ $faculty->course ? $faculty->course->course_name : 'N/A' }}</td>
+                    <td>{{ $faculty->course ? $faculty->course->course_code : 'N/A' }}</td>
                     <td>
                         {{ $faculty->status_id == 1 ? 'Active' : 'Inactive' }}
                     </td>
@@ -59,7 +66,7 @@
                                 Deactivate
                             </button>
 
-                            <!-- Modal -->
+                            <!-- Deactivate Modal -->
                             <div class="modal fade" id="deactivateModal-{{ $faculty->id }}" tabindex="-1" aria-labelledby="deactivateModalLabel" aria-hidden="true">
                                 <div class="modal-dialog">
                                     <div class="modal-content">

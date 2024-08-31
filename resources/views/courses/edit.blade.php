@@ -14,7 +14,10 @@
             <label for="course_name" class="form-label">Course Name</label>
             <input type="text" id="course_name" name="course_name" class="form-control" value="{{ $course->course_name }}" required>
         </div>
-        <button type="submit" class="btn btn-primary">Update</button>
+        <div class="d-flex justify-content-end">
+            <button type="submit" class="btn btn-primary me-2">Update</button>
+            <a href="{{ route('courses.index') }}" class="btn btn-secondary">Cancel</a>
+        </div>
     </form>
 </div>
 @endsection
