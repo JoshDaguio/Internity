@@ -159,9 +159,11 @@ Route::middleware(['auth'])->group(function () {
 
     //Generate and View Monthly Compilation for Students
     Route::get('/end_of_day_reports/compile/monthly', [EndOfDayReportController::class, 'compileMonthly'])->name('end_of_day_reports.compile.monthly');
-    
-    //Download the Monthly Compilation as PDF
     Route::get('/end_of_day_reports/download/monthly', [EndOfDayReportController::class, 'downloadMonthlyPDF'])->name('end_of_day_reports.download.monthly');
+
+    // Generate and View Weekly Compilation for Students
+    Route::get('/end_of_day_reports/compile/weekly', [EndOfDayReportController::class, 'compileWeekly'])->name('end_of_day_reports.compile.weekly');
+    Route::get('/end_of_day_reports/download/weekly', [EndOfDayReportController::class, 'downloadWeeklyPDF'])->name('end_of_day_reports.download.weekly');
 });
 
 

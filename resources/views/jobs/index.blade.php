@@ -11,6 +11,7 @@
                 <th>Industry</th>
                 <th>Positions Available</th>
                 <th>Location</th>
+                <th>Work Type</th>
                 <th>Action</th>
             </tr>
         </thead>
@@ -21,6 +22,7 @@
                     <td>{{ $job->industry }}</td>
                     <td>{{ $job->positions_available }}</td>
                     <td>{{ $job->location }}</td>
+                    <td>{{ $job->work_type }}</td>
                     <td>
                         <a href="{{ route('jobs.show', $job) }}" class="btn btn-info btn-sm">View</a>
                         <a href="{{ route('jobs.edit', $job) }}" class="btn btn-warning btn-sm">Edit</a>

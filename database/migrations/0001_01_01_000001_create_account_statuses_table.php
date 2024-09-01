@@ -22,6 +22,7 @@ return new class extends Migration
         DB::table('account_statuses')->insert([
             ['id' => 1, 'status' => 'Active'],
             ['id' => 2, 'status' => 'Inactive'],
+            ['id' => 3, 'status' => 'Pending'],
         ]);
     }
 

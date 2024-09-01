@@ -15,32 +15,32 @@
 
   <li class="nav-item">
     <a class="nav-link {{ request()->routeIs('profile.profile') ? '' : 'collapsed' }}" href="{{ route('profile.profile') }}">
-      <i class="bi bi-person"></i>
-      <span>{{ __('Profile') }}</span>  
+      <i class="bi bi-person-circle"></i>
+      <span>Profile</span>  
     </a>
   </li><!-- End Profile Page Nav -->
-
 
   <li class="nav-heading">Internship Management</li>
 
   <li class="nav-item">
     <a class="nav-link collapsed" href="#">
-      <i class="bi bi-person"></i>
+      <i class="bi bi-clipboard-check"></i>
       <span>Requirements</span>  
     </a>
   </li><!-- End Requirement Nav -->
 
   <li class="nav-item">
-    <a class="nav-link collapsed" data-bs-target="#internship-nav" data-bs-toggle="collapse" href="#">
-      <i class="bi bi-menu-button-wide"></i><span>Internship</span><i class="bi bi-chevron-down ms-auto"></i>
+    <a class="nav-link {{ request()->routeIs('internship.listings', 'internship.application') ? '' : 'collapsed' }}" data-bs-target="#internship-nav" data-bs-toggle="collapse" href="#">
+      <i class="bi bi-briefcase"></i><span>Internship</span><i class="bi bi-chevron-down ms-auto"></i>
     </a>
-    <ul id="internship-nav" class="nav-content collapse" data-bs-parent="#sidebar-nav">
+    <ul id="internship-nav" class="nav-content {{ request()->routeIs('internship.listings', 'internship.application') ? '' : 'collapse' }}" data-bs-parent="#sidebar-nav">
       <li>
-        <a href="#">
+        <a href="#" class="{{ Request::routeIs('internship.listings') ? 'active' : '' }}">
           <i class="bi bi-circle"></i><span>Internship Listings</span>
         </a>
-        <li>
-        <a href="#">
+      </li>
+      <li>
+        <a href="#" class="{{ Request::routeIs('internship.application') ? 'active' : '' }}">
           <i class="bi bi-circle"></i><span>Internship Application</span>
         </a>
       </li>
@@ -48,17 +48,17 @@
   </li><!-- End Internship Nav -->
 
   <li class="nav-item">
-    <a class="nav-link collapsed" data-bs-target="#dtr-nav" data-bs-toggle="collapse" href="#">
-      <i class="bi bi-menu-button-wide"></i><span>Daily Time Record</span><i class="bi bi-chevron-down ms-auto"></i>
+    <a class="nav-link {{ request()->routeIs('dtr.logging', 'dtr.reports') ? '' : 'collapsed' }}" data-bs-target="#dtr-nav" data-bs-toggle="collapse" href="#">
+      <i class="bi bi-clock"></i><span>Daily Time Record</span><i class="bi bi-chevron-down ms-auto"></i>
     </a>
-    <ul id="dtr-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+    <ul id="dtr-nav" class="nav-content {{ request()->routeIs('dtr.logging', 'dtr.reports') ? '' : 'collapse' }}" data-bs-parent="#sidebar-nav">
       <li>
-        <a href="components-alerts.html">
+        <a href="#" class="{{ Request::routeIs('dtr.logging') ? 'active' : '' }}">
           <i class="bi bi-circle"></i><span>Logging</span>
         </a>
       </li>
       <li>
-        <a href="components-alerts.html">
+        <a href="#" class="{{ Request::routeIs('dtr.reports') ? 'active' : '' }}">
           <i class="bi bi-circle"></i><span>Reports</span>
         </a>
       </li>
@@ -66,35 +66,22 @@
   </li><!-- End Daily Time Record Nav -->
 
   <li class="nav-item">
-    <a class="nav-link {{ request()->routeIs('end_of_day_reports.create', 'end_of_day_reports.index', 'end_of_day_reports.compile.monthly') ? '' : 'collapsed' }}" data-bs-target="#eod-nav" data-bs-toggle="collapse" href="#">
-        <i class="bi bi-menu-button-wide"></i><span>Reports</span><i class="bi bi-chevron-down ms-auto"></i>
+    <a class="nav-link {{ request()->routeIs('end_of_day_reports.create', 'end_of_day_reports.index', 'end_of_day_reports.compile.monthly', 'end_of_day_reports.show') ? '' : 'collapsed' }}" href="{{ route('end_of_day_reports.index') }}">
+      <i class="bi bi-file-earmark-text"></i>
+      <span>Reports</span>  
     </a>
-    <ul id="eod-nav" class="nav-content {{ request()->routeIs('end_of_day_reports.create', 'end_of_day_reports.index', 'end_of_day_reports.compile.monthly') ? '' : 'collapse' }}" data-bs-parent="#sidebar-nav">
-        <li>
-            <a href="{{ route('end_of_day_reports.create') }}" class="{{ Request::routeIs('end_of_day_reports.create') ? 'active' : '' }}">
-                <i class="bi bi-circle"></i><span>Create Daily Report</span>
-            </a>
-        </li>
-        <li>
-            <a href="{{ route('end_of_day_reports.index') }}" class="{{ Request::routeIs('end_of_day_reports.index', 'end_of_day_reports.compile.monthly') ? 'active' : '' }}">
-                <i class="bi bi-circle"></i><span>View Reports</span>
-            </a>
-        </li>
-    </ul>
-</li><!-- End Report Nav -->
-
-
+  </li><!-- End Reports Nav -->
 
   <li class="nav-item">
     <a class="nav-link collapsed" href="#">
-      <i class="bi bi-person"></i>
+      <i class="bi bi-file-earmark-text"></i>
       <span>Requests</span>  
     </a>
   </li><!-- End Request Nav -->
 
   <li class="nav-item">
     <a class="nav-link {{ request()->routeIs('file_uploads.index') ? '' : 'collapsed' }}" href="{{ route('file_uploads.index') }}">
-      <i class="bi bi-file-earmark"></i>
+      <i class="bi bi-folder"></i>
       <span>Files</span>  
     </a>
 </li><!-- End File Nav -->
@@ -103,7 +90,7 @@
 
   <li class="nav-item">
     <a class="nav-link collapsed" href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-      <i class="bi bi-box-arrow-in-right"></i>
+      <i class="bi bi-box-arrow-right"></i>
       <span>{{ __('Log Out') }}</span>
       <form method="POST" action="{{ route('logout') }}" id="logout-form" style="display: none;">
         @csrf

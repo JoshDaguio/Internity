@@ -17,18 +17,71 @@ class EndOfDayReportController extends Controller
      */
     public function index(Request $request)
     {
-        $query = EndOfDayReport::where('student_id', Auth::id());
+        $user = Auth::user();
 
-        if ($request->has('filter') && $request->filter === 'week') {
-            $query->where('date_submitted', '>=', Carbon::now()->subDays(7));
-        } elseif ($request->has('filter') && $request->filter === 'month') {
-            $query->whereYear('date_submitted', Carbon::now()->year)
-                  ->whereMonth('date_submitted', Carbon::now()->month);
+        // Fetch the current date and time from the API or fallback to server time
+        try {
+            $response = Http::get('http://worldtimeapi.org/api/timezone/Asia/Manila');
+            $currentDateTime = Carbon::parse($response->json('datetime'));
+        } catch (\Exception $e) {
+            $currentDateTime = Carbon::now(new \DateTimeZone('Asia/Manila'));
         }
     
-        $reports = $query->orderBy('date_submitted', 'desc')->get();
+        $selectedMonth = (int) $request->input('month', $currentDateTime->month);
+        $filter = $request->input('filter', 'week');
     
-        return view('end_of_day_reports.index', compact('reports'));
+        // Get the list of months with reports or the current month
+        $availableMonths = EndOfDayReport::where('student_id', $user->id)
+            ->selectRaw('MONTH(date_submitted) as month')
+            ->distinct()
+            ->pluck('month')
+            ->toArray();
+    
+        // Add the current month if not in the list
+        if (!in_array($currentDateTime->month, $availableMonths)) {
+            $availableMonths[] = $currentDateTime->month;
+        }
+    
+        $reports = collect();
+        $missingDates = collect();
+    
+        if ($filter === 'week') {
+            $reports = EndOfDayReport::where('student_id', $user->id)
+                ->where('date_submitted', '>=', $currentDateTime->subDays(7))
+                ->orderBy('date_submitted', 'desc')
+                ->get();
+        } elseif ($filter === 'month') {
+            $reports = EndOfDayReport::where('student_id', $user->id)
+                ->whereYear('date_submitted', $currentDateTime->year)
+                ->whereMonth('date_submitted', $selectedMonth)
+                ->orderBy('date_submitted', 'desc')
+                ->get();
+        } elseif ($filter === 'missing') {
+            $startOfMonth = Carbon::create($currentDateTime->year, $selectedMonth, 1)->startOfMonth();
+            $endOfMonth = $startOfMonth->copy()->endOfMonth();
+    
+            // Get all weekdays between the start and end of the month
+            $allWeekdays = collect();
+            for ($date = $startOfMonth; $date->lte($endOfMonth); $date->addDay()) {
+                if (!$date->isWeekend()) {
+                    $allWeekdays->push($date->copy()->format('Y-m-d'));  // Format as string
+                }
+            }
+    
+            // Get submission dates for the selected month
+            $submissionDates = EndOfDayReport::where('student_id', $user->id)
+                ->whereYear('date_submitted', $currentDateTime->year)
+                ->whereMonth('date_submitted', $selectedMonth)
+                ->pluck('date_submitted')
+                ->map(function ($date) {
+                    return Carbon::parse($date)->format('Y-m-d');  // Format as string
+                });
+    
+            // Calculate missing dates
+            $missingDates = $allWeekdays->diff($submissionDates);
+        }
+    
+        return view('end_of_day_reports.index', compact('reports', 'missingDates', 'selectedMonth', 'availableMonths'));
     }
 
     /**
@@ -162,5 +215,35 @@ class EndOfDayReportController extends Controller
     public function destroy(string $id)
     {
         //
+    }
+
+    public function compileWeekly()
+    {
+        $startOfWeek = Carbon::now()->startOfWeek();
+        $endOfWeek = Carbon::now()->endOfWeek();
+
+        $reports = EndOfDayReport::where('student_id', Auth::id())
+            ->whereBetween('date_submitted', [$startOfWeek, $endOfWeek])
+            ->orderBy('date_submitted', 'asc')
+            ->get();
+
+        return view('end_of_day_reports.weekly_compilation', compact('reports', 'startOfWeek', 'endOfWeek'));
+    }
+
+    public function downloadWeeklyPDF()
+    {
+        $startOfWeek = Carbon::now()->startOfWeek();
+        $endOfWeek = Carbon::now()->endOfWeek();
+
+        $reports = EndOfDayReport::where('student_id', Auth::id())
+            ->whereBetween('date_submitted', [$startOfWeek, $endOfWeek])
+            ->orderBy('date_submitted', 'asc')
+            ->get();
+
+        $profile = Auth::user()->profile;
+        $studentName = $profile->last_name . ', ' . $profile->first_name;
+        $pdf = Pdf::loadView('end_of_day_reports.pdf.weekly_compilation', compact('reports', 'startOfWeek', 'endOfWeek', 'studentName'));
+        
+        return $pdf->download("{$studentName}_Weekly_Report.pdf");
     }
 }

@@ -34,7 +34,10 @@
             <label for="plans_for_tomorrow" class="form-label">Plans for Tomorrow</label>
             <textarea name="plans_for_tomorrow" id="plans_for_tomorrow" class="form-control" required></textarea>
         </div>
-        <button type="submit" class="btn btn-primary">Submit Report</button>
+        <div class="mt-3">
+            <button type="submit" class="btn btn-primary">Submit Report</button>
+            <a href="{{ route('end_of_day_reports.index') }}" class="btn btn-secondary">Cancel</a>
+        </div>
     </form>
 
     <script>

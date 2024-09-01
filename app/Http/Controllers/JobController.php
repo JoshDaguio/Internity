@@ -31,14 +31,45 @@ class JobController extends Controller
             'positions_available' => 'required|integer|min:1',
             'location' => 'required|string|max:255',
             'work_type' => 'required|string',
-            'schedule' => 'required|string',
+            'schedule_days' => 'nullable|array',
+            'onsite_days' => 'nullable|array',
+            'remote_days' => 'nullable|array',
+            'start_time' => 'required|string',
+            'end_time' => 'required|string',
             'description' => 'required|string',
             'qualification' => 'required|string',
             'preferred_skills' => 'required|string',
         ]);
-
-        Job::create(array_merge($request->all(), ['company_id' => Auth::id()]));
-
+    
+        $schedule = [
+            'days' => $request->schedule_days ?? [],  // For Remote or On-site jobs
+            'onsite_days' => $request->onsite_days ?? [], // For Hybrid jobs
+            'remote_days' => $request->remote_days ?? [], // For Hybrid jobs
+            'start_time' => $request->start_time,
+            'end_time' => $request->end_time,
+        ];
+    
+        // Check if the job is Hybrid and validate that both onsite and remote days are provided
+        if ($request->work_type === 'Hybrid') {
+            $request->validate([
+                'onsite_days' => 'required|array',
+                'remote_days' => 'required|array',
+            ]);
+        }
+    
+        Job::create([
+            'company_id' => Auth::id(),
+            'title' => $request->title,
+            'industry' => $request->industry,
+            'positions_available' => $request->positions_available,
+            'location' => $request->location,
+            'work_type' => $request->work_type,
+            'schedule' => json_encode($schedule),
+            'description' => $request->description,
+            'qualification' => $request->qualification,
+            'preferred_skills' => $request->preferred_skills,
+        ]);
+    
         return redirect()->route('jobs.index');
     }
 
@@ -60,14 +91,44 @@ class JobController extends Controller
             'positions_available' => 'required|integer|min:1',
             'location' => 'required|string|max:255',
             'work_type' => 'required|string',
-            'schedule' => 'required|string',
+            'schedule_days' => 'nullable|array',
+            'onsite_days' => 'nullable|array',
+            'remote_days' => 'nullable|array',
+            'start_time' => 'required|string',
+            'end_time' => 'required|string',
             'description' => 'required|string',
             'qualification' => 'required|string',
             'preferred_skills' => 'required|string',
         ]);
-
-        $job->update($request->all());
-
+    
+        $schedule = [
+            'days' => $request->schedule_days ?? [],
+            'onsite_days' => $request->onsite_days ?? [],
+            'remote_days' => $request->remote_days ?? [],
+            'start_time' => $request->start_time,
+            'end_time' => $request->end_time,
+        ];
+    
+        // Validate Hybrid job schedule
+        if ($request->work_type === 'Hybrid') {
+            $request->validate([
+                'onsite_days' => 'required|array',
+                'remote_days' => 'required|array',
+            ]);
+        }
+    
+        $job->update([
+            'title' => $request->title,
+            'industry' => $request->industry,
+            'positions_available' => $request->positions_available,
+            'location' => $request->location,
+            'work_type' => $request->work_type,
+            'schedule' => json_encode($schedule),
+            'description' => $request->description,
+            'qualification' => $request->qualification,
+            'preferred_skills' => $request->preferred_skills,
+        ]);
+    
         return redirect()->route('jobs.index');
     }
 

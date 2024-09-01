@@ -4,6 +4,8 @@
 <div class="container">
     <h1>Create Company Account</h1>
 
+    <a href="{{ route('company.index') }}" class="btn btn-secondary mb-3">Back to Faculty List</a>
+
     @if ($errors->any())
         <div class="alert alert-danger">
             <ul>

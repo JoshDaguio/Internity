@@ -33,7 +33,19 @@
             </tr>
             <tr>
                 <td><strong>Schedule:</strong></td>
-                <td>{{ $job->schedule }}</td>
+                <td>
+                    @php
+                        $schedule = json_decode($job->schedule, true);
+                        $startTime = \Carbon\Carbon::createFromFormat('H:i', $schedule['start_time'])->format('g:i A');
+                        $endTime = \Carbon\Carbon::createFromFormat('H:i', $schedule['end_time'])->format('g:i A');
+                    @endphp
+                    Days: {{ implode(', ', $schedule['days']) }} <br>
+                    @if ($job->work_type === 'Hybrid')
+                        On-site Days: {{ implode(', ', $schedule['onsite_days']) }} <br>
+                        Remote Days: {{ implode(', ', $schedule['remote_days']) }} <br>
+                    @endif
+                    Time: {{ $startTime }} - {{ $endTime }}
+                </td>
             </tr>
             <tr>
                 <td><strong>Description:</strong></td>

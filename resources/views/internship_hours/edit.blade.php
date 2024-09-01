@@ -18,7 +18,10 @@
             <label for="hours" class="form-label">Hours</label>
             <input type="number" id="hours" name="hours" class="form-control" value="{{ $internshipHour->hours }}" required>
         </div>
-        <button type="submit" class="btn btn-primary">Update</button>
+        <div class="mt-3">
+            <button type="submit" class="btn btn-primary">Update</button>
+            <a href="{{ route('internship_hours.index') }}" class="btn btn-secondary">Cancel</a>
+        </div>
     </form>
 </div>
 @endsection

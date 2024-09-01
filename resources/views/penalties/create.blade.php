@@ -13,7 +13,10 @@
             <label for="penalty_hours" class="form-label">Penalty Hours</label>
             <input type="number" id="penalty_hours" name="penalty_hours" class="form-control" required min="1">
         </div>
-        <button type="submit" class="btn btn-primary">Create</button>
+        <div class="mt-3">
+            <button type="submit" class="btn btn-primary">Create</button>
+            <a href="{{ route('penalties.index') }}" class="btn btn-secondary">Cancel</a>
+        </div>
     </form>
 </div>
 @endsection

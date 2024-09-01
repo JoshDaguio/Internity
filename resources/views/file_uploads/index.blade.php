@@ -3,6 +3,8 @@
 @section('body')
     <h1>File Uploads</h1>
 
+    <a href="{{ route('file_uploads.create') }}" class="btn btn-primary mb-3">Upload File</a>
+
     @if($files->isEmpty())
         <p>No files uploaded yet.</p>
     @else
