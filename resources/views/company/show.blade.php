@@ -24,7 +24,6 @@
     </table>
 
     <a href="{{ route('company.edit', $company->id) }}" class="btn btn-warning {{ $company->status_id != 1 ? 'd-none' : '' }}">Edit</a>
-    <a href="{{ route('company.index') }}" class="btn btn-secondary">Back to List</a>
 
     @if($company->status_id == 1)
         <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deactivateModal">
@@ -60,5 +59,54 @@
             </div>
         </div>
     </div>
+
+    <hr>
+
+    <h2>Jobs Posted</h2>
+
+    @if($company->jobs->isEmpty())
+        <p>No jobs posted by this company.</p>
+    @else
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Job Title</th>
+                    <th>Industry</th>
+                    <th>Positions Available</th>
+                    <th>Location</th>
+                    <th>Work Type</th>
+                    <th>Schedule</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach($company->jobs as $job)
+                    <tr>
+                        <td>{{ $job->title }}</td>
+                        <td>{{ $job->industry }}</td>
+                        <td>{{ $job->positions_available }}</td>
+                        <td>{{ $job->location }}</td>
+                        <td>{{ $job->work_type }}</td>
+                        <td>
+                            @php
+                                $schedule = json_decode($job->schedule, true);
+                            @endphp
+                            Days: {{ implode(', ', $schedule['days'] ?? []) }} <br>
+                            @if ($job->work_type === 'Hybrid')
+                                On-site Days: {{ implode(', ', $schedule['onsite_days'] ?? []) }} <br>
+                                Remote Days: {{ implode(', ', $schedule['remote_days'] ?? []) }} <br>
+                            @endif
+                            Time: {{ \Carbon\Carbon::createFromFormat('H:i', $schedule['start_time'])->format('h:i A') }} - {{ \Carbon\Carbon::createFromFormat('H:i', $schedule['end_time'])->format('h:i A') }}
+                        </td>
+                        <td>
+                            <a href="{{ route('jobs.show', $job->id) }}" class="btn btn-info btn-sm">View</a>
+                        </td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
+    @endif
+
+    <a href="{{ route('company.index') }}" class="btn btn-secondary">Back to List</a>
 </div>
 @endsection

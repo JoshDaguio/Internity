@@ -14,7 +14,7 @@
     <!-- Course Filter -->
     <form method="GET" action="{{ route('registrations.pending') }}" class="mb-3">
         <div class="d-flex">
-            <select name="course_id" id="course_id" class="form-control me-2">
+            <select name="course_id" id="course_id" class="form-select me-2" onchange="this.form.submit()">
                 <option value="">All Courses</option>
                 @foreach($courses as $course)
                     <option value="{{ $course->id }}" {{ request('course_id') == $course->id ? 'selected' : '' }}>
@@ -22,7 +22,6 @@
                     </option>
                 @endforeach
             </select>
-            <button type="submit" class="btn btn-secondary">Apply</button>
         </div>
     </form>
 

@@ -3,7 +3,20 @@
 @section('body')
     <h1>File Uploads</h1>
 
-    <a href="{{ route('file_uploads.create') }}" class="btn btn-primary mb-3">Upload File</a>
+    @if(Auth::user()->role_id != 5)  <!-- This condition hides the button for students -->
+        <a href="{{ route('file_uploads.create') }}" class="btn btn-primary mb-3">Upload File</a>
+
+        <!-- Filter Section -->
+        <form method="GET" action="{{ route('file_uploads.index') }}" class="mb-3">
+            <div class="d-flex">
+                <select name="filter" class="form-select me-2" onchange="this.form.submit()">
+                    <option value="">All Files</option>
+                    <option value="my_uploads" {{ request('filter') == 'my_uploads' ? 'selected' : '' }}>My Uploads</option>
+                    <option value="other_uploads" {{ request('filter') == 'other_uploads' ? 'selected' : '' }}>Other Uploads</option>
+                </select>
+            </div>
+        </form>
+    @endif
 
     @if($files->isEmpty())
         <p>No files uploaded yet.</p>
@@ -14,6 +27,7 @@
                     <th>File Name</th>
                     <th>Description</th>
                     <th>Date Uploaded</th>
+                    <th>Uploaded By</th>
                     <th>Actions</th>
                 </tr>
             </thead>
@@ -23,6 +37,13 @@
                         <td>{{ $file->file_name }}</td>
                         <td>{{ $file->description }}</td>
                         <td>{{ $file->created_at->format('F d, Y') }}</td>
+                        <td>
+                            @if($file->uploader->profile)
+                                {{ $file->uploader->profile->first_name }} {{ $file->uploader->profile->last_name }}
+                            @else
+                                {{ $file->uploader->name }}
+                            @endif
+                        </td>
                         <td>
                             <button class="btn btn-secondary" onclick="showPreview('{{ route('file_uploads.preview', $file->id) }}')">Preview</button>
                             <a href="{{ route('file_uploads.download', $file->id) }}" class="btn btn-primary">Download</a>

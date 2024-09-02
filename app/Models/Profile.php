@@ -11,7 +11,23 @@ class Profile extends Model
     
     protected $fillable = [
         'first_name',
+        'middle_name',
         'last_name',
         'id_number',
+        'about',
+        'address',
+        'contact_number',
+        'cv_file_path',
+        'profile_picture',
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function links()
+    {
+        return $this->hasMany(Link::class);
+    }
 }

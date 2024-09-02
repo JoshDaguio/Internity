@@ -39,10 +39,10 @@
                         $startTime = \Carbon\Carbon::createFromFormat('H:i', $schedule['start_time'])->format('g:i A');
                         $endTime = \Carbon\Carbon::createFromFormat('H:i', $schedule['end_time'])->format('g:i A');
                     @endphp
-                    Days: {{ implode(', ', $schedule['days']) }} <br>
+                    Days: {{ implode(', ', $schedule['days'] ?? []) }} <br>
                     @if ($job->work_type === 'Hybrid')
-                        On-site Days: {{ implode(', ', $schedule['onsite_days']) }} <br>
-                        Remote Days: {{ implode(', ', $schedule['remote_days']) }} <br>
+                        On-site Days: {{ implode(', ', $schedule['onsite_days'] ?? []) }} <br>
+                        Remote Days: {{ implode(', ', $schedule['remote_days'] ?? []) }} <br>
                     @endif
                     Time: {{ $startTime }} - {{ $endTime }}
                 </td>
@@ -62,13 +62,19 @@
         </tbody>
     </table>
 
-    <a href="{{ route('jobs.edit', $job) }}" class="btn btn-primary">Edit</a>
+    @if(Auth::id() === $job->company_id)
+        <a href="{{ route('jobs.edit', $job) }}" class="btn btn-primary">Edit</a>
 
-    <form action="{{ route('jobs.destroy', $job) }}" method="POST" style="display:inline;">
-        @csrf
-        @method('DELETE')
-        <button type="submit" class="btn btn-danger">Delete</button>
-    </form>
+        <form action="{{ route('jobs.destroy', $job) }}" method="POST" style="display:inline;">
+            @csrf
+            @method('DELETE')
+            <button type="submit" class="btn btn-danger">Delete</button>
+        </form>
+    @endif
 
-    <a href="{{ route('jobs.index') }}" class="btn btn-secondary">Back to List</a>
+    @if(Auth::user()->role_id === 4) <!-- Company -->
+        <a href="{{ route('jobs.index') }}" class="btn btn-secondary">Back</a>
+    @else <!-- Super Admin or Admin -->
+        <a href="{{ route('company.show', $job->company_id) }}" class="btn btn-secondary">Back</a>
+    @endif
 @endsection

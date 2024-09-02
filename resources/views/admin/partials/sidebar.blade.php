@@ -87,6 +87,14 @@
     </a>
   </li><!-- End File Management Nav -->
 
+  <li class="nav-item">
+    <a class="nav-link {{ request()->routeIs('skill_tags.index') ? '' : 'collapsed' }}" href="{{ route('skill_tags.index') }}">
+      <i class="bi bi-tags"></i>
+      <span>Skill Tags</span>  
+    </a>
+  </li><!-- End Skill Tags Nav -->
+
+
   <li class="nav-heading">Account Management</li>
 
   <li class="nav-item">

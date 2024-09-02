@@ -14,6 +14,7 @@ use App\Http\Controllers\JobController;
 use App\Http\Controllers\AdminAccountController;
 use App\Http\Controllers\EndOfDayReportController;
 use App\Http\Controllers\FileUploadController;
+use App\Http\Controllers\SkillTagController;
 
 
 Route::get('/', function () {
@@ -29,6 +30,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile/destroy', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::get('/profile/previewCV/{id}', [ProfileController::class, 'previewCV'])->name('profile.previewCV');
 });
 
 require __DIR__.'/auth.php';
@@ -169,7 +171,7 @@ Route::middleware(['auth'])->group(function () {
 
 //File Uploads and Downloads
 //Super Admins and Admins Can Upload files
-Route::middleware(['auth', 'administrative'])->group(function () {
+Route::middleware(['auth', 'facultyaccess'])->group(function () {
     Route::get('/file_uploads', [FileUploadController::class, 'index'])->name('file_uploads.index');
     Route::get('/file_uploads/create', [FileUploadController::class, 'create'])->name('file_uploads.create');
     Route::post('/file_uploads', [FileUploadController::class, 'store'])->name('file_uploads.store');
@@ -181,4 +183,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/file_uploads', [FileUploadController::class, 'index'])->name('file_uploads.index');
     Route::get('/file_uploads/download/{file}', [FileUploadController::class, 'download'])->name('file_uploads.download');
     Route::get('/file_uploads/preview/{file}', [FileUploadController::class, 'preview'])->name('file_uploads.preview');
+});
+
+//Skill Tags CRUD
+Route::middleware(['auth'])->group(function () {
+    Route::resource('skill_tags', SkillTagController::class);
 });

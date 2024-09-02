@@ -70,6 +70,9 @@ class CompanyController extends Controller
             abort(404);
         }
 
+        // Fetch the jobs posted by the company
+        $company->load('jobs');
+
         return view('company.show', compact('company'));
     }
 

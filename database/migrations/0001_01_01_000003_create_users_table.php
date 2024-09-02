@@ -11,12 +11,34 @@ return new class extends Migration
      */
     public function up(): void
     {
+        //skill tags
+        Schema::create('skill_tags', function (Blueprint $table) {
+            $table->id();
+            $table->string('name')->unique(); // Name of the skill tag
+            $table->timestamps();
+        });
+
         //for user profile
         Schema::create('profiles', function (Blueprint $table) {
             $table->id();
             $table->string('first_name');
+            $table->string('middle_name')->nullable();
             $table->string('last_name');
             $table->string('id_number')->nullable()->unique();
+            $table->text('about')->nullable();
+            $table->string('address')->nullable();
+            $table->string('contact_number')->nullable();
+            $table->string('cv_file_path')->nullable(); // For Curriculum Vitae file upload
+            $table->string('profile_picture')->nullable(); // For Profile Picture upload
+            $table->timestamps();
+        });
+
+        // profile links
+        Schema::create('links', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('profile_id')->constrained('profiles')->onDelete('cascade');
+            $table->string('link_name');
+            $table->string('link_url');
             $table->timestamps();
         });
 
@@ -104,7 +126,9 @@ return new class extends Migration
     {
         Schema::disableForeignKeyConstraints();
 
+        Schema::dropIfExists('skill_tags');
         Schema::dropIfExists('profiles');
+        Schema::dropIfExists('links');
         Schema::dropIfExists('users');
         Schema::dropIfExists('password_reset_tokens');
         Schema::dropIfExists('sessions');

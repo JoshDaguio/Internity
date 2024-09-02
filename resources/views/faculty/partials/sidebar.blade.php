@@ -39,6 +39,15 @@
     </ul>
   </li><!-- End Student Nav -->
 
+  <li class="nav-heading">Internship Management</li>
+
+  <li class="nav-item">
+    <a class="nav-link {{ request()->routeIs('file_uploads.index', 'file_uploads.create') ? '' : 'collapsed' }}" href="{{ route('file_uploads.index') }}">
+      <i class="bi bi-folder"></i>
+      <span>File Management</span>  
+    </a>
+  </li><!-- End File Management Nav -->
+
   <li class="nav-heading">Account Management</li>
 
   <li class="nav-item">

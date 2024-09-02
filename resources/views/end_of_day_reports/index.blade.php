@@ -9,23 +9,23 @@
             <a href="{{ route('end_of_day_reports.compile.monthly') }}" class="btn btn-secondary">Generate Monthly Compilation</a>
             <a href="{{ route('end_of_day_reports.compile.weekly') }}" class="btn btn-secondary">Generate Weekly Compilation</a>
         </div>
-    
+
+        <!-- Filter Section -->
         <form method="GET" action="{{ route('end_of_day_reports.index') }}" class="d-flex align-items-center">
             <label for="filter" class="me-2">Filter:</label>
-            <select name="filter" id="filter" class="form-control me-2">
+            <select name="filter" id="filter" class="form-select me-2" onchange="this.form.submit()">
                 <option value="week" {{ request('filter') == 'week' ? 'selected' : '' }}>Week</option>
                 <option value="month" {{ request('filter') == 'month' ? 'selected' : '' }}>Month</option>
                 <option value="missing" {{ request('filter') == 'missing' ? 'selected' : '' }}>Missing Submissions</option>
             </select>
 
-            <select name="month" id="month" class="form-control me-2">
+            <select name="month" id="month" class="form-select me-2" onchange="this.form.submit()">
                 @foreach($availableMonths as $month)
                     <option value="{{ $month }}" {{ request('month', $selectedMonth) == $month ? 'selected' : '' }}>
                         {{ \Carbon\Carbon::create()->month($month)->format('F') }}
                     </option>
                 @endforeach
             </select>
-            <button type="submit" class="btn btn-primary">Filter</button>
         </form>
     </div>
 

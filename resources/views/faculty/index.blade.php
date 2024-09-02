@@ -4,9 +4,10 @@
     <h1>Faculty Accounts</h1>
     <a href="{{ route('faculty.create') }}" class="btn btn-primary mb-3">Add New Faculty</a>
     
+    <!-- Filter Section -->
     <form method="GET" action="{{ route('faculty.index') }}" class="mb-3">
         <div class="d-flex">
-            <select name="course_id" id="course_id" class="form-control me-2">
+            <select name="course_id" id="course_id" class="form-select me-2" onchange="this.form.submit()">
                 <option value="">All Courses</option>
                 @foreach($courses as $course)
                     <option value="{{ $course->id }}" {{ request('course_id') == $course->id ? 'selected' : '' }}>
@@ -15,13 +16,11 @@
                 @endforeach
             </select>
 
-            <select name="status_id" id="status_id" class="form-control me-2">
+            <select name="status_id" id="status_id" class="form-select me-2" onchange="this.form.submit()">
                 <option value="">All Statuses</option>
                 <option value="1" {{ request('status_id') == '1' ? 'selected' : '' }}>Active</option>
                 <option value="2" {{ request('status_id') == '2' ? 'selected' : '' }}>Inactive</option>
             </select>
-
-            <button type="submit" class="btn btn-secondary">Apply</button>
         </div>
     </form>
     
