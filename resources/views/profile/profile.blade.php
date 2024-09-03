@@ -17,8 +17,8 @@
         <div class="col-xl-4">
             <div class="card">
                 <div class="card-body profile-card pt-4 d-flex flex-column align-items-center">
-                    <img src="{{ $profile->profile_picture ? Storage::url($profile->profile_picture) : 'assets/img/profile-img.jpg' }}" alt="Profile" class="rounded-circle">
-                    <h2>{{ $profile->first_name }} {{ $profile->middle_name ? $profile->middle_name[0].'.' : '' }} {{ $profile->last_name }}</h2>
+                <img id="profilePicturePreview" src="{{ $profile->profile_picture ? asset('storage/' . $profile->profile_picture) : asset('assets/img/profile-img.jpg') }}" alt="Profile" class="rounded-circle">
+                <h2>{{ $profile->first_name }} {{ $profile->middle_name ? $profile->middle_name[0].'.' : '' }} {{ $profile->last_name }}</h2>
                     <h3>{{ $user->role->role_name }}</h3>
                 </div>
             </div>
@@ -143,6 +143,11 @@
         var cvPreviewModal = new bootstrap.Modal(document.getElementById('cvPreviewModal'), {});
         cvPreviewModal.show();
     }
+
+    document.getElementById('profilePicturePreview').addEventListener('click', function() {
+        var modal = new bootstrap.Modal(document.getElementById('previewProfilePictureModal'));
+        modal.show();
+    });
 </script>
 
 @endsection

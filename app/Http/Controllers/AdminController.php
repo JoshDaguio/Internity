@@ -3,8 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Course;
+use App\Models\Profile;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+
 
 class AdminController extends Controller
 {
@@ -105,6 +109,45 @@ class AdminController extends Controller
     public function showStudent(User $student)
     {
         return view('administrative.show-student', compact('student'));
+    }
+
+    // Method to show the form for creating a new student
+    public function createStudent()
+    {
+        $courses = Course::all();
+        return view('administrative.create-student', compact('courses'));
+    }
+
+    // Method to store a new student
+    public function storeStudent(Request $request)
+    {
+        $request->validate([
+            'first_name' => ['required', 'string', 'max:255'],
+            'last_name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'id_number' => ['required', 'string', 'max:255', 'unique:profiles,id_number'],
+            'course_id' => ['required', 'exists:courses,id'],
+        ]);
+
+        // Create profile
+        $profile = Profile::create([
+            'first_name' => $request->first_name,
+            'last_name' => $request->last_name,
+            'id_number' => $request->id_number,
+        ]);
+
+        // Create student account
+        User::create([
+            'name' => $request->first_name,
+            'email' => $request->email,
+            'password' => Hash::make('aufCCSInternship'), // Default password for students
+            'role_id' => 5, // Student role
+            'status_id' => 1, // Active status
+            'profile_id' => $profile->id,
+            'course_id' => $request->course_id,
+        ]);
+
+        return redirect()->route('students.list')->with('success', 'Student account created successfully.');
     }
 
     // Method to edit a student account

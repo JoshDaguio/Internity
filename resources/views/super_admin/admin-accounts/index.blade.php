@@ -3,6 +3,18 @@
 @section('body')
     <h1>Admin Accounts</h1>
     <a href="{{ route('admin-accounts.create') }}" class="btn btn-primary mb-3">Create New Admin</a>
+
+    <!-- Filter Section -->
+    <form method="GET" action="{{ route('admin-accounts.index') }}" class="mb-3">
+        <div class="d-flex">
+            <select name="status" class="form-select me-2" onchange="this.form.submit()">
+                <option value="">All Statuses</option>
+                <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>Active</option>
+                <option value="inactive" {{ request('status') == 'inactive' ? 'selected' : '' }}>Inactive</option>
+            </select>
+        </div>
+    </form>
+
     <table class="table">
         <thead>
             <tr>

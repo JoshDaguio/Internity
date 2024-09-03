@@ -25,6 +25,8 @@ Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
+
+//Profile
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'profile'])->name('profile.profile');
     Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -42,7 +44,7 @@ route::get('admin/dashboard',[AdminController::class,'index'])->
 route::get('student/dashboard',[StudentController::class,'index'])->
     middleware(['auth','student']);
 
-//paste for each roles
+//Dashboard
 route::get('/super_admin/dashboard', [SuperAdminController::class, 'index'])->middleware(['auth','super_admin'])->name('super_admin.dashboard');
 route::get('/admin/dashboard', [AdminController::class, 'index'])->middleware(['auth','admin'])->name('admin.dashboard');
 route::get('/faculty/dashboard', [FacultyController::class, 'dashboard'])->middleware(['auth','faculty'])->name('faculty.dashboard');
@@ -123,6 +125,9 @@ Route::middleware(['auth', 'facultyaccess'])->group(function () {
     Route::get('/registrations/pending', [AdminController::class, 'pendingRegistrations'])->name('registrations.pending');
     Route::post('/registrations/approve/{user}', [AdminController::class, 'approveRegistration'])->name('registrations.approve');
     Route::get('/students/list', [AdminController::class, 'approvedStudents'])->name('students.list');
+
+    Route::get('/students/create', [AdminController::class, 'createStudent'])->name('students.create');
+    Route::post('/students/store', [AdminController::class, 'storeStudent'])->name('students.store');
 
     Route::get('/students/{student}/show', [AdminController::class, 'showStudent'])->name('students.show');
     Route::get('/students/{student}/edit', [AdminController::class, 'editStudent'])->name('students.edit');

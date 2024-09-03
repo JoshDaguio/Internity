@@ -40,8 +40,10 @@
             </div>
         </div>
 
-
-        <button type="submit" class="btn btn-primary">Create Company</button>
+        <div class="mt-3">
+            <button type="submit" class="btn btn-primary">Create</button>
+            <a href="{{ route('company.index') }}" class="btn btn-secondary">Cancel</a>
+        </div>
     </form>
 </div>
 @endsection

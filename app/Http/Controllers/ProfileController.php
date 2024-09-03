@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Storage; 
 use Illuminate\View\View;
+use Illuminate\Support\Str;
+
 
 class ProfileController extends Controller
 {
@@ -68,14 +70,20 @@ class ProfileController extends Controller
         // Handle file upload for Profile Picture
         if ($request->hasFile('profile_picture')) {
             // Delete old profile picture if it exists
-            if ($profile->profile_picture_path) {
-                Storage::delete($profile->profile_picture);
+            if ($profile->profile_picture) {
+                Storage::disk('public')->delete($profile->profile_picture);
             }
 
             // Store new profile picture
             $file = $request->file('profile_picture');
-            $filePath = $file->store('profile_pictures');
-            $profile->profile_picture = $filePath;
+            $filename = Str::uuid() . '.' . $file->getClientOriginalExtension();
+            $relativePath = 'profile_pictures/' . $filename;
+
+            // Move the uploaded file to the public disk
+            $file->storeAs('profile_pictures', $filename, 'public');
+
+            // Update the profile picture path in the database
+            $profile->profile_picture = $relativePath;
             $profile->save();
         }
     

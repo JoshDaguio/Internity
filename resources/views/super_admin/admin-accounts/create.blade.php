@@ -20,6 +20,10 @@
             <label for="email" class="form-label">Email</label>
             <input type="email" class="form-control" id="email" name="email" required>
         </div>
-        <button type="submit" class="btn btn-primary">Create</button>
+
+        <div class="mt-3">
+            <button type="submit" class="btn btn-primary">Create</button>
+            <a href="{{ route('admin-accounts.index') }}" class="btn btn-secondary">Cancel</a>
+        </div>
     </form>
 @endsection

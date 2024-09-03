@@ -9,9 +9,20 @@ use Illuminate\Support\Facades\Hash;
 
 class AdminAccountController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $admins = User::where('role_id', 2)->get(); // Fetch only admin accounts
+        $query = User::where('role_id', 2); // Fetch only admin accounts
+
+        // Apply status filter
+        if ($request->has('status')) {
+            if ($request->status == 'active') {
+                $query->where('status_id', 1);
+            } elseif ($request->status == 'inactive') {
+                $query->where('status_id', 2);
+            }
+        }
+    
+        $admins = $query->get();
         return view('super_admin.admin-accounts.index', compact('admins'));
     }
 

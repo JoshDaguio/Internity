@@ -4,9 +4,6 @@
 <div class="container">
     <h1>Add New Faculty</h1>
 
-    <!-- Back Button -->
-    <a href="{{ route('faculty.index') }}" class="btn btn-secondary mb-3">Back to Faculty List</a>
-
     <!-- Display Validation Errors -->
     @if ($errors->any())
         <div class="alert alert-danger">
@@ -55,8 +52,10 @@
             </select>
         </div>
 
-        <!-- Submit Button -->
-        <button type="submit" class="btn btn-primary">Add Faculty</button>
+        <div class="mt-3">
+            <button type="submit" class="btn btn-primary">Create</button>
+            <a href="{{ route('faculty.index') }}" class="btn btn-secondary">Cancel</a>
+        </div>
     </form>
 </div>
 @endsection

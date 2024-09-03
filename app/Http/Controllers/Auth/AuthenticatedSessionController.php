@@ -30,6 +30,9 @@ class AuthenticatedSessionController extends Controller
         if ($request->user()->status_id == 2) { 
             Auth::logout(); // Log out the user if they are inactive
             return redirect()->route('login')->withErrors(['email' => 'This account is inactive.']);
+        }  elseif ($request->user()->status_id == 3) {
+            Auth::logout(); // Log out the user if they are waiting for approval
+            return redirect()->route('login')->withErrors(['email' => 'This account is waiting for approval.']);
         }
 
         $request->session()->regenerate();

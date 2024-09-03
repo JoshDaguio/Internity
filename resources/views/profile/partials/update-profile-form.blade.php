@@ -2,18 +2,19 @@
     @csrf
     @method('patch')
 
-        <div class="row mb-3">
-            <label for="profile_picture" class="col-md-4 col-lg-3 col-form-label">Profile Image</label>
-            <div class="col-md-8 col-lg-9">
-                <img src="{{ $profile->profile_picture ? Storage::url($profile->profile_picture) : 'assets/img/profile-img.jpg' }}" alt="Profile">
-                <div class="pt-2">
-                    <input type="file" name="profile_picture" class="form-control mt-2">
-                    @if($profile->profile_picture)
-                        <small class="text-muted">Current Image: <a href="{{ Storage::url($profile->profile_picture) }}" target="_blank">View</a></small>
-                    @endif
-                </div>
+    <div class="row mb-3">
+        <label for="profile_picture" class="col-md-4 col-lg-3 col-form-label">Profile Image</label>
+        <div class="col-md-8 col-lg-9">
+            <img id="profilePicturePreview" src="{{ $profile->profile_picture ? Storage::url($profile->profile_picture) : asset('assets/img/profile-img.jpg') }}" alt="Profile" class="rounded-circle">
+            <div class="pt-2">
+                <input type="file" name="profile_picture" class="form-control mt-2" onchange="previewProfilePicture(event)">
+                @if($profile->profile_picture)
+                    <small class="text-muted">Current Image: <a href="{{ Storage::url($profile->profile_picture) }}" target="_blank">View</a></small>
+                @endif
             </div>
         </div>
+    </div>
+
 
     @if($user->role_id == 4) <!-- Company Profile -->
         <div class="row mb-3">
@@ -136,5 +137,14 @@
                            <input type="text" name="link_urls[]" class="form-control" placeholder="Link URL">
                        </div>`;
         document.getElementById('newLink').insertAdjacentHTML('beforeend', newLink);
+    }
+
+    function previewProfilePicture(event) {
+        var reader = new FileReader();
+        reader.onload = function() {
+            var output = document.getElementById('profilePicturePreview');
+            output.src = reader.result;
+        };
+        reader.readAsDataURL(event.target.files[0]);
     }
 </script>

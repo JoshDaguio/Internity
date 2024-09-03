@@ -77,7 +77,7 @@
         @if (Route::has('login'))
             <div>
                 @auth
-                    <a href="{{ url('/dashboard') }}" class="btn-icon">
+                    <a href="{{ route('dashboard') }}" class="btn-icon">
                         <i class="fas fa-tachometer-alt"></i>
                         Dashboard
                     </a>

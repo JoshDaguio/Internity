@@ -23,35 +23,24 @@
   <li class="nav-heading">User Management</li>
 
   <li class="nav-item">
-    <a class="nav-link {{ request()->routeIs('admin-accounts.index', 'admin-accounts.create', 'admin-accounts.edit') ? '' : 'collapsed' }}" data-bs-target="#admin-nav" data-bs-toggle="collapse" href="#">
-      <i class="bi bi-person-badge"></i><span>Admin</span><i class="bi bi-chevron-down ms-auto"></i>
+    <a class="nav-link {{ request()->routeIs('admin-accounts.index', 'admin-accounts.create', 'admin-accounts.edit') ? '' : 'collapsed' }}" href="{{ route('admin-accounts.index') }}">
+      <i class="bi bi-person-badge"></i>
+      <span>Admin</span>  
     </a>
-    <ul id="admin-nav" class="nav-content {{ request()->routeIs('admin-accounts.index', 'admin-accounts.create', 'admin-accounts.edit') ? '' : 'collapse' }}" data-bs-parent="#sidebar-nav">
-      <li>
-        <a href="{{ route('admin-accounts.index') }}" class="{{ Request::routeIs('admin-accounts.index') ? 'active' : '' }}">
-          <i class="bi bi-circle"></i><span>View Admins</span>
-        </a>
-      </li>
-      <li>
-        <a href="{{ route('admin-accounts.create') }}" class="{{ Request::routeIs('admin-accounts.create') ? 'active' : '' }}">
-          <i class="bi bi-circle"></i><span>Add Admin</span>
-        </a>
-      </li>
-    </ul>
   </li><!-- End Admin Nav -->
 
   <li class="nav-item">
-    <a class="nav-link {{ request()->routeIs('registrations.pending', 'students.list') ? '' : 'collapsed' }}" data-bs-target="#student-nav" data-bs-toggle="collapse" href="#">
+    <a class="nav-link {{ request()->routeIs('registrations.pending', 'students.list', 'students.edit', 'students.show', 'students.create') ? '' : 'collapsed' }}" data-bs-target="#student-nav" data-bs-toggle="collapse" href="#">
       <i class="bi bi-people"></i><span>Student</span><i class="bi bi-chevron-down ms-auto"></i>
     </a>
-    <ul id="student-nav" class="nav-content {{ request()->routeIs('registrations.pending', 'students.list') ? '' : 'collapse' }} " data-bs-parent="#sidebar-nav">
+    <ul id="student-nav" class="nav-content {{ request()->routeIs('registrations.pending', 'students.list', 'students.edit', 'students.show', 'students.create') ? '' : 'collapse' }} " data-bs-parent="#sidebar-nav">
       <li>
         <a href="{{ route('registrations.pending') }}" class="{{ Request::routeIs('registrations.pending') ? 'active' : '' }}">
           <i class="bi bi-circle"></i><span>Student Registration</span>
         </a>
       </li>
       <li>
-        <a href="{{ route('students.list') }}" class="{{ Request::routeIs('students.list') ? 'active' : '' }}">
+        <a href="{{ route('students.list') }}" class="{{ Request::routeIs('students.list', 'students.edit', 'students.show', 'students.create') ? 'active' : '' }}">
           <i class="bi bi-circle"></i><span>Student List</span>
         </a>
       </li>

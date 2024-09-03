@@ -30,6 +30,9 @@
             <input type="email" class="form-control" id="email" name="email" value="{{ $admin->email }}" required>
         </div>
         <!-- Submit Button -->
-        <button type="submit" class="btn btn-primary">Update</button>
+        <div class="mt-3">
+            <button type="submit" class="btn btn-primary">Update</button>
+            <a href="{{ route('admin-accounts.index') }}" class="btn btn-secondary">Cancel</a>
+        </div>
     </form>
 @endsection

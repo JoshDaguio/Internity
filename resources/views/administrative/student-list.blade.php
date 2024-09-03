@@ -3,6 +3,9 @@
 @section('body')
     <h1>Student List</h1>
 
+    <a href="{{ route('students.create') }}" class="btn btn-primary mb-3">Create New Student</a>
+
+
     <!-- Filters -->
     <form method="GET" action="{{ route('students.list') }}" class="mb-3">
         <div class="d-flex">
