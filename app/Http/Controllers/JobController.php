@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Job;
+use App\Models\SkillTag;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -20,7 +21,8 @@ class JobController extends Controller
 
     public function create()
     {
-        return view('jobs.create');
+        $skillTags = SkillTag::all(); // Retrieve all skill tags for selection
+        return view('jobs.create', compact('skillTags'));
     }
 
     public function store(Request $request)
@@ -38,7 +40,7 @@ class JobController extends Controller
             'end_time' => 'required|string',
             'description' => 'required|string',
             'qualification' => 'required|string',
-            'preferred_skills' => 'required|string',
+            'skill_tags' => 'nullable|array',
         ]);
     
         $schedule = [
@@ -57,7 +59,7 @@ class JobController extends Controller
             ]);
         }
     
-        Job::create([
+        $job = Job::create([
             'company_id' => Auth::id(),
             'title' => $request->title,
             'industry' => $request->industry,
@@ -67,9 +69,10 @@ class JobController extends Controller
             'schedule' => json_encode($schedule),
             'description' => $request->description,
             'qualification' => $request->qualification,
-            'preferred_skills' => $request->preferred_skills,
         ]);
-    
+
+        $job->skillTags()->sync($request->input('skill_tags', [])); // Sync selected skill tags
+
         return redirect()->route('jobs.index');
     }
 
@@ -80,7 +83,8 @@ class JobController extends Controller
 
     public function edit(Job $job)
     {
-        return view('jobs.edit', compact('job'));
+        $skillTags = SkillTag::all(); // Retrieve all skill tags for selection
+        return view('jobs.edit', compact('job', 'skillTags'));
     }
 
     public function update(Request $request, Job $job)
@@ -98,7 +102,7 @@ class JobController extends Controller
             'end_time' => 'required|string',
             'description' => 'required|string',
             'qualification' => 'required|string',
-            'preferred_skills' => 'required|string',
+            'skill_tags' => 'nullable|array',
         ]);
     
         $schedule = [
@@ -126,8 +130,8 @@ class JobController extends Controller
             'schedule' => json_encode($schedule),
             'description' => $request->description,
             'qualification' => $request->qualification,
-            'preferred_skills' => $request->preferred_skills,
         ]);
+        $job->skillTags()->sync($request->input('skill_tags', []));
     
         return redirect()->route('jobs.index');
     }

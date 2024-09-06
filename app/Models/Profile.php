@@ -30,4 +30,9 @@ class Profile extends Model
     {
         return $this->hasMany(Link::class);
     }
+
+    public function skillTags()
+    {
+        return $this->belongsToMany(SkillTag::class, 'profile_skill_tag');
+    }
 }

@@ -130,8 +130,12 @@
         </div>
 
         <div class="mb-3">
-            <label for="preferred_skills" class="form-label">Preferred Skills</label>
-            <textarea id="preferred_skills" name="preferred_skills" class="form-control" rows="4" required></textarea>
+            <label for="skill_tags" class="form-label">Preferred Skills</label>
+            <select id="skill_tags" name="skill_tags[]" class="form-control" multiple="multiple">
+                @foreach($skillTags as $skillTag)
+                    <option value="{{ $skillTag->id }}">{{ $skillTag->name }}</option>
+                @endforeach
+            </select>
         </div>
 
         <div class="d-flex justify-content-end">
@@ -158,6 +162,13 @@
 
             // Trigger the change event on load to handle default value
             workType.dispatchEvent(new Event('change'));
+        });
+
+        $(document).ready(function() {
+            $('#skill_tags').select2({
+                placeholder: "Select preferred skills",
+                allowClear: true
+            });
         });
     </script>
 @endsection

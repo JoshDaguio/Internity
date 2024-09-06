@@ -58,11 +58,11 @@ class EndOfDayReportController extends Controller
                 ->get();
         } elseif ($filter === 'missing') {
             $startOfMonth = Carbon::create($currentDateTime->year, $selectedMonth, 1)->startOfMonth();
-            $endOfMonth = $startOfMonth->copy()->endOfMonth();
+            $today = $selectedMonth == $currentDateTime->month ? $currentDateTime->copy() : $startOfMonth->copy()->endOfMonth();
     
-            // Get all weekdays between the start and end of the month
+            // Get all weekdays between the start of the month and today
             $allWeekdays = collect();
-            for ($date = $startOfMonth; $date->lte($endOfMonth); $date->addDay()) {
+            for ($date = $startOfMonth; $date->lte($today); $date->addDay()) {
                 if (!$date->isWeekend()) {
                     $allWeekdays->push($date->copy()->format('Y-m-d'));  // Format as string
                 }

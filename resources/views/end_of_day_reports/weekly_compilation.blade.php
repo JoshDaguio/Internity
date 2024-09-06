@@ -32,6 +32,9 @@
                 @endforeach
             </tbody>
         </table>
-        <a href="{{ route('end_of_day_reports.download.weekly') }}" class="btn btn-primary">Download as PDF</a>
+        <div class="mt-3">
+            <a href="{{ route('end_of_day_reports.download.weekly') }}" class="btn btn-primary">Download as PDF</a>
+            <a href="{{ route('end_of_day_reports.index') }}" class="btn btn-secondary">Cancel</a>
+        </div>
     @endif
 @endsection

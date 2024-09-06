@@ -22,7 +22,6 @@ return new class extends Migration
             $table->json('schedule');
             $table->text('description');
             $table->text('qualification');
-            $table->text('preferred_skills');
             $table->timestamps();
         });
     }

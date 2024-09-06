@@ -97,6 +97,22 @@
         @endif
 
         @if($user->role_id == 5) <!-- Student Profile -->
+
+            <div class="row mb-3">
+                <label for="skill_tags" class="col-md-4 col-lg-3 col-form-label">Skills</label>
+                <div class="col-md-8 col-lg-9">
+                    <select name="skill_tags[]" id="skill_tags" class="form-control" multiple="multiple">
+                        @foreach($skillTags as $skillTag)
+                            <option value="{{ $skillTag->id }}" 
+                                {{ in_array($skillTag->id, $profile->skillTags->pluck('id')->toArray()) ? 'selected' : '' }}>
+                                {{ $skillTag->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                    <small class="text-muted">Select your skills or type to search and select.</small>
+                </div>
+            </div>
+
             <div class="row mb-3">
                 <label for="cv" class="col-md-4 col-lg-3 col-form-label">Curriculum Vitae</label>
                 <div class="col-md-8 col-lg-9">
@@ -147,4 +163,13 @@
         };
         reader.readAsDataURL(event.target.files[0]);
     }
+
+    $(document).ready(function() {
+        $('#skill_tags').select2({
+            placeholder: 'Select skills',
+            allowClear: true,
+            width: '100%'  // Makes the select box fit the container width
+        });
+    });
+
 </script>

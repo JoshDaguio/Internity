@@ -57,7 +57,7 @@
             </tr>
             <tr>
                 <td><strong>Preferred Skills:</strong></td>
-                <td>{{ $job->preferred_skills }}</td>
+                <td>{{ $job->skillTags->pluck('name')->implode(', ') }}</td>
             </tr>
         </tbody>
     </table>

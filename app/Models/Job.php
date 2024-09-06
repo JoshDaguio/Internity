@@ -19,11 +19,15 @@ class Job extends Model
         'schedule',
         'description',
         'qualification',
-        'preferred_skills',
     ];
 
     public function company()
     {
         return $this->belongsTo(User::class, 'company_id');
+    }
+
+    public function skillTags()
+    {
+        return $this->belongsToMany(SkillTag::class, 'job_skill_tag', 'job_id', 'skill_tag_id');
     }
 }

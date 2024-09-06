@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Profile;
 use App\Models\Link;
+use App\Models\SkillTag;
 use App\Http\Requests\ProfileUpdateRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -24,8 +25,10 @@ class ProfileController extends Controller
         $user = Auth::user();
         $profile = $user->profile;
         $links = $profile ? $profile->links : [];
+        $skillTags = SkillTag::all();
 
-        return view('profile.profile', compact('user', 'profile', 'links'));
+
+        return view('profile.profile', compact('user', 'profile', 'links', 'skillTags'));
     }
     
     /**
@@ -99,7 +102,11 @@ class ProfileController extends Controller
                 }
             }
         }
-    
+
+        // Sync skill tags
+        $skillTags = $request->input('skill_tags', []); // Get selected skill tags or an empty array
+        $profile->skillTags()->sync($skillTags); // Sync the skill tags (removes unselected ones)
+        
         return redirect()->route('profile.profile')->with('status', 'Profile updated successfully.');
     }
 

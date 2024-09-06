@@ -82,6 +82,17 @@
                                 @endif
                                 @if($user->role_id == 5) <!-- Student Profile -->
                                     <div class="row">
+                                        <div class="col-lg-3 col-md-4 label">Skills</div>
+                                        <div class="col-lg-9 col-md-8">
+                                            @if($profile->skillTags->isEmpty())
+                                                <p class="small fst-italic">No skills available.</p>
+                                            @else
+                                                {{ $profile->skillTags->pluck('name')->implode(', ') }}
+                                            @endif
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
                                         <div class="col-lg-3 col-md-4 label">Curriculum Vitae</div>
                                         <div class="col-lg-9 col-md-8">
                                             @if ($profile->cv_file_path)
