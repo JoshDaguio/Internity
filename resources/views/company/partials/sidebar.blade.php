@@ -21,7 +21,7 @@
     </li><!-- End Profile Page Nav -->
 
 
-    <li class="nav-heading">Intern Management</li>
+    <li class="nav-heading">Job Management</li>
 
     <li class="nav-item">
       <a class="nav-link {{ request()->routeIs('jobs.index', 'jobs.create', 'jobs.edit', 'jobs.show') ? '' : 'collapsed' }}" href="{{ route('jobs.index') }}">
@@ -35,18 +35,22 @@
         <i class="bi bi-people"></i><span>Interns</span><i class="bi bi-chevron-down ms-auto"></i>
       </a>
       <ul id="interns-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+        <!-- Applications Link -->
         <li>
-          <a href="components-alerts.html">
-            <i class="bi bi-circle"></i><span>Intern Applications</span>
+          <a href="{{ route('company.internApplications') }}"> <!-- Correct route name -->
+            <i class="bi bi-circle"></i><span>Applications</span> 
           </a>
         </li>
+        <!-- Interns Placeholder -->
         <li>
-          <a href="components-alerts.html">
-            <i class="bi bi-circle"></i><span>Interns</span>
+          <a href="#">
+            <i class="bi bi-circle"></i><span>Interns</span> <!-- Placeholder for future content -->
           </a>
         </li>
       </ul>
     </li><!-- End Intern Nav -->
+
+
 
     <li class="nav-item">
       <a class="nav-link collapsed" href="#">

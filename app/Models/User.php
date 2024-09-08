@@ -72,4 +72,10 @@ class User extends Authenticatable
     {
         return $this->hasMany(FileUpload::class, 'uploaded_by');
     }
+
+    public function priorities()
+    {
+        return $this->hasMany(Priority::class, 'student_id');
+    }
+
 }

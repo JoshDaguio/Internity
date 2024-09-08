@@ -30,22 +30,23 @@
   </li><!-- End Requirement Nav -->
 
   <li class="nav-item">
-    <a class="nav-link {{ request()->routeIs('internship.listings', 'internship.application') ? '' : 'collapsed' }}" data-bs-target="#internship-nav" data-bs-toggle="collapse" href="#">
-      <i class="bi bi-briefcase"></i><span>Internship</span><i class="bi bi-chevron-down ms-auto"></i>
+    <a class="nav-link {{ request()->routeIs('internship.listings', 'internship.applications') ? '' : 'collapsed' }}" data-bs-target="#internship-nav" data-bs-toggle="collapse" href="#">
+        <i class="bi bi-briefcase"></i><span>Internship</span><i class="bi bi-chevron-down ms-auto"></i>
     </a>
-    <ul id="internship-nav" class="nav-content {{ request()->routeIs('internship.listings', 'internship.application') ? '' : 'collapse' }}" data-bs-parent="#sidebar-nav">
-      <li>
-        <a href="#" class="{{ Request::routeIs('internship.listings') ? 'active' : '' }}">
-          <i class="bi bi-circle"></i><span>Internship Listings</span>
-        </a>
-      </li>
-      <li>
-        <a href="#" class="{{ Request::routeIs('internship.application') ? 'active' : '' }}">
-          <i class="bi bi-circle"></i><span>Internship Application</span>
-        </a>
-      </li>
+    <ul id="internship-nav" class="nav-content {{ request()->routeIs('internship.listings', 'internship.applications') ? 'show' : 'collapse' }}" data-bs-parent="#sidebar-nav">
+        <li>
+            <a href="{{ route('internship.listings') }}" class="{{ request()->routeIs('internship.listings') ? 'active' : '' }}">
+                <i class="bi bi-circle"></i><span>Listings</span>
+            </a>
+        </li>
+        <li>
+            <a href="{{ route('internship.applications') }}" class="{{ request()->routeIs('internship.applications') ? 'active' : '' }}">
+                <i class="bi bi-circle"></i><span>Applications</span>
+            </a>
+        </li>
     </ul>
-  </li><!-- End Internship Nav -->
+</li><!-- End Internship Nav -->
+
 
   <li class="nav-item">
     <a class="nav-link {{ request()->routeIs('dtr.logging', 'dtr.reports') ? '' : 'collapsed' }}" data-bs-target="#dtr-nav" data-bs-toggle="collapse" href="#">

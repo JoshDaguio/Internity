@@ -87,6 +87,7 @@ Route::middleware(['auth', 'administrative'])->group(function () {
 
 //Jobs CRUD. Only Super Admin/Admin and Company
 Route::middleware(['auth', 'job_access'])->group(function () {
+    // Creating of Jobs
     Route::get('/jobs', [JobController::class, 'index'])->name('jobs.index');
     Route::get('/jobs/create', [JobController::class, 'create'])->name('jobs.create');
     Route::post('/jobs', [JobController::class, 'store'])->name('jobs.store');
@@ -94,6 +95,14 @@ Route::middleware(['auth', 'job_access'])->group(function () {
     Route::get('/jobs/{job}/edit', [JobController::class, 'edit'])->name('jobs.edit');
     Route::patch('/jobs/{job}', [JobController::class, 'update'])->name('jobs.update');
     Route::delete('/jobs/{job}', [JobController::class, 'destroy'])->name('jobs.destroy');
+
+    //  Accepting of Interns
+    // Intern Applications Page
+    Route::get('/company/intern-applications', [CompanyController::class, 'internApplications'])->name('company.internApplications');
+    // Job Applications Page
+    Route::get('/company/job-applications/{job}', [CompanyController::class, 'jobApplications'])->name('company.jobApplications');
+
+
 });
 
 // Faculty CRUD. Only Super Admin/Admin
@@ -194,3 +203,14 @@ Route::middleware(['auth'])->group(function () {
 Route::middleware(['auth'])->group(function () {
     Route::resource('skill_tags', SkillTagController::class);
 });
+
+// Student Job Application
+Route::middleware('auth')->group(function () {
+    Route::get('/internship/listings', [StudentController::class, 'internshipListings'])->name('internship.listings');
+    Route::post('/internship/priority', [StudentController::class, 'setPriority'])->name('internship.priority');
+    Route::get('/internship/applications', [StudentController::class, 'internshipApplications'])->name('internship.applications');
+    Route::post('/internship/submit/{jobId}', [StudentController::class, 'submitApplication'])->name('internship.submit');
+    Route::get('/application/preview/{type}/{id}', [StudentController::class, 'previewFile'])->name('application.preview');
+    Route::post('/internship/remove-priority/{jobId}', [StudentController::class, 'removePriority'])->name('internship.removePriority');
+});
+

@@ -74,19 +74,59 @@
             <!-- On-site days -->
             <div class="form-check">
                 <input type="checkbox" name="onsite_days[]" value="Monday" class="form-check-input" id="onsite_monday"
-                       @if(isset($schedule['onsite_days']) && in_array('Monday', $schedule['onsite_days'])) checked @endif>
+                    @if(isset($schedule['onsite_days']) && in_array('Monday', $schedule['onsite_days'])) checked @endif>
                 <label class="form-check-label" for="onsite_monday">Monday</label>
             </div>
-            <!-- Repeat for other days -->
-            <label class="form-label">Select Remote Days</label>
+            <div class="form-check">
+                <input type="checkbox" name="onsite_days[]" value="Tuesday" class="form-check-input" id="onsite_tuesday"
+                    @if(isset($schedule['onsite_days']) && in_array('Tuesday', $schedule['onsite_days'])) checked @endif>
+                <label class="form-check-label" for="onsite_tuesday">Tuesday</label>
+            </div>
+            <div class="form-check">
+                <input type="checkbox" name="onsite_days[]" value="Wednesday" class="form-check-input" id="onsite_wednesday"
+                    @if(isset($schedule['onsite_days']) && in_array('Wednesday', $schedule['onsite_days'])) checked @endif>
+                <label class="form-check-label" for="onsite_wednesday">Wednesday</label>
+            </div>
+            <div class="form-check">
+                <input type="checkbox" name="onsite_days[]" value="Thursday" class="form-check-input" id="onsite_thursday"
+                    @if(isset($schedule['onsite_days']) && in_array('Thursday', $schedule['onsite_days'])) checked @endif>
+                <label class="form-check-label" for="onsite_thursday">Thursday</label>
+            </div>
+            <div class="form-check">
+                <input type="checkbox" name="onsite_days[]" value="Friday" class="form-check-input" id="onsite_friday"
+                    @if(isset($schedule['onsite_days']) && in_array('Friday', $schedule['onsite_days'])) checked @endif>
+                <label class="form-check-label" for="onsite_friday">Friday</label>
+            </div>
+
+            <label class="form-label mt-3">Select Remote Days</label>
             <!-- Remote days -->
             <div class="form-check">
                 <input type="checkbox" name="remote_days[]" value="Monday" class="form-check-input" id="remote_monday"
-                       @if(isset($schedule['remote_days']) && in_array('Monday', $schedule['remote_days'])) checked @endif>
+                    @if(isset($schedule['remote_days']) && in_array('Monday', $schedule['remote_days'])) checked @endif>
                 <label class="form-check-label" for="remote_monday">Monday</label>
             </div>
-            <!-- Repeat for other days -->
+            <div class="form-check">
+                <input type="checkbox" name="remote_days[]" value="Tuesday" class="form-check-input" id="remote_tuesday"
+                    @if(isset($schedule['remote_days']) && in_array('Tuesday', $schedule['remote_days'])) checked @endif>
+                <label class="form-check-label" for="remote_tuesday">Tuesday</label>
+            </div>
+            <div class="form-check">
+                <input type="checkbox" name="remote_days[]" value="Wednesday" class="form-check-input" id="remote_wednesday"
+                    @if(isset($schedule['remote_days']) && in_array('Wednesday', $schedule['remote_days'])) checked @endif>
+                <label class="form-check-label" for="remote_wednesday">Wednesday</label>
+            </div>
+            <div class="form-check">
+                <input type="checkbox" name="remote_days[]" value="Thursday" class="form-check-input" id="remote_thursday"
+                    @if(isset($schedule['remote_days']) && in_array('Thursday', $schedule['remote_days'])) checked @endif>
+                <label class="form-check-label" for="remote_thursday">Thursday</label>
+            </div>
+            <div class="form-check">
+                <input type="checkbox" name="remote_days[]" value="Friday" class="form-check-input" id="remote_friday"
+                    @if(isset($schedule['remote_days']) && in_array('Friday', $schedule['remote_days'])) checked @endif>
+                <label class="form-check-label" for="remote_friday">Friday</label>
+            </div>
         </div>
+
 
         <div class="mb-3">
             <label for="start_time" class="form-label">Start Time</label>

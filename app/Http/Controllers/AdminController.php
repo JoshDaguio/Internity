@@ -49,7 +49,8 @@ class AdminController extends Controller
         $user = Auth::user();
     
         $query = User::with('profile', 'course')
-            ->where('role_id', 5); // Students
+            ->where('role_id', 5) // Students
+            ->where('status_id', '!=', 3); // Exclude pending students (status_id = 3)
     
         // Apply status filter if provided
         if ($request->filled('status_id')) {

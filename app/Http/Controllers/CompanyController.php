@@ -1,9 +1,13 @@
 <?php
 
 namespace App\Http\Controllers;
+use App\Models\Job;
+use App\Models\Application;
 use App\Models\User;
 use App\Models\Profile;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
+
 
 use Illuminate\Http\Request;
 
@@ -131,5 +135,50 @@ class CompanyController extends Controller
 
         return redirect()->route('company.index')->with('success', 'Company account reactivated successfully.');
     }
+
+    // Internship Listing Applicants
+        // Intern Applications Page
+    public function internApplications()
+    {
+        // Fetch jobs posted by the logged-in company
+        $companyId = Auth::id();
+        $jobs = Job::where('company_id', $companyId)->withCount('applications')->get();
+
+        // Prepare data for the pie chart (applicants per job)
+        $applicantsData = $jobs->map(function ($job) {
+            return [
+                'job_title' => $job->title,
+                'applicants_count' => $job->applications_count,
+            ];
+        });
+
+        return view('company.intern_applications', compact('jobs', 'applicantsData'));
+    }
+
+    public function jobApplications($jobId)
+    {
+        $job = Job::with(['applications.student.profile.skillTags', 'applications.status'])->findOrFail($jobId);
+    
+        // Separate recommended and other applicants based on matching skills
+        $recommendedApplicants = [];
+        $otherApplicants = [];
+    
+        foreach ($job->applications as $application) {
+            $studentSkills = $application->student->profile->skillTags->pluck('id')->toArray();
+            $jobSkills = $job->skillTags->pluck('id')->toArray();
+    
+            $matchingSkills = array_intersect($studentSkills, $jobSkills);
+    
+            if (!empty($matchingSkills)) {
+                $recommendedApplicants[] = $application;
+            } else {
+                $otherApplicants[] = $application;
+            }
+        }
+    
+        return view('company.job_applications', compact('job', 'recommendedApplicants', 'otherApplicants'));
+    }
+    
+
 
 }

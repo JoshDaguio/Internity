@@ -30,4 +30,9 @@ class Job extends Model
     {
         return $this->belongsToMany(SkillTag::class, 'job_skill_tag', 'job_id', 'skill_tag_id');
     }
+    
+    public function applications()
+    {
+        return $this->hasMany(Application::class, 'job_id');
+    }
 }

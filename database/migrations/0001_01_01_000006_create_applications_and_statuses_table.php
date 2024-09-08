@@ -32,6 +32,8 @@ return new class extends Migration
             $table->foreignId('job_id')->constrained('jobs');
             $table->foreignId('student_id')->constrained('users');
             $table->foreignId('status_id')->constrained('application_statuses');
+            $table->string('endorsement_letter_path')->nullable(); // For Endorsement Letter
+            $table->string('cv_path')->nullable(); // For CV path
             $table->timestamp('date_posted');
             $table->timestamps();
         });
