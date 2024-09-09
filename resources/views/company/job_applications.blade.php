@@ -13,17 +13,16 @@
             <div class="card">
                 <div class="card-body">
                     <h5 class="card-title">Job Information</h5>
-                    <p><strong>Available Positions:</strong> {{ $job->positions_available }}</p>
-                    <p><strong>Work Type:</strong> {{ $job->work_type }}</p>
-
+                    <p><strong>Available:</strong> {{ $job->positions_available }}</p>
                     <!-- Schedule -->
                     @php
                         $schedule = json_decode($job->schedule, true);
                         $startTime = \Carbon\Carbon::createFromFormat('H:i', $schedule['start_time'])->format('g:i A');
                         $endTime = \Carbon\Carbon::createFromFormat('H:i', $schedule['end_time'])->format('g:i A');
                     @endphp
-                    <p><strong>Schedule:</strong></p>
+                    <p><strong> Work Type & Schedule:</strong></p>
                     <ul>
+                        <li>{{ $job->work_type }}</li>
                         <li>Days: {{ implode(', ', $schedule['days'] ?? []) }}</li>
                         @if ($job->work_type === 'Hybrid')
                             <li>On-site Days: {{ implode(', ', $schedule['onsite_days'] ?? []) }}</li>
@@ -43,6 +42,7 @@
 
                     <!-- Accordion for Description, Qualification, Preferred Skills -->
                     <div class="accordion" id="jobDetailsAccordion">
+                        <!-- Description Section -->
                         <div class="accordion-item">
                             <h2 class="accordion-header" id="headingDescription">
                                 <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseDescription" aria-expanded="false" aria-controls="collapseDescription">
@@ -56,6 +56,7 @@
                             </div>
                         </div>
 
+                        <!-- Qualification Section -->
                         <div class="accordion-item">
                             <h2 class="accordion-header" id="headingQualification">
                                 <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseQualification" aria-expanded="false" aria-controls="collapseQualification">
@@ -68,11 +69,26 @@
                                 </div>
                             </div>
                         </div>
+
+                        <!-- Preferred Skills Section -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="headingSkills">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSkills" aria-expanded="false" aria-controls="collapseSkills">
+                                    Preferred Skills
+                                </button>
+                            </h2>
+                            <div id="collapseSkills" class="accordion-collapse collapse" aria-labelledby="headingSkills" data-bs-parent="#jobDetailsAccordion">
+                                <div class="accordion-body">
+                                    {{ $job->skillTags->pluck('name')->implode(', ') }}
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
             </div>
         </div>
-    </div>
+
 
     <!-- Recommended Applicants Section -->
     <h2>Recommended Applicants</h2>
@@ -95,7 +111,7 @@
                 <td>{{ $matchingSkills }}</td>
                 <td>{{ $application->status->status }}</td>
                 <td>
-                    <button class="btn btn-info" data-bs-toggle="modal" data-bs-target="#viewApplicantModal{{ $application->id }}">View</button>
+                    <button class="btn btn-info" data-bs-toggle="modal" data-bs-target="#viewApplicantModal{{ $application->id }}"><i class="bi bi-info-circle"></i></button>
                 </td>
             </tr>
 
@@ -120,10 +136,10 @@
                                 @endforeach
                             </ul>
                             <p><strong>Endorsement Letter:</strong> 
-                                <button class="btn btn-secondary" onclick="showPreview('{{ route('application.preview', ['type' => 'endorsement_letter', 'id' => $application->id]) }}')">Preview</button>
+                                <button class="btn btn-dark" onclick="showPreview('{{ route('application.preview', ['type' => 'endorsement_letter', 'id' => $application->id]) }}')"><i class="bi bi-folder"></i></button>
                             </p>
                             <p><strong>CV:</strong> 
-                                <button class="btn btn-secondary" onclick="showPreview('{{ route('application.preview', ['type' => 'cv', 'id' => $application->id]) }}')">Preview</button>
+                                <button class="btn btn-dark" onclick="showPreview('{{ route('application.preview', ['type' => 'cv', 'id' => $application->id]) }}')"><i class="bi bi-folder"></i></button>
                             </p>
                         </div>
                     </div>
@@ -149,7 +165,7 @@
                 <td>{{ $application->student->profile->first_name }} {{ $application->student->profile->last_name }}</td>
                 <td>{{ $application->status->status }}</td>
                 <td>
-                    <button class="btn btn-info" data-bs-toggle="modal" data-bs-target="#viewApplicantModal{{ $application->id }}">View</button>
+                    <button class="btn btn-info" data-bs-toggle="modal" data-bs-target="#viewApplicantModal{{ $application->id }}"><i class="bi bi-info-circle"></i></button>
                 </td>
             </tr>
                         <!-- Applicant Modal -->
@@ -173,10 +189,10 @@
                                 @endforeach
                             </ul>
                             <p><strong>Endorsement Letter:</strong> 
-                                <button class="btn btn-secondary" onclick="showPreview('{{ route('application.preview', ['type' => 'endorsement_letter', 'id' => $application->id]) }}')">Preview</button>
+                                <button class="btn btn-secondary" onclick="showPreview('{{ route('application.preview', ['type' => 'endorsement_letter', 'id' => $application->id]) }}')"><i class="bi bi-folder"></i></button>
                             </p>
                             <p><strong>CV:</strong> 
-                                <button class="btn btn-secondary" onclick="showPreview('{{ route('application.preview', ['type' => 'cv', 'id' => $application->id]) }}')">Preview</button>
+                                <button class="btn btn-secondary" onclick="showPreview('{{ route('application.preview', ['type' => 'cv', 'id' => $application->id]) }}')"><i class="bi bi-folder"></i></button>
                             </p>
                         </div>
                     </div>

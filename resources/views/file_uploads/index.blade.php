@@ -45,13 +45,13 @@
                             @endif
                         </td>
                         <td>
-                            <button class="btn btn-secondary" onclick="showPreview('{{ route('file_uploads.preview', $file->id) }}')">Preview</button>
-                            <a href="{{ route('file_uploads.download', $file->id) }}" class="btn btn-primary">Download</a>
+                            <button class="btn btn-dark" onclick="showPreview('{{ route('file_uploads.preview', $file->id) }}')"><i class="bi bi-folder"></i></button>
+                            <a href="{{ route('file_uploads.download', $file->id) }}" class="btn btn-success"><i class="bi bi-download"></i></a>
                             @if(Auth::user()->role_id == 1 || Auth::user()->role_id == 2)
                                 <form action="{{ route('file_uploads.destroy', $file->id) }}" method="POST" style="display:inline;">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="btn btn-danger">Delete</button>
+                                    <button type="submit" class="btn btn-danger"><i class="bi bi-trash"></i></button>
                                 </form>
                             @endif
                         </td>

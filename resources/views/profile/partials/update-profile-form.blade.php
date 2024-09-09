@@ -73,10 +73,19 @@
             </div>
         </div>
 
+        @if($user->role_id == 1 || $user->role_id == 2) <!-- Super Admin and Admin -->
+            <div class="row mb-3">
+                <label for="email" class="col-md-4 col-lg-3 col-form-label">Email</label>
+                <div class="col-md-8 col-lg-9">
+                    <input name="email" type="email" class="form-control" id="email" value="{{ old('email', $user->email) }}" required>
+                </div>
+            </div>
+        @endif
+
         <div class="row mb-3">
             <label for="id_number" class="col-md-4 col-lg-3 col-form-label">ID Number</label>
             <div class="col-md-8 col-lg-9">
-                <input name="id_number" type="text" class="form-control" id="id_number" value="{{ old('id_number', $profile->id_number) }}">
+                <input name="id_number" type="text" class="form-control" id="id_number" value="{{ old('id_number', $profile->id_number) }}"  {{ ($user->role_id == 3 || $user->role_id == 5) ? 'disabled' : '' }}>
             </div>
         </div>
 
@@ -137,7 +146,7 @@
             @endforeach
             <!-- Add new link -->
             <div id="newLink"></div>
-            <button type="button" class="btn btn-secondary" onclick="addNewLink()">Add Another Link</button>
+            <button type="button" class="btn btn-success" onclick="addNewLink()"><i class="bi bi-plus"></i></button>
         </div>
     </div>
 

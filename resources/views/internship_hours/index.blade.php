@@ -18,11 +18,11 @@
                     <td>{{ $internshipHour->course->course_code }}</td>
                     <td>{{ $internshipHour->hours }}</td>
                     <td>
-                        <a href="{{ route('internship_hours.edit', $internshipHour->id) }}" class="btn btn-warning">Edit</a>
+                        <a href="{{ route('internship_hours.edit', $internshipHour->id) }}" class="btn btn-warning"><i class="bi bi-pencil"></i></a>
                         <form action="{{ route('internship_hours.destroy', $internshipHour->id) }}" method="POST" style="display:inline;">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="btn btn-danger">Delete</button>
+                            <button type="submit" class="btn btn-danger"><i class="bi bi-trash"></i></button>
                         </form>
                     </td>
                 </tr>

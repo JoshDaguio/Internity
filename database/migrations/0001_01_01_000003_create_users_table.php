@@ -57,51 +57,24 @@ return new class extends Migration
             $table->timestamps();
         });
 
+        //Set up of Super Admin Account and Profile
+
+        DB::table('profiles')->insert([
+            'first_name' => 'Super',
+            'last_name' => 'Admin',
+        ]);
+
         DB::table('users')->insert([
-            'name' => 'superadmin',
-            'email' => 'superadmin@gmail.com',
+            'name' => 'Super Admin',
+            'email' => 'internity.css@gmail.com',
             'password' => Hash::make('12345678'), // Hash the password
             'role_id' => 1, // Super Admin
             'status_id' => 1, // Active
+            'profile_id' => 1, // First Profile Created Above
             'created_at' => now(),
             'updated_at' => now()
         ]);
-        DB::table('users')->insert([
-            'name' => 'admin',
-            'email' => 'admin@gmail.com',
-            'password' => Hash::make('12345678'), // Hash the password
-            'role_id' => 2, // Admin
-            'status_id' => 1, // Active
-            'created_at' => now(),
-            'updated_at' => now()
-        ]);
-        DB::table('users')->insert([
-            'name' => 'faculty',
-            'email' => 'faculty@gmail.com',
-            'password' => Hash::make('12345678'), // Hash the password
-            'role_id' => 3, // Faculty
-            'status_id' => 1, // Active
-            'created_at' => now(),
-            'updated_at' => now()
-        ]);
-        DB::table('users')->insert([
-            'name' => 'company',
-            'email' => 'company@gmail.com',
-            'password' => Hash::make('12345678'), // Hash the password
-            'role_id' => 4, // Company
-            'status_id' => 1, // Active
-            'created_at' => now(),
-            'updated_at' => now()
-        ]);
-        DB::table('users')->insert([
-            'name' => 'student',
-            'email' => 'student@gmail.com',
-            'password' => Hash::make('12345678'), // Hash the password
-            'role_id' => 5, // Student
-            'status_id' => 1, // Active
-            'created_at' => now(),
-            'updated_at' => now()
-        ]);
+
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {
             $table->string('email')->primary();

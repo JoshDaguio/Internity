@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('priorities', function (Blueprint $table) {
             $table->id();
             $table->foreignId('student_id')->constrained('users');
-            $table->foreignId('job_id')->constrained('jobs');
+            $table->foreignId('job_id')->constrained('jobs')->onDelete('cascade');
             $table->integer('priority')->comment('1 for First Priority, 2 for Second Priority');
             $table->timestamps();
         });

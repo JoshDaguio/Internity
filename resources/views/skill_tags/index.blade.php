@@ -26,14 +26,14 @@
                         <td>
                             <!-- Edit Button -->
                             <button type="button" class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#editSkillTagModal-{{ $tag->id }}">
-                                Edit
+                            <i class="bi bi-pencil"></i>
                             </button>
 
                             <!-- Delete Form -->
                             <form action="{{ route('skill_tags.destroy', $tag->id) }}" method="POST" style="display:inline-block;">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                                <button type="submit" class="btn btn-danger btn-sm"><i class="bi bi-trash"></i></button>
                             </form>
 
                             <!-- Modal for Editing Skill Tag -->
@@ -52,7 +52,7 @@
                                                     <label for="editTagName-{{ $tag->id }}" class="form-label">Skill Tag Name</label>
                                                     <input type="text" id="editTagName-{{ $tag->id }}" name="name" class="form-control" value="{{ $tag->name }}" required>
                                                 </div>
-                                                <button type="submit" class="btn btn-primary">Update Skill Tag</button>
+                                                <button type="submit" class="btn btn-primary">Update</button>
                                             </form>
                                         </div>
                                     </div>
@@ -80,7 +80,7 @@
                             <label for="tagName" class="form-label">Skill Tag Name</label>
                             <input type="text" id="tagName" name="name" class="form-control" required>
                         </div>
-                        <button type="submit" class="btn btn-primary">Add Skill Tag</button>
+                        <button type="submit" class="btn btn-primary">Add</button>
                     </form>
                 </div>
             </div>

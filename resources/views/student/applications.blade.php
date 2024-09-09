@@ -40,7 +40,7 @@
                 <th>Position</th>
                 <th>Company</th>
                 <th>Priority Position</th>
-                <th>View Listing</th>
+                <th>Action</th>
             </tr>
         </thead>
         <tbody>
@@ -54,7 +54,7 @@
                 <td>{{ $priority->job->company->name }}</td>
                 <td>{{ $priority->priority == 1 ? '1st Priority' : '2nd Priority' }}</td>
                 <td>
-                    <button class="btn btn-info" data-bs-toggle="modal" data-bs-target="#jobModal{{ $priority->job->id }}">View</button>
+                    <button class="btn btn-info" data-bs-toggle="modal" data-bs-target="#jobModal{{ $priority->job->id }}"><i class="bi bi-info-circle"></i></button>
 
                     <!-- Remove priority button (only show if application is not yet submitted) -->
                     @if(!$submitted)
@@ -133,7 +133,7 @@
                 <th>Position</th>
                 <th>Company</th>
                 <th>Application Status</th>
-                <th>View Listing</th>
+                <th>Action</th>
             </tr>
         </thead>
         <tbody>
@@ -147,7 +147,7 @@
                     </span>
                 </td>
                 <td>
-                    <button class="btn btn-info" data-bs-toggle="modal" data-bs-target="#submittedJobModal{{ $application->job->id }}">View</button>
+                    <button class="btn btn-info" data-bs-toggle="modal" data-bs-target="#submittedJobModal{{ $application->job->id }}"><i class="bi bi-info-circle"></i></button>
                 </td>
             </tr>
 
@@ -185,14 +185,14 @@
 
                             <!-- Display Uploaded Endorsement Letter -->
                             @if($application->endorsement_letter_path)
-                            <p><strong>Endorsement Letter:</strong> <button class="btn btn-secondary" onclick="showPreview('{{ route('application.preview', ['type' => 'endorsement_letter', 'id' => $application->id]) }}')">Preview Endorsement Letter</button></p>
+                            <p><strong>Endorsement Letter:</strong> <button class="btn btn-dark" onclick="showPreview('{{ route('application.preview', ['type' => 'endorsement_letter', 'id' => $application->id]) }}')"><i class="bi bi-folder"></i></button></p>
                             @else
                             <p><strong>Endorsement Letter:</strong> Not uploaded</p>
                             @endif
 
                             <!-- Display Uploaded CV -->
                             @if($application->cv_path)
-                            <p><strong>CV:</strong> <button class="btn btn-secondary" onclick="showPreview('{{ route('application.preview', ['type' => 'cv', 'id' => $application->id]) }}')">Preview CV</button></p>
+                            <p><strong>CV:</strong> <button class="btn btn-dark" onclick="showPreview('{{ route('application.preview', ['type' => 'cv', 'id' => $application->id]) }}')"><i class="bi bi-folder"></i></button></p>
                             @else
                             <p><strong>CV:</strong> Not uploaded</p>
                             @endif

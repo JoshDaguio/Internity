@@ -2,7 +2,7 @@
 
 @section('body')
     <h1>Faculty Accounts</h1>
-    <a href="{{ route('faculty.create') }}" class="btn btn-primary mb-3">Add New Faculty</a>
+    <a href="{{ route('faculty.create') }}" class="btn btn-primary mb-3">Add Faculty</a>
     
     <!-- Filter Section -->
     <form method="GET" action="{{ route('faculty.index') }}" class="mb-3">
@@ -59,8 +59,8 @@
                     </td>
                     <td>
                         @if($faculty->status_id == 1)
-                            <a href="{{ route('faculty.show', $faculty->id) }}" class="btn btn-info">View</a>
-                            <a href="{{ route('faculty.edit', $faculty) }}" class="btn btn-warning">Edit</a>
+                            <a href="{{ route('faculty.show', $faculty->id) }}" class="btn btn-info"><i class="bi bi-info-circle"></i></a>
+                            <a href="{{ route('faculty.edit', $faculty) }}" class="btn btn-warning"><i class="bi bi-pencil"></i></a>
                             <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deactivateModal-{{ $faculty->id }}">
                                 Deactivate
                             </button>
@@ -77,12 +77,12 @@
                                             Are you sure you want to deactivate this faculty account?
                                         </div>
                                         <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                                             <form action="{{ route('faculty.destroy', $faculty) }}" method="POST" style="display:inline;">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" class="btn btn-danger">Deactivate</button>
                                             </form>
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                                         </div>
                                     </div>
                                 </div>

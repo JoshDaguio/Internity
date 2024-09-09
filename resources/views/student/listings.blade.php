@@ -40,7 +40,7 @@
                 <th>Position</th>
                 <th>Company</th>
                 <th>Matching Skills</th>
-                <th>View Listing</th>
+                <th>View</th>
                 <th>Add Priority</th>
             </tr>
         </thead>
@@ -56,7 +56,7 @@
                 <td>{{ $job->company->name }}</td>
                 <td>{{ $job->skillTags->pluck('name')->implode(', ') }}</td>
                 <td>
-                    <button class="btn btn-info" data-bs-toggle="modal" data-bs-target="#jobModal{{ $job->id }}">View</button>
+                    <button class="btn btn-info" data-bs-toggle="modal" data-bs-target="#jobModal{{ $job->id }}"><i class="bi bi-info-circle"></i></button>
                 </td>
                 <td>
                     @if ($existingPriority)
@@ -78,7 +78,7 @@
                                     <option value="2">Second</option>
                                 @endif
                             </select>
-                            <button type="submit" class="btn btn-primary">Set</button>
+                            <button type="submit" class="btn btn-primary"><i class="bi bi-check"></i></button>
                         </div>
                     </form>
                     @endif
@@ -131,7 +131,7 @@
             <tr>
                 <th>Position</th>
                 <th>Company</th>
-                <th>View Listing</th>
+                <th>View</th>
                 <th>Add Priority</th>
             </tr>
         </thead>
@@ -145,7 +145,7 @@
                 <td>{{ $job->title }}</td>
                 <td>{{ $job->company->name }}</td>
                 <td>
-                    <button class="btn btn-info" data-bs-toggle="modal" data-bs-target="#jobModal{{ $job->id }}">View</button>
+                    <button class="btn btn-info" data-bs-toggle="modal" data-bs-target="#jobModal{{ $job->id }}"><i class="bi bi-info-circle"></i></button>
                 </td>
                 <td>
                     @if ($existingPriority)
@@ -167,7 +167,7 @@
                                     <option value="2">Second</option>
                                 @endif
                             </select>
-                            <button type="submit" class="btn btn-primary">Set</button>
+                            <button type="submit" class="btn btn-primary"><i class="bi bi-check"></i></button>
                         </div>
                     </form>
                     @endif

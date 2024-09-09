@@ -15,8 +15,10 @@ class JobController extends Controller
         $jobs = (Auth::user()->role_id === 4) // Company
             ? Job::where('company_id', Auth::id())->get()
             : Job::all();
+        
+        $totalPositions = $jobs->sum('positions_available');
 
-        return view('jobs.index', compact('jobs'));
+        return view('jobs.index', compact('jobs', 'totalPositions'));
     }
 
     public function create()

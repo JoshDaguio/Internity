@@ -6,7 +6,7 @@
 
     <div class="row">
         <!-- Internship Listings -->
-        <div class="col-md-9">
+        <div class="col-md-8">
             <table class="table">
                 <thead>
                     <tr>
@@ -25,7 +25,7 @@
                         <td>{{ $job->created_at->format('M d, Y') }}</td>
                         <td>{{ $job->applications_count }}</td>
                         <td>
-                            <a href="{{ route('company.jobApplications', $job->id) }}" class="btn btn-info">View</a>
+                            <a href="{{ route('company.jobApplications', $job->id) }}" class="btn btn-info"><i class="bi bi-info-circle"></i></a>
                         </td>
                     </tr>
                     @endforeach
@@ -34,7 +34,7 @@
         </div>
 
         <!-- Pie Chart for Applicants -->
-        <div class="col-md-3">
+        <div class="col-md-4">
             <div class="card">
                 <div class="card-body">
                     <h5 class="card-title">Number of Applicants</h5>

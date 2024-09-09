@@ -55,7 +55,15 @@ class ProfileController extends Controller
         $profile->update($request->only([
             'first_name', 'middle_name', 'last_name', 'id_number', 'about', 'address', 'contact_number'
         ]));
-    
+
+        // Allow Super Admin and Admin to update their email
+        if ($user->role_id == 1 || $user->role_id == 2) {
+            $request->validate([
+                'email' => 'required|email|unique:users,email,' . $user->id,
+            ]);
+            $user->update(['email' => $request->input('email')]);
+        }
+        
         // Handle file upload for CV
         if ($request->hasFile('cv')) {
             // Delete old CV if it exists

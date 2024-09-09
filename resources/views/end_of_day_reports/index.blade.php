@@ -6,8 +6,8 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
             <a href="{{ route('end_of_day_reports.create') }}" class="btn btn-primary me-2">Create Report</a>
-            <a href="{{ route('end_of_day_reports.compile.monthly') }}" class="btn btn-secondary">Generate Monthly Compilation</a>
-            <a href="{{ route('end_of_day_reports.compile.weekly') }}" class="btn btn-secondary">Generate Weekly Compilation</a>
+            <a href="{{ route('end_of_day_reports.compile.monthly') }}" class="btn btn-secondary"><i class="bi bi-download"></i> Monthly</a>
+            <a href="{{ route('end_of_day_reports.compile.weekly') }}" class="btn btn-secondary"><i class="bi bi-download"></i> Weekly</a>
         </div>
 
         <!-- Filter Section -->
@@ -62,7 +62,7 @@
                             <td>{{ Str::limit($report->main_challenges, 50) }}</td>
                             <td>{{ Str::limit($report->plans_for_tomorrow, 50) }}</td>
                             <td>
-                                <a href="{{ route('end_of_day_reports.show', $report->id) }}" class="btn btn-primary">View</a>
+                                <a href="{{ route('end_of_day_reports.show', $report->id) }}" class="btn btn-info"><i class="bi bi-info-circle"></i></a>
                             </td>
                         </tr>
                     @endforeach

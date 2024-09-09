@@ -2,7 +2,7 @@
 
 @section('body')
     <h1>Admin Accounts</h1>
-    <a href="{{ route('admin-accounts.create') }}" class="btn btn-primary mb-3">Create New Admin</a>
+    <a href="{{ route('admin-accounts.create') }}" class="btn btn-primary mb-3">Add Admin</a>
 
     <!-- Filter Section -->
     <form method="GET" action="{{ route('admin-accounts.index') }}" class="mb-3">
@@ -48,7 +48,7 @@
                     </td>
                     <td>
                         @if($admin->status_id == 1)
-                            <a href="{{ route('admin-accounts.edit', $admin) }}" class="btn btn-warning">Edit</a>
+                            <a href="{{ route('admin-accounts.edit', $admin) }}" class="btn btn-warning"><i class="bi bi-pencil"></i></a>
                             <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deactivateModal-{{ $admin->id }}">
                                 Deactivate
                             </button>
@@ -65,12 +65,12 @@
                                             Are you sure you want to deactivate this admin account?
                                         </div>
                                         <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                                             <form action="{{ route('admin-accounts.destroy', $admin) }}" method="POST" style="display:inline;">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" class="btn btn-danger">Deactivate</button>
                                             </form>
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                                         </div>
                                     </div>
                                 </div>

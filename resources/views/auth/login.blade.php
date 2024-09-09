@@ -111,13 +111,15 @@
                       <div class="col-12 mt-4">
                           <label for="password" class="form-label">{{ __('Password') }}</label>
                           <div class="input-group has-validation">
-                            <span class="input-group-text" id="inputGroupPrepend">*</span>
-                            <input type="password" name="password" class="form-control" id="password" required>
-                            <div class="invalid-feedback">Please enter your password!</div>
+                              <span class="input-group-text" id="inputGroupPrepend">*</span>
+                              <input type="password" name="password" class="form-control" id="password" required>
+                              <span class="input-group-text" id="togglePassword" style="cursor: pointer;">
+                                  <i class="bi bi-eye-slash" id="togglePasswordIcon"></i>
+                              </span>
+                              <div class="invalid-feedback">Please enter your password!</div>
                           </div>
                           <x-input-error :messages="$errors->get('password')" class="mt-2" />
                       </div>
-
                       <!-- Remember Me -->
                       <div class="col-12 mt-4">
                           <div class="form-check">
@@ -168,6 +170,23 @@
 
   <!-- Template Main JS File -->
   <script src="{{ asset('assets/js/main.js') }}"></script>
+
+  <script>
+      const togglePassword = document.querySelector('#togglePassword');
+      const password = document.querySelector('#password');
+      const togglePasswordIcon = document.querySelector('#togglePasswordIcon');
+
+      togglePassword.addEventListener('click', function (e) {
+          // toggle the type attribute
+          const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+          password.setAttribute('type', type);
+
+          // toggle the eye icon
+          togglePasswordIcon.classList.toggle('bi-eye');
+          togglePasswordIcon.classList.toggle('bi-eye-slash');
+      });
+  </script>
+
 
 </body>
 
