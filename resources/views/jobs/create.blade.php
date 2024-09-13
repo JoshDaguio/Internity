@@ -130,7 +130,7 @@
         </div>
 
         <div class="mb-3">
-            <label for="skill_tags" class="form-label">Preferred Skills</label>
+            <label for="skill_tags" class="form-label">Preferred Skills (Optional)</label>
             <select id="skill_tags" name="skill_tags[]" class="form-control" multiple="multiple">
                 @foreach($skillTags as $skillTag)
                     <option value="{{ $skillTag->id }}">{{ $skillTag->name }}</option>

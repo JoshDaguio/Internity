@@ -1,8 +1,19 @@
 @extends('layouts.app')
 
 @section('body')
-<div class="container">
-    <h1>Company Details</h1>
+
+    <div class="pagetitle">
+        <h1>{{ $company->name }}</h1>
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">Home</li>
+                <li class="breadcrumb-item">Company</li>
+                <li class="breadcrumb-item active">{{ $company->name }}</li>
+            </ol>
+        </nav>
+    </div><!-- End Page Title -->
+    <a href="{{ route('company.index') }}" class="btn btn-secondary">Back to List</a>
+
 
     <table class="table table-bordered">
         <tr>
@@ -60,53 +71,55 @@
         </div>
     </div>
 
-    <hr>
+    <hr> 
 
-    <h2>Jobs Posted</h2>
 
-    @if($company->jobs->isEmpty())
-        <p>No jobs posted by this company.</p>
-    @else
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th>Job Title</th>
-                    <th>Industry</th>
-                    <th>Positions Available</th>
-                    <th>Location</th>
-                    <th>Work Type</th>
-                    <th>Schedule</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach($company->jobs as $job)
-                    <tr>
-                        <td>{{ $job->title }}</td>
-                        <td>{{ $job->industry }}</td>
-                        <td>{{ $job->positions_available }}</td>
-                        <td>{{ $job->location }}</td>
-                        <td>{{ $job->work_type }}</td>
-                        <td>
-                            @php
-                                $schedule = json_decode($job->schedule, true);
-                            @endphp
-                            Days: {{ implode(', ', $schedule['days'] ?? []) }} <br>
-                            @if ($job->work_type === 'Hybrid')
-                                On-site Days: {{ implode(', ', $schedule['onsite_days'] ?? []) }} <br>
-                                Remote Days: {{ implode(', ', $schedule['remote_days'] ?? []) }} <br>
-                            @endif
-                            Time: {{ \Carbon\Carbon::createFromFormat('H:i', $schedule['start_time'])->format('h:i A') }} - {{ \Carbon\Carbon::createFromFormat('H:i', $schedule['end_time'])->format('h:i A') }}
-                        </td>
-                        <td>
-                            <a href="{{ route('jobs.show', $job->id) }}" class="btn btn-info btn-sm">View</a>
-                        </td>
-                    </tr>
-                @endforeach
-            </tbody>
-        </table>
-    @endif
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">Jobs Posted</h5>
 
-    <a href="{{ route('company.index') }}" class="btn btn-secondary">Back to List</a>
-</div>
+            @if($company->jobs->isEmpty())
+                <p>No jobs posted by this company.</p>
+            @else
+                <table class="table datatable">
+                    <thead>
+                        <tr>
+                            <th>Job Title</th>
+                            <th>Industry</th>
+                            <th>Available</th>
+                            <th>Location</th>
+                            <th>Work Type</th>
+                            <th>Schedule</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($company->jobs as $job)
+                            <tr>
+                                <td>{{ $job->title }}</td>
+                                <td>{{ $job->industry }}</td>
+                                <td>{{ $job->positions_available }}</td>
+                                <td>{{ $job->location }}</td>
+                                <td>{{ $job->work_type }}</td>
+                                <td>
+                                    @php
+                                        $schedule = json_decode($job->schedule, true);
+                                    @endphp
+                                    Days: {{ implode(', ', $schedule['days'] ?? []) }} <br>
+                                    @if ($job->work_type === 'Hybrid')
+                                        On-site Days: {{ implode(', ', $schedule['onsite_days'] ?? []) }} <br><br>
+                                        Remote Days: {{ implode(', ', $schedule['remote_days'] ?? []) }} <br>
+                                    @endif
+                                    Time: {{ \Carbon\Carbon::createFromFormat('H:i', $schedule['start_time'])->format('h:i A') }} - {{ \Carbon\Carbon::createFromFormat('H:i', $schedule['end_time'])->format('h:i A') }}
+                                </td>
+                                <td>
+                                    <a href="{{ route('jobs.show', $job->id) }}" class="btn btn-info btn-sm"><i class="bi bi-info-circle"></i></a>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            @endif
+        </div>
+    </div>
 @endsection

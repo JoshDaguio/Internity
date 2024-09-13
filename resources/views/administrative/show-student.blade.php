@@ -15,7 +15,7 @@
     </div>
 
     <a href="{{ route('students.edit', $student->id) }}" class="btn btn-warning">Edit</a>
-    <a href="{{ route('students.list') }}" class="btn btn-secondary">Back to List</a>
+    <a href="javascript:history.back()" class="btn btn-secondary">Back</a>
     @if($student->status_id == 1)
         <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deactivateModal-{{ $student->id }}">
             Deactivate

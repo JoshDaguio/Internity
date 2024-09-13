@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Course;
+use App\Models\User;
+use App\Models\Profile;
 use Illuminate\Http\Request;
 
 class CourseController extends Controller
@@ -12,8 +14,17 @@ class CourseController extends Controller
      */
     public function index()
     {
-        $courses = Course::all();
-        return view('courses.index', compact('courses'));
+        $courses = Course::withCount(['faculty', 'students'])->get();
+
+        // Prepare data for the pie chart (total population per course)
+        $coursePopulationData = $courses->map(function ($course) {
+            return [
+                'course' => $course->course_code,
+                'population' => $course->faculty_count + $course->students_count,
+            ];
+        });
+
+        return view('courses.index', compact('courses', 'coursePopulationData'));
     }
 
     /**
@@ -44,8 +55,23 @@ class CourseController extends Controller
      */
     public function show(string $id)
     {
-        $course = Course::findOrFail($id);
-        return view('courses.show', compact('course'));
+        $course = Course::withCount(['students', 'faculty'])->findOrFail($id);
+
+        // Prepare data for students chart
+        $totalStudents = User::where('role_id', 5)->count(); // Assuming role_id 5 is for students
+        $studentsChartData = [
+            ['name' => $course->course_code, 'value' => $course->students->count()],
+            ['name' => 'Other Courses', 'value' => $totalStudents - $course->students->count()],
+        ];
+
+        // Prepare data for faculty chart
+        $totalFaculty = User::where('role_id', 3)->count(); // Assuming role_id 3 is for faculty
+        $facultyChartData = [
+            ['name' => $course->course_code, 'value' => $course->faculty->count()],
+            ['name' => 'Other Courses', 'value' => $totalFaculty - $course->faculty->count()],
+        ];
+
+        return view('courses.show', compact('course', 'studentsChartData', 'facultyChartData'));
     }
 
     /**

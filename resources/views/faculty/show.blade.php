@@ -29,7 +29,7 @@
     </div>
 
     <a href="{{ route('faculty.edit', $faculty->id) }}" class="btn btn-warning">Edit</a>
-    <a href="{{ route('faculty.index') }}" class="btn btn-secondary">Back to List</a>
+    <a href="javascript:history.back()" class="btn btn-secondary">Back</a>
 </div>
 
 <!-- Deactivate Modal -->

@@ -1,4 +1,4 @@
-<form method="post" action="{{ route('profile.update') }}" enctype="multipart/form-data">
+<form method="post" action="{{ route('profile.update') }}" enctype="multipart/form-data" novalidate>
     @csrf
     @method('patch')
 

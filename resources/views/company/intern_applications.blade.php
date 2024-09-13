@@ -1,13 +1,28 @@
 @extends('layouts.app')
 
 @section('body')
-<div class="container">
-    <h1>Internship Applications</h1>
+
+    <div class="pagetitle">
+        <h1>Applications</h1>
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">Home</li>
+                <li class="breadcrumb-item">Interns</li>
+                <li class="breadcrumb-item active">Applications</li>
+            </ol>
+        </nav>
+    </div><!-- End Page Title -->
 
     <div class="row">
-        <!-- Internship Listings -->
-        <div class="col-md-8">
-            <table class="table">
+        <!-- Internship Listings Table -->
+        <div class="col-lg-8">
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title">Internship Listings</h5>
+              <p class="small">This table displays all the job listings with applicant counts. You can view the applicants for each job.</p>
+
+              <!-- Table with DataTables formatting -->
+              <table class="table datatable">
                 <thead>
                     <tr>
                         <th>Job Title</th>
@@ -25,70 +40,69 @@
                         <td>{{ $job->created_at->format('M d, Y') }}</td>
                         <td>{{ $job->applications_count }}</td>
                         <td>
-                            <a href="{{ route('company.jobApplications', $job->id) }}" class="btn btn-info"><i class="bi bi-info-circle"></i></a>
+                            <a href="{{ route('company.jobApplications', $job->id) }}" class="btn btn-info btn-sm"><i class="bi bi-info-circle"></i></a>
                         </td>
                     </tr>
                     @endforeach
                 </tbody>
-            </table>
+              </table>
+              <!-- End of table -->
+            </div>
+          </div>
         </div>
+        
+        <!-- Responsive Pie Chart for Applicants -->
+        <div class="col-lg-4">
+                    <div class="card">
+                        <div class="card-body pb-0">
+                            <h5 class="card-title">Number of Applicants</h5>
+                            <div id="applicantsChartContainer" style="min-height: 400px;" class="echart"></div>
 
-        <!-- Pie Chart for Applicants -->
-        <div class="col-md-4">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">Number of Applicants</h5>
-                    <canvas id="applicantsChart"></canvas>
+                            <script>
+                                document.addEventListener("DOMContentLoaded", () => {
+                                    const applicantsData = @json($applicantsData);
+
+                                    if (applicantsData.length > 0) {
+                                        echarts.init(document.querySelector("#applicantsChartContainer")).setOption({
+                                            tooltip: {
+                                                trigger: 'item'
+                                            },
+                                            legend: {
+                                                top: '5%',
+                                                left: 'center'
+                                            },
+                                            series: [{
+                                                name: 'Applicants',
+                                                type: 'pie',
+                                                radius: ['40%', '70%'],
+                                                avoidLabelOverlap: false,
+                                                label: {
+                                                    show: false,
+                                                    position: 'center'
+                                                },
+                                                emphasis: {
+                                                    label: {
+                                                        show: true,
+                                                        fontSize: '18',
+                                                        fontWeight: 'bold'
+                                                    }
+                                                },
+                                                labelLine: {
+                                                    show: false
+                                                },
+                                                data: applicantsData.map(data => ({
+                                                    value: data.applicants_count,
+                                                    name: data.job_title
+                                                }))
+                                            }]
+                                        });
+                                    } else {
+                                        document.getElementById('applicantsChartContainer').innerHTML = '<p class="text-center text-muted">No applicants data available yet.</p>';
+                                    }
+                                });
+                            </script>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-    </div>
-
-    <!-- Chart Script -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- Ensure Chart.js is loaded -->
-
-    <script>
-        const ctx = document.getElementById('applicantsChart').getContext('2d');
-        const applicantsData = @json($applicantsData);
-        
-        // Debugging data
-        console.log(applicantsData); // Check the data in the browser console
-
-        // Proceed only if there is data
-        if (applicantsData.length > 0) {
-            const chart = new Chart(ctx, {
-                type: 'pie',
-                data: {
-                    labels: applicantsData.map(data => data.job_title),
-                    datasets: [{
-                        label: 'Number of Applicants',
-                        data: applicantsData.map(data => data.applicants_count),
-                        backgroundColor: [
-                            'rgba(255, 99, 132, 0.2)',
-                            'rgba(54, 162, 235, 0.2)',
-                            'rgba(255, 206, 86, 0.2)',
-                            'rgba(75, 192, 192, 0.2)',
-                            'rgba(153, 102, 255, 0.2)',
-                            'rgba(255, 159, 64, 0.2)'
-                        ],
-                        borderColor: [
-                            'rgba(255, 99, 132, 1)',
-                            'rgba(54, 162, 235, 1)',
-                            'rgba(255, 206, 86, 1)',
-                            'rgba(75, 192, 192, 1)',
-                            'rgba(153, 102, 255, 1)',
-                            'rgba(255, 159, 64, 1)'
-                        ],
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                }
-            });
-        } else {
-            console.log("No applicants data available for the chart.");
-        }
-    </script>
-</div>
 @endsection
