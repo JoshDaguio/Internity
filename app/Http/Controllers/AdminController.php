@@ -5,9 +5,12 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Models\Course;
 use App\Models\Profile;
+use App\Mail\StudentApprovalMail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
 
 
 class AdminController extends Controller
@@ -89,6 +92,20 @@ class AdminController extends Controller
         $student->status_id = 1; // Set status to active
         $student->save();
 
+        // Generate a random password (update if password was changed)
+        $password = 'aufCCSInternship' . \Str::random(5);
+
+        // Hash the password and update the student user
+        $student->update(['password' => Hash::make($password)]);
+
+        // Send approval email
+        \Mail::to($student->email)->send(new \App\Mail\StudentApprovalMail(
+            $student->name,
+            $student->email,
+            $password,
+            $student->course->course_name
+        ));
+
         return redirect()->route('registrations.pending')->with('success', 'Student registration approved successfully.');
     }
 
@@ -137,16 +154,27 @@ class AdminController extends Controller
             'id_number' => $request->id_number,
         ]);
 
+        // Generate a random password
+        $password = 'aufCCSInternship' . Str::random(5);
+
         // Create student account
-        User::create([
+        $student = User::create([
             'name' => $request->first_name,
             'email' => $request->email,
-            'password' => Hash::make('aufCCSInternship'), // Default password for students
+            'password' => Hash::make($password), // Use the generated password
             'role_id' => 5, // Student role
             'status_id' => 1, // Active status
             'profile_id' => $profile->id,
             'course_id' => $request->course_id,
         ]);
+
+        // Send the email with the login details
+        \Mail::to($student->email)->send(new \App\Mail\StudentApprovalMail(
+            $student->name,
+            $student->email,
+            $password,
+            $student->course->course_name
+        ));
 
         return redirect()->route('students.list')->with('success', 'Student account created successfully.');
     }
@@ -170,6 +198,9 @@ class AdminController extends Controller
             'course_id' => ['required', 'exists:courses,id'],
         ]);
 
+        $updatedFields = [];
+        $newPassword = null;
+
         // Update profile
         $student->profile->update([
             'first_name' => $request->first_name,
@@ -177,12 +208,35 @@ class AdminController extends Controller
             'id_number' => $request->id_number,
         ]);
 
-        // Update student account
-        $student->update([
-            'email' => $request->email,
-            'password' => $request->filled('password') ? Hash::make($request->password) : $student->password,
-            'course_id' => $request->course_id,
-        ]);
+        // Check if email is updated
+        if ($request->email != $student->email) {
+            $student->email = $request->email;
+            $updatedFields[] = 'email';
+
+            // Auto-generate a new password if only the email is updated
+            $newPassword = 'aufCCSInternship' . Str::random(5);
+            $student->password = Hash::make($newPassword);
+            $updatedFields[] = 'password';
+        }
+
+        // Check if password is updated
+        if ($request->filled('password')) {
+            $newPassword = $request->password; // Use the password from the request
+            $student->password = Hash::make($request->password);
+            $updatedFields[] = 'password';
+        }
+
+        $student->save();
+
+        // Send email if either email or password is updated
+        if (!empty($updatedFields)) {
+            \Mail::to($student->email)->send(new \App\Mail\StudentUpdateNotificationMail(
+                $student->name,
+                $student->email,
+                $updatedFields,
+                $newPassword
+            ));
+        }
 
         return redirect()->route('students.list')->with('success', 'Student account updated successfully.');
     }

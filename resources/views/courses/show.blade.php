@@ -33,10 +33,10 @@
                             <p><strong>Course Name:</strong> {{ $course->course_name }}</p>
                         </div>
                         <div class="col-md-6">
-                            <p><strong>Faculty No.:</strong> {{ $course->faculty_count }}</p>
+                            <p><strong>Faculty:</strong> {{ $course->faculty_count }}</p>
                         </div>
                         <div class="col-md-6">
-                            <p><strong>Student No.:</strong> {{ $course->students_count }}</p>
+                            <p><strong>Student:</strong> {{ $course->students_count }}</p>
                         </div>
                     </div>
                 </div>

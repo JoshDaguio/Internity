@@ -66,7 +66,7 @@ return new class extends Migration
 
         DB::table('users')->insert([
             'name' => 'Super Admin',
-            'email' => 'internity.css@gmail.com',
+            'email' => 'internity.ccs@gmail.com',
             'password' => Hash::make('12345678'), // Hash the password
             'role_id' => 1, // Super Admin
             'status_id' => 1, // Active

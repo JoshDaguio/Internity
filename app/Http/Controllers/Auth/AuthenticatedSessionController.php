@@ -37,7 +37,13 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        //authentication for roles
+        // Handle 'Remember Me' functionality
+        // Auth attempt with 'remember' checkbox
+        $remember = $request->filled('remember');
+
+        Auth::attempt($request->only('email', 'password'), $remember);
+
+        //redirect base on roles
         if($request->user()->role_id == 1)
         {
             return redirect('super_admin/dashboard');

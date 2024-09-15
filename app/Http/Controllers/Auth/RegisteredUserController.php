@@ -9,6 +9,9 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\View\View;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\StudentApprovalMail;
 
 class RegisteredUserController extends Controller
 {
@@ -36,6 +39,9 @@ class RegisteredUserController extends Controller
             'course_id' => ['required', 'exists:courses,id'],
         ]);
 
+        // Generate a unique password with aufCCSInternship + random characters
+        $randomPassword = 'aufCCSInternship' . Str::random(5);
+
         // Create the profile first
         $profile = Profile::create([
             'first_name' => $request->first_name,
@@ -47,7 +53,7 @@ class RegisteredUserController extends Controller
         $user = User::create([
             'name' => $request->first_name,
             'email' => $request->email,
-            'password' => Hash::make('aufCCSInternship'), // Default password
+            'password' => Hash::make($randomPassword), // Store hashed password
             'course_id' => $request->course_id,
             'role_id' => 5, // Student role
             'status_id' => 3, // Pending registration status
@@ -55,5 +61,27 @@ class RegisteredUserController extends Controller
         ]);
 
         return redirect()->route('register.success');
+    }
+
+        /**
+     * Method to approve a student and send approval email.
+     */
+    public function approveRegistration($userId)
+    {
+        $student = User::with('profile', 'course')->findOrFail($userId);
+
+        // Update student status to active
+        $student->status_id = 1;
+        $student->save();
+
+        // Send approval email with login details
+        Mail::to($student->email)->send(new StudentApprovalMail(
+            $student->profile->first_name . ' ' . $student->profile->last_name, 
+            $student->email, 
+            $randomPassword, // Send the random password created at registration
+            $student->course->course_name
+        ));
+
+        return redirect()->route('registrations.pending')->with('success', 'Student registration approved successfully and email sent.');
     }
 }

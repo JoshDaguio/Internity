@@ -4,8 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\Profile;
 use App\Models\User;
+use App\Mail\AdminApprovalMail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str; 
 
 class AdminAccountController extends Controller
 {
@@ -47,15 +50,25 @@ class AdminAccountController extends Controller
             'id_number' => $request->id_number,
         ]);
 
+        // Generate a random password with "aufCCSInternshipAdmin" + 5 random characters
+        $password = 'aufCCSInternshipAdmin' . Str::random(5);
+
         // Create admin account
-        User::create([
+        $admin = User::create([
             'name' => $request->first_name,
             'email' => $request->email,
-            'password' => Hash::make('aufCCSInternshipAdmin'), // Default password for admins
+            'password' => Hash::make($password), // Store hashed password
             'role_id' => 2, // Admin role
             'status_id' => 1, // Active status
             'profile_id' => $profile->id,
         ]);
+
+        // Send the email with login details
+        \Mail::to($admin->email)->send(new \App\Mail\AdminApprovalMail(
+            $admin->name,
+            $admin->email,
+            $password
+        ));
 
         return redirect()->route('admin-accounts.index')->with('success', 'Admin account created successfully.');
     }
@@ -72,8 +85,11 @@ class AdminAccountController extends Controller
             'last_name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email,' . $admin->id],
             'id_number' => ['required', 'string', 'max:255', 'unique:profiles,id_number,' . $admin->profile_id],
-            'password' => ['nullable', 'string', 'min:8', 'confirmed'],
+            'password' => ['nullable', 'string', 'min:8'],
         ]);
+
+        $updatedFields = [];
+        $newPassword = null;
 
         // Update profile
         $admin->profile->update([
@@ -82,12 +98,35 @@ class AdminAccountController extends Controller
             'id_number' => $request->id_number,
         ]);
 
-        // Update admin account
-        $admin->update([
-            'name' => $request->first_name,
-            'email' => $request->email,
-            'password' => $request->password ? Hash::make($request->password) : $admin->password,
-        ]);
+        // Check if email is updated
+        if ($request->email != $admin->email) {
+            $admin->email = $request->email;
+            $updatedFields[] = 'email';
+
+            // Auto-generate a new password if only the email is updated
+            $newPassword = 'aufCCSInternshipAdmin' . Str::random(5);
+            $admin->password = Hash::make($newPassword);
+            $updatedFields[] = 'password';
+        }
+
+        // Check if password is updated
+        if ($request->filled('password')) {
+            $newPassword = $request->password; // Use the password from the request
+            $admin->password = Hash::make($request->password);
+            $updatedFields[] = 'password';
+        }
+
+        $admin->save();
+
+        // Send email if either email or password is updated
+        if (!empty($updatedFields)) {
+            \Mail::to($admin->email)->send(new \App\Mail\AdminUpdateNotificationMail(
+                $admin->name,
+                $admin->email,
+                $updatedFields,
+                $newPassword
+            ));
+        }
 
         return redirect()->route('admin-accounts.index')->with('success', 'Admin account updated successfully.');
     }

@@ -23,10 +23,10 @@
                 <table class="table datatable">
                     <thead>
                         <tr>
-                            <th scope="col">Course Name</th>
-                            <th scope="col">Course Code</th>
-                            <th scope="col">Faculty No.</th>
-                            <th scope="col">Student No.</th>
+                            <th scope="col">Course</th>
+                            <th scope="col">Code</th>
+                            <th scope="col">Faculty #</th>
+                            <th scope="col">Student #</th>
                             <th scope="col">Action</th>
                         </tr>
                     </thead>

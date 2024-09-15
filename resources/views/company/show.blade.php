@@ -85,9 +85,7 @@
                     <thead>
                         <tr>
                             <th>Job Title</th>
-                            <th>Industry</th>
                             <th>Available</th>
-                            <th>Location</th>
                             <th>Work Type</th>
                             <th>Schedule</th>
                             <th>Actions</th>
@@ -97,9 +95,7 @@
                         @foreach($company->jobs as $job)
                             <tr>
                                 <td>{{ $job->title }}</td>
-                                <td>{{ $job->industry }}</td>
                                 <td>{{ $job->positions_available }}</td>
-                                <td>{{ $job->location }}</td>
                                 <td>{{ $job->work_type }}</td>
                                 <td>
                                     @php

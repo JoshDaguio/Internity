@@ -5,8 +5,11 @@ use App\Models\Job;
 use App\Models\Application;
 use App\Models\User;
 use App\Models\Profile;
+use App\Mail\CompanyApprovalMail;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
 
 
 use Illuminate\Http\Request;
@@ -49,15 +52,25 @@ class CompanyController extends Controller
             'id_number' => null, // No ID number for companies
         ]);
 
+        // Generate a random password with "aufCCSInternshipCompany" + 5 random characters
+        $password = 'aufCCSInternshipCompany' . Str::random(5);
+
         // Create company account
-        User::create([
+        $company = User::create([
             'name' => $request->name, // Company name
             'email' => $request->email,
-            'password' => Hash::make('aufCCSInternshipCompany'), // Default password for companies
+            'password' => Hash::make($password), // Store hashed password
             'role_id' => 4, // Company role
             'status_id' => 1, // Active status
             'profile_id' => $profile->id,
         ]);
+
+            // Send the email with login details
+        \Mail::to($company->email)->send(new \App\Mail\CompanyApprovalMail(
+            $company->name,
+            $company->email,
+            $password
+        ));
 
         return redirect()->route('company.index')->with('success', 'Company account created successfully.');
     }
@@ -96,22 +109,45 @@ class CompanyController extends Controller
             'last_name' => 'required|string|max:255',
         ]);
 
+        $updatedFields = [];
+        $newPassword = null; // To store the new auto-generated password
+
         // Update profile for the contact person
         $company->profile->update([
             'first_name' => $request->first_name,
             'last_name' => $request->last_name,
         ]);
 
-        // Update company account
-        $company->update([
-            'name' => $request->name, // Company name
-            'email' => $request->email,
-        ]);
+        // Check if email is updated
+        if ($request->email != $company->email) {
+            $company->email = $request->email;
+            $updatedFields[] = 'email';
 
-        if ($request->filled('password')) {
-            $company->password = Hash::make($request->password);
-            $company->save();
+            // Auto-generate a new password if only the email is updated
+            $newPassword = 'aufCCSInternshipCompany' . Str::random(5); // Generate new password
+            $company->password = Hash::make($newPassword); // Hash the new password
+            $updatedFields[] = 'password';
         }
+
+        // Check if password is updated
+        if ($request->filled('password')) {
+            $newPassword = $request->password; // Use the password from the request
+            $company->password = Hash::make($request->password); // Hash the new password
+            $updatedFields[] = 'password';
+        }
+
+        $company->save();
+
+        // Send email if either email or password is updated
+        if (!empty($updatedFields)) {
+            \Mail::to($company->email)->send(new \App\Mail\CompanyUpdateNotificationMail(
+                $company->name,
+                $company->email,
+                $updatedFields,
+                $newPassword // Pass the new password if updated
+            ));
+        }
+
 
         return redirect()->route('company.index')->with('success', 'Company account updated successfully.');
     }

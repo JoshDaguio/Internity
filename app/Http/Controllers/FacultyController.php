@@ -5,8 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\Course;
 use App\Models\User;
 use App\Models\Profile;
+use App\Mail\FacultyApprovalMail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
 
 class FacultyController extends Controller
 {
@@ -57,16 +60,27 @@ class FacultyController extends Controller
             'id_number' => $request->id_number,
         ]);
 
+        // Generate a random password with "aufCCSInternshipFaculty" + 5 random characters
+        $password = 'aufCCSInternshipFaculty' . Str::random(5);
+
         // Create faculty account
-        User::create([
+        $faculty = User::create([
             'name' => $request->first_name,
             'email' => $request->email,
-            'password' => Hash::make('aufCCSInternshipFaculty'), // Default password for faculty
+            'password' => Hash::make($password), // Store hashed password
             'role_id' => 3, // Faculty role
             'status_id' => 1, // Active status
             'profile_id' => $profile->id,
             'course_id' => $request->course_id,
         ]);
+
+        // Send the email with login details
+        \Mail::to($faculty->email)->send(new \App\Mail\FacultyApprovalMail(
+            $faculty->name,
+            $faculty->email,
+            $password,
+            $faculty->course->course_name
+        ));
 
         return redirect()->route('faculty.index')->with('success', 'Faculty account created successfully.');
     }
@@ -94,9 +108,12 @@ class FacultyController extends Controller
             'last_name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email,' . $faculty->id],
             'id_number' => ['required', 'string', 'max:255', 'unique:profiles,id_number,' . $faculty->profile_id],
-            'password' => ['nullable', 'string', 'min:8'], // Removed the 'confirmed' rule
+            'password' => ['nullable', 'string', 'min:8'], 
             'course_id' => ['required', 'exists:courses,id'],
         ]);
+
+        $updatedFields = [];
+        $newPassword = null;
     
         // Update profile
         $faculty->profile->update([
@@ -104,19 +121,37 @@ class FacultyController extends Controller
             'last_name' => $request->last_name,
             'id_number' => $request->id_number,
         ]);
-    
-        // Update faculty account
-        $faculty->update([
-            'name' => $request->first_name,
-            'email' => $request->email,
-            'course_id' => $request->course_id,
-        ]);
-    
-        // If password is provided, update it
-        if ($request->filled('password')) {
-            $faculty->password = Hash::make($request->password);
-            $faculty->save();
+        
+        // Check if email is updated
+        if ($request->email != $faculty->email) {
+            $faculty->email = $request->email;
+            $updatedFields[] = 'email';
+
+            // Auto-generate a new password if only the email is updated
+            $newPassword = 'aufCCSInternshipFaculty' . Str::random(5);
+            $faculty->password = Hash::make($newPassword);
+            $updatedFields[] = 'password';
         }
+
+        // Check if password is updated
+        if ($request->filled('password')) {
+            $newPassword = $request->password; // Use the password from the request
+            $faculty->password = Hash::make($request->password);
+            $updatedFields[] = 'password';
+        }
+
+        $faculty->save();
+
+        // Send email if either email or password is updated
+        if (!empty($updatedFields)) {
+            \Mail::to($faculty->email)->send(new \App\Mail\FacultyUpdateNotificationMail(
+                $faculty->name,
+                $faculty->email,
+                $updatedFields,
+                $newPassword
+            ));
+        }
+
     
         return redirect()->route('faculty.index')->with('success', 'Faculty account updated successfully.');
     }
