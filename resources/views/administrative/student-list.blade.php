@@ -23,103 +23,144 @@
     <!-- Add Student Button -->
     <a href="{{ route('students.create') }}" class="btn btn-primary mb-3">Add Student</a>
     
-    <!-- Filters Section -->
-    <form method="GET" action="{{ route('students.list') }}" class="mb-3">
-        <div class="card">
-            <div class="card-body">
-                <h5 class="card-title">Filter by Course and Status</h5>
-                <div class="row">
-                    <div class="col-md-6 mb-2">
-                        <select name="course_id" id="course_id" class="form-select" onchange="this.form.submit()">
-                            <option value="">All Courses</option>
-                            @foreach($courses as $course)
-                                <option value="{{ $course->id }}" {{ request('course_id') == $course->id ? 'selected' : '' }}>
-                                    {{ $course->course_code }}
-                                </option>
+    <div class="row">
+        <!-- Filters and Progress Bar Row -->
+        <div class="col-lg-6">
+            <!-- Filters Section -->
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Filter by Course and Status</h5>
+                    <form method="GET" action="{{ route('students.list') }}">
+                        <div class="mb-3">
+                            <select name="course_id" id="course_id" class="form-select" onchange="this.form.submit()">
+                                <option value="">All Courses</option>
+                                @foreach($courses as $course)
+                                    <option value="{{ $course->id }}" {{ request('course_id') == $course->id ? 'selected' : '' }}>
+                                        {{ $course->course_code }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <select name="status_id" id="status_id" class="form-select" onchange="this.form.submit()">
+                                <option value="">All Statuses</option>
+                                <option value="1" {{ request('status_id') == '1' ? 'selected' : '' }}>Active</option>
+                                <option value="2" {{ request('status_id') == '2' ? 'selected' : '' }}>Inactive</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Progress Bar for Approved Students by Course -->
+        <div class="col-lg-6">
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Approved Students by Course</h5>
+                    <div class="progress-container" style="min-height: 107px; max-height: 107px; overflow-y: auto;">
+                        @php
+                            $totalApproved = $approvedStudents->count();
+                        @endphp
+
+                        @if ($totalApproved > 0)
+                            @foreach ($courses as $course)
+                                @php
+                                    // Calculate the number of approved students per course
+                                    $courseApprovedCount = $approvedStudents->where('course_id', $course->id)->count();
+                                    $percentage = ($courseApprovedCount / $totalApproved) * 100;
+                                @endphp
+                                @if ($courseApprovedCount > 0)
+                                    <p>{{ $course->course_code }} ({{ $courseApprovedCount }})</p>
+                                    <div class="progress mb-3">
+                                        <div class="progress-bar" role="progressbar" style="width: {{ $percentage }}%; background-color: #B30600;" aria-valuenow="{{ $percentage }}" aria-valuemin="0" aria-valuemax="100">
+                                            {{ round($percentage, 2) }}%
+                                        </div>
+                                    </div>
+                                @endif
                             @endforeach
-                        </select>
-                    </div>
-                    <div class="col-md-6 mb-2">
-                        <select name="status_id" id="status_id" class="form-select" onchange="this.form.submit()">
-                            <option value="">All Statuses</option>
-                            <option value="1" {{ request('status_id') == '1' ? 'selected' : '' }}>Active</option>
-                            <option value="2" {{ request('status_id') == '2' ? 'selected' : '' }}>Inactive</option>
-                        </select>
+                        @else
+                            <p>No approved students available.</p>
+                        @endif
                     </div>
                 </div>
             </div>
         </div>
-    </form>
 
-    <div class="card">
-        <div class="card-body">
-            <h5 class="card-title">Approved Student List</h5>
+        <!-- Approved Students Table -->
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Approved Student List</h5>
+                    <div class="table-responsive">
+                        <table class="table datatable">
+                            <thead>
+                                <tr>
+                                    <th>ID Number</th>
+                                    <th>Full Name</th>
+                                    <th>Email</th>
+                                    <th>Course</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse($approvedStudents as $student)
+                                    <tr>
+                                        <td>{{ $student->profile ? $student->profile->id_number : 'N/A' }}</td>
+                                        <td>{{ $student->profile ? $student->profile->last_name : 'N/A' }}, {{ $student->profile ? $student->profile->first_name : 'N/A' }}</td>
+                                        <td>{{ $student->email }}</td>
+                                        <td>{{ $student->course ? $student->course->course_code : 'N/A' }}</td>
+                                        <td>{{ $student->status_id == 1 ? 'Active' : 'Inactive' }}</td>
+                                        <td>
+                                            @if($student->status_id == 1)
+                                                <a href="{{ route('students.show', $student->id) }}" class="btn btn-info"><i class="bi bi-info-circle"></i></a>
+                                                <a href="{{ route('students.edit', $student->id) }}" class="btn btn-warning"><i class="bi bi-pencil"></i></a>
+                                                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deactivateModal-{{ $student->id }}">
+                                                    Deactivate
+                                                </button>
 
-            <table class="table datatable">
-                <thead>
-                    <tr>
-                        <th>ID Number</th>
-                        <th>Name</th>
-                        <th>Email</th>
-                        <th>Course</th>
-                        <th>Status</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @forelse($approvedStudents as $student)
-                        <tr>
-                            <td>{{ $student->profile ? $student->profile->id_number : 'N/A' }}</td>
-                            <td>{{ $student->profile ? $student->profile->last_name : 'N/A' }}, {{ $student->profile ? $student->profile->first_name : 'N/A' }}</td>
-                            <td>{{ $student->email }}</td>
-                            <td>{{ $student->course ? $student->course->course_code : 'N/A' }}</td>
-                            <td>{{ $student->status_id == 1 ? 'Active' : 'Inactive' }}</td>
-                            <td>
-                                @if($student->status_id == 1)
-                                    <a href="{{ route('students.show', $student->id) }}" class="btn btn-info"><i class="bi bi-info-circle"></i></a>
-                                    <a href="{{ route('students.edit', $student->id) }}" class="btn btn-warning"><i class="bi bi-pencil"></i></a>
-                                    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deactivateModal-{{ $student->id }}">
-                                        Deactivate
-                                    </button>
-
-                                    <!-- Deactivate Modal -->
-                                    <div class="modal fade" id="deactivateModal-{{ $student->id }}" tabindex="-1" aria-labelledby="deactivateModalLabel-{{ $student->id }}" aria-hidden="true">
-                                        <div class="modal-dialog">
-                                            <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <h5 class="modal-title" id="deactivateModalLabel-{{ $student->id }}">Deactivate Student Account</h5>
-                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                <!-- Deactivate Modal -->
+                                                <div class="modal fade" id="deactivateModal-{{ $student->id }}" tabindex="-1" aria-labelledby="deactivateModalLabel-{{ $student->id }}" aria-hidden="true">
+                                                    <div class="modal-dialog">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                                <h5 class="modal-title" id="deactivateModalLabel-{{ $student->id }}">Deactivate Student Account</h5>
+                                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                            </div>
+                                                            <div class="modal-body">
+                                                                Are you sure you want to deactivate this student account?
+                                                            </div>
+                                                            <div class="modal-footer">
+                                                                <form action="{{ route('students.deactivate', $student->id) }}" method="POST" style="display:inline;">
+                                                                    @csrf
+                                                                    @method('DELETE')
+                                                                    <button type="submit" class="btn btn-danger">Deactivate</button>
+                                                                </form>
+                                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                                <div class="modal-body">
-                                                    Are you sure you want to deactivate this student account?
-                                                </div>
-                                                <div class="modal-footer">
-                                                    <form action="{{ route('students.deactivate', $student->id) }}" method="POST" style="display:inline;">
-                                                        @csrf
-                                                        @method('DELETE')
-                                                        <button type="submit" class="btn btn-danger">Deactivate</button>
-                                                    </form>
-                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                @else
-                                    <form action="{{ route('students.reactivate', $student->id) }}" method="POST" style="display:inline;">
-                                        @csrf
-                                        @method('PATCH')
-                                        <button type="submit" class="btn btn-success">Reactivate</button>
-                                    </form>
-                                @endif
-                            </td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="6">No students found.</td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
+                                            @else
+                                                <form action="{{ route('students.reactivate', $student->id) }}" method="POST" style="display:inline;">
+                                                    @csrf
+                                                    @method('PATCH')
+                                                    <button type="submit" class="btn btn-success">Reactivate</button>
+                                                </form>
+                                            @endif
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="6">No students found.</td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>  
+                </div>
+            </div>
         </div>
     </div>
 @endsection

@@ -109,63 +109,64 @@
     <div class="card">
         <div class="card-body">
             <h5 class="card-title">Recommended Applicants</h5>
+            <div class="table-responsive">
+                <table class="table datatable">
+                    <thead>
+                        <tr>
+                            <th>Applicant</th>
+                            <th>Matching Skills</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($recommendedApplicants as $application)
+                        @php
+                            $matchingSkills = $application->student->profile->skillTags->pluck('name')->implode(', ');
+                        @endphp
+                        <tr>
+                            <td>{{ $application->student->profile->first_name }} {{ $application->student->profile->last_name }}</td>
+                            <td>{{ $matchingSkills }}</td>
+                            <td>{{ $application->status->status }}</td>
+                            <td>
+                                <button class="btn btn-info" data-bs-toggle="modal" data-bs-target="#viewApplicantModal{{ $application->id }}"><i class="bi bi-info-circle"></i></button>
+                            </td>
+                        </tr>
 
-            <table class="table datatable">
-                <thead>
-                    <tr>
-                        <th>Applicant</th>
-                        <th>Matching Skills</th>
-                        <th>Status</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($recommendedApplicants as $application)
-                    @php
-                        $matchingSkills = $application->student->profile->skillTags->pluck('name')->implode(', ');
-                    @endphp
-                    <tr>
-                        <td>{{ $application->student->profile->first_name }} {{ $application->student->profile->last_name }}</td>
-                        <td>{{ $matchingSkills }}</td>
-                        <td>{{ $application->status->status }}</td>
-                        <td>
-                            <button class="btn btn-info" data-bs-toggle="modal" data-bs-target="#viewApplicantModal{{ $application->id }}"><i class="bi bi-info-circle"></i></button>
-                        </td>
-                    </tr>
-
-                    <!-- Applicant Modal -->
-                    <div class="modal fade" id="viewApplicantModal{{ $application->id }}" tabindex="-1" aria-labelledby="viewApplicantModalLabel{{ $application->id }}" aria-hidden="true">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="viewApplicantModalLabel{{ $application->id }}">Applicant Information</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body">
-                                    <p><strong>Full Name:</strong> {{ $application->student->profile->first_name }} {{ $application->student->profile->last_name }}</p>
-                                    <p><strong>Course:</strong> {{ $application->student->course->course_code }}</p>
-                                    <p><strong>Email:</strong> {{ $application->student->email }}</p>
-                                    <p><strong>About:</strong> {{ $application->student->profile->about ?? 'N/A' }}</p>
-                                    <p><strong>Skills:</strong> {{ $application->student->profile->skillTags->pluck('name')->implode(', ') }}</p>
-                                    <p><strong>Links:</strong></p>
-                                    <ul>
-                                        @foreach ($application->student->profile->links as $link)
-                                        <li><a href="{{ $link->link_url }}" target="_blank">{{ $link->link_name }}</a></li>
-                                        @endforeach
-                                    </ul>
-                                    <p><strong>Endorsement Letter:</strong> 
-                                        <button class="btn btn-dark" onclick="showPreview('{{ route('application.preview', ['type' => 'endorsement_letter', 'id' => $application->id]) }}')"><i class="bi bi-folder"></i></button>
-                                    </p>
-                                    <p><strong>CV:</strong> 
-                                        <button class="btn btn-dark" onclick="showPreview('{{ route('application.preview', ['type' => 'cv', 'id' => $application->id]) }}')"><i class="bi bi-folder"></i></button>
-                                    </p>
+                        <!-- Applicant Modal -->
+                        <div class="modal fade" id="viewApplicantModal{{ $application->id }}" tabindex="-1" aria-labelledby="viewApplicantModalLabel{{ $application->id }}" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="viewApplicantModalLabel{{ $application->id }}">Applicant Information</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p><strong>Full Name:</strong> {{ $application->student->profile->first_name }} {{ $application->student->profile->last_name }}</p>
+                                        <p><strong>Course:</strong> {{ $application->student->course->course_code }}</p>
+                                        <p><strong>Email:</strong> {{ $application->student->email }}</p>
+                                        <p><strong>About:</strong> {{ $application->student->profile->about ?? 'N/A' }}</p>
+                                        <p><strong>Skills:</strong> {{ $application->student->profile->skillTags->pluck('name')->implode(', ') }}</p>
+                                        <p><strong>Links:</strong></p>
+                                        <ul>
+                                            @foreach ($application->student->profile->links as $link)
+                                            <li><a href="{{ $link->link_url }}" target="_blank">{{ $link->link_name }}</a></li>
+                                            @endforeach
+                                        </ul>
+                                        <p><strong>Endorsement Letter:</strong> 
+                                            <button class="btn btn-dark" onclick="showPreview('{{ route('application.preview', ['type' => 'endorsement_letter', 'id' => $application->id]) }}')"><i class="bi bi-folder"></i></button>
+                                        </p>
+                                        <p><strong>CV:</strong> 
+                                            <button class="btn btn-dark" onclick="showPreview('{{ route('application.preview', ['type' => 'cv', 'id' => $application->id]) }}')"><i class="bi bi-folder"></i></button>
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    @endforeach
-                </tbody>
-            </table>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 
@@ -173,57 +174,59 @@
     <div class="card">
         <div class="card-body">
             <h5 class="card-title">Other Applicants</h5>
-            <table class="table datatable">
-                <thead>
-                    <tr>
-                        <th>Applicant</th>
-                        <th>Status</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($otherApplicants as $application)
-                    <tr>
-                        <td>{{ $application->student->profile->first_name }} {{ $application->student->profile->last_name }}</td>
-                        <td>{{ $application->status->status }}</td>
-                        <td>
-                            <button class="btn btn-info" data-bs-toggle="modal" data-bs-target="#viewApplicantModal{{ $application->id }}"><i class="bi bi-info-circle"></i></button>
-                        </td>
-                    </tr>
-                                <!-- Applicant Modal -->
-                                <div class="modal fade" id="viewApplicantModal{{ $application->id }}" tabindex="-1" aria-labelledby="viewApplicantModalLabel{{ $application->id }}" aria-hidden="true">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="viewApplicantModalLabel{{ $application->id }}">Applicant Information</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body">
-                                    <p><strong>Full Name:</strong> {{ $application->student->profile->first_name }} {{ $application->student->profile->last_name }}</p>
-                                    <p><strong>Course:</strong> {{ $application->student->course->course_code }}</p>
-                                    <p><strong>Email:</strong> {{ $application->student->email }}</p>
-                                    <p><strong>About:</strong> {{ $application->student->profile->about ?? 'N/A' }}</p>
-                                    <p><strong>Skills:</strong> {{ $application->student->profile->skillTags->pluck('name')->implode(', ') }}</p>
-                                    <p><strong>Links:</strong></p>
-                                    <ul>
-                                        @foreach ($application->student->profile->links as $link)
-                                        <li><a href="{{ $link->link_url }}" target="_blank">{{ $link->link_name }}</a></li>
-                                        @endforeach
-                                    </ul>
-                                    <p><strong>Endorsement Letter:</strong> 
-                                        <button class="btn btn-secondary" onclick="showPreview('{{ route('application.preview', ['type' => 'endorsement_letter', 'id' => $application->id]) }}')"><i class="bi bi-folder"></i></button>
-                                    </p>
-                                    <p><strong>CV:</strong> 
-                                        <button class="btn btn-secondary" onclick="showPreview('{{ route('application.preview', ['type' => 'cv', 'id' => $application->id]) }}')"><i class="bi bi-folder"></i></button>
-                                    </p>
+            <div class="table-responsive">
+                <table class="table datatable">
+                    <thead>
+                        <tr>
+                            <th>Applicant</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($otherApplicants as $application)
+                        <tr>
+                            <td>{{ $application->student->profile->first_name }} {{ $application->student->profile->last_name }}</td>
+                            <td>{{ $application->status->status }}</td>
+                            <td>
+                                <button class="btn btn-info" data-bs-toggle="modal" data-bs-target="#viewApplicantModal{{ $application->id }}"><i class="bi bi-info-circle"></i></button>
+                            </td>
+                        </tr>
+                                    <!-- Applicant Modal -->
+                                    <div class="modal fade" id="viewApplicantModal{{ $application->id }}" tabindex="-1" aria-labelledby="viewApplicantModalLabel{{ $application->id }}" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="viewApplicantModalLabel{{ $application->id }}">Applicant Information</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p><strong>Full Name:</strong> {{ $application->student->profile->first_name }} {{ $application->student->profile->last_name }}</p>
+                                        <p><strong>Course:</strong> {{ $application->student->course->course_code }}</p>
+                                        <p><strong>Email:</strong> {{ $application->student->email }}</p>
+                                        <p><strong>About:</strong> {{ $application->student->profile->about ?? 'N/A' }}</p>
+                                        <p><strong>Skills:</strong> {{ $application->student->profile->skillTags->pluck('name')->implode(', ') }}</p>
+                                        <p><strong>Links:</strong></p>
+                                        <ul>
+                                            @foreach ($application->student->profile->links as $link)
+                                            <li><a href="{{ $link->link_url }}" target="_blank">{{ $link->link_name }}</a></li>
+                                            @endforeach
+                                        </ul>
+                                        <p><strong>Endorsement Letter:</strong> 
+                                            <button class="btn btn-secondary" onclick="showPreview('{{ route('application.preview', ['type' => 'endorsement_letter', 'id' => $application->id]) }}')"><i class="bi bi-folder"></i></button>
+                                        </p>
+                                        <p><strong>CV:</strong> 
+                                            <button class="btn btn-secondary" onclick="showPreview('{{ route('application.preview', ['type' => 'cv', 'id' => $application->id]) }}')"><i class="bi bi-folder"></i></button>
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    @endforeach
+                        @endforeach
 
-                </tbody>
-            </table>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 

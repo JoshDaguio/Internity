@@ -38,44 +38,46 @@
     <div class="card">
         <div class="card-body">
             <h5 class="card-title">Uploaded Files List</h5>
-            <table class="table datatable">
-                <thead>
-                    <tr>
-                        <th>File Name</th>
-                        <th>Description</th>
-                        <th>Date Uploaded</th>
-                        <th>Uploaded By</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($files as $file)
+            <div class="table-responsive">
+                <table class="table datatable">
+                    <thead>
                         <tr>
-                            <td>{{ $file->file_name }}</td>
-                            <td>{{ $file->description }}</td>
-                            <td>{{ $file->created_at->format('F d, Y') }}</td>
-                            <td>
-                                @if($file->uploader->profile)
-                                    {{ $file->uploader->profile->first_name }} {{ $file->uploader->profile->last_name }}
-                                @else
-                                    {{ $file->uploader->name }}
-                                @endif
-                            </td>
-                            <td>
-                                <button class="btn btn-dark" onclick="showPreview('{{ route('file_uploads.preview', $file->id) }}')"><i class="bi bi-folder"></i></button>
-                                <a href="{{ route('file_uploads.download', $file->id) }}" class="btn btn-success"><i class="bi bi-download"></i></a>
-                                @if(Auth::user()->role_id == 1 || Auth::user()->role_id == 2)
-                                    <form action="{{ route('file_uploads.destroy', $file->id) }}" method="POST" style="display:inline;">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn btn-danger"><i class="bi bi-trash"></i></button>
-                                    </form>
-                                @endif
-                            </td>
+                            <th>File</th>
+                            <th>Description</th>
+                            <th>Date</th>
+                            <th>Uploader</th>
+                            <th>Actions</th>
                         </tr>
-                    @endforeach
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        @foreach($files as $file)
+                            <tr>
+                                <td>{{ $file->file_name }}</td>
+                                <td>{{ $file->description }}</td>
+                                <td>{{ $file->created_at->format('F d, Y') }}</td>
+                                <td>
+                                    @if($file->uploader->profile)
+                                        {{ $file->uploader->profile->first_name }} {{ $file->uploader->profile->last_name }}
+                                    @else
+                                        {{ $file->uploader->name }}
+                                    @endif
+                                </td>
+                                <td>
+                                    <button class="btn btn-dark" onclick="showPreview('{{ route('file_uploads.preview', $file->id) }}')"><i class="bi bi-folder"></i></button>
+                                    <a href="{{ route('file_uploads.download', $file->id) }}" class="btn btn-success"><i class="bi bi-download"></i></a>
+                                    @if(Auth::user()->role_id == 1 || Auth::user()->role_id == 2)
+                                        <form action="{{ route('file_uploads.destroy', $file->id) }}" method="POST" style="display:inline;">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn btn-danger"><i class="bi bi-trash"></i></button>
+                                        </form>
+                                    @endif
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 

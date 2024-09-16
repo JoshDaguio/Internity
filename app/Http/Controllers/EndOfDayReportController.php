@@ -42,46 +42,46 @@ class EndOfDayReportController extends Controller
             $availableMonths[] = $currentDateTime->month;
         }
     
-        $reports = collect();
-        $missingDates = collect();
+        $reports = EndOfDayReport::where('student_id', $user->id)
+            ->whereMonth('date_submitted', $selectedMonth)
+            ->get();
+
+        // Calculate missing dates
+        $missingDates = $this->getMissingSubmissionDates($user->id, $selectedMonth, $currentDateTime);
+        
+        // Check if a report has already been submitted today
+        $hasSubmittedToday = EndOfDayReport::where('student_id', $user->id)
+            ->whereDate('date_submitted', $currentDateTime->format('Y-m-d'))
+            ->exists();
+
     
-        if ($filter === 'week') {
-            $reports = EndOfDayReport::where('student_id', $user->id)
-                ->where('date_submitted', '>=', $currentDateTime->subDays(7))
-                ->orderBy('date_submitted', 'desc')
-                ->get();
-        } elseif ($filter === 'month') {
-            $reports = EndOfDayReport::where('student_id', $user->id)
-                ->whereYear('date_submitted', $currentDateTime->year)
-                ->whereMonth('date_submitted', $selectedMonth)
-                ->orderBy('date_submitted', 'desc')
-                ->get();
-        } elseif ($filter === 'missing') {
-            $startOfMonth = Carbon::create($currentDateTime->year, $selectedMonth, 1)->startOfMonth();
-            $today = $selectedMonth == $currentDateTime->month ? $currentDateTime->copy() : $startOfMonth->copy()->endOfMonth();
+        return view('end_of_day_reports.index', compact('reports', 'missingDates', 'selectedMonth', 'availableMonths', 'hasSubmittedToday'));
+    }
+
+    private function getMissingSubmissionDates($studentId, $selectedMonth, $currentDateTime)
+    {
+        $startOfMonth = Carbon::create($currentDateTime->year, $selectedMonth, 1)->startOfMonth();
+        $today = $selectedMonth == $currentDateTime->month ? $currentDateTime->copy() : $startOfMonth->copy()->endOfMonth();
     
-            // Get all weekdays between the start of the month and today
-            $allWeekdays = collect();
-            for ($date = $startOfMonth; $date->lte($today); $date->addDay()) {
-                if (!$date->isWeekend()) {
-                    $allWeekdays->push($date->copy()->format('Y-m-d'));  // Format as string
-                }
+        // Get all weekdays between the start of the month and today
+        $allWeekdays = collect();
+        for ($date = $startOfMonth; $date->lte($today); $date->addDay()) {
+            if (!$date->isWeekend()) {
+                $allWeekdays->push($date->copy()->format('Y-m-d'));
             }
-    
-            // Get submission dates for the selected month
-            $submissionDates = EndOfDayReport::where('student_id', $user->id)
-                ->whereYear('date_submitted', $currentDateTime->year)
-                ->whereMonth('date_submitted', $selectedMonth)
-                ->pluck('date_submitted')
-                ->map(function ($date) {
-                    return Carbon::parse($date)->format('Y-m-d');  // Format as string
-                });
-    
-            // Calculate missing dates
-            $missingDates = $allWeekdays->diff($submissionDates);
         }
     
-        return view('end_of_day_reports.index', compact('reports', 'missingDates', 'selectedMonth', 'availableMonths'));
+        // Get submission dates for the selected month
+        $submissionDates = EndOfDayReport::where('student_id', $studentId)
+            ->whereYear('date_submitted', $currentDateTime->year)
+            ->whereMonth('date_submitted', $selectedMonth)
+            ->pluck('date_submitted')
+            ->map(function ($date) {
+                return Carbon::parse($date)->format('Y-m-d');
+            });
+    
+        // Calculate missing dates
+        return $allWeekdays->diff($submissionDates);
     }
 
     /**

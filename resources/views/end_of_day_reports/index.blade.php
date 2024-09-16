@@ -1,73 +1,142 @@
 @extends('layouts.app')
 
 @section('body')
-    <h1>End of Day Reports</h1>
+
+    <div class="pagetitle">
+        <h1>End of Day Reports</h1>
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">Home</li>
+                <li class="breadcrumb-item active">Reports</li>
+            </ol>
+        </nav>
+    </div><!-- End Page Title -->
 
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
             <a href="{{ route('end_of_day_reports.create') }}" class="btn btn-primary me-2">Create Report</a>
-            <a href="{{ route('end_of_day_reports.compile.monthly') }}" class="btn btn-secondary"><i class="bi bi-download"></i> Monthly</a>
-            <a href="{{ route('end_of_day_reports.compile.weekly') }}" class="btn btn-secondary"><i class="bi bi-download"></i> Weekly</a>
+            <a href="{{ route('end_of_day_reports.compile.weekly') }}" class="btn btn-success me-2"><i class="bi bi-download"></i> Weekly</a>
+            <a href="{{ route('end_of_day_reports.compile.monthly') }}" class="btn btn-success me-2"><i class="bi bi-download"></i> Monthly</a>
         </div>
-
-        <!-- Filter Section -->
-        <form method="GET" action="{{ route('end_of_day_reports.index') }}" class="d-flex align-items-center">
-            <label for="filter" class="me-2">Filter:</label>
-            <select name="filter" id="filter" class="form-select me-2" onchange="this.form.submit()">
-                <option value="week" {{ request('filter') == 'week' ? 'selected' : '' }}>Week</option>
-                <option value="month" {{ request('filter') == 'month' ? 'selected' : '' }}>Month</option>
-                <option value="missing" {{ request('filter') == 'missing' ? 'selected' : '' }}>Missing Submissions</option>
-            </select>
-
-            <select name="month" id="month" class="form-select me-2" onchange="this.form.submit()">
-                @foreach($availableMonths as $month)
-                    <option value="{{ $month }}" {{ request('month', $selectedMonth) == $month ? 'selected' : '' }}>
-                        {{ \Carbon\Carbon::create()->month($month)->format('F') }}
-                    </option>
-                @endforeach
-            </select>
-        </form>
     </div>
 
-    @if(request('filter') == 'missing')
-        <h2>Missing Submissions for {{ \Carbon\Carbon::create()->month($selectedMonth)->format('F') }}</h2>
-        @if(isset($missingDates) && $missingDates->isEmpty())
-            <p>All submissions are up to date.</p>
-        @elseif(isset($missingDates))
-            <ul>
-                @foreach($missingDates as $date)
-                    <li>{{ \Carbon\Carbon::parse($date)->format('F d, Y') }}</li>
-                @endforeach
-            </ul>
-        @endif
-    @else
-        @if($reports->isEmpty())
-            <p>No reports available.</p>
-        @else
-            <table class="table mt-4">
-                <thead>
-                    <tr>
-                        <th>Date Submitted</th>
-                        <th>Key Successes</th>
-                        <th>Main Challenges</th>
-                        <th>Plans for Tomorrow</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
+    <!-- Calendar Card -->
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">Reports Date Summary</h5>
+            <div id="calendar"></div>
+        </div>
+    </div>
+
+    <style>
+        /* Responsive styling for the calendar */
+        #calendar {
+            max-width: 100%;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Ensure the calendar adjusts for different screen sizes */
+        @media (max-width: 768px) {
+            #calendar {
+                padding: 10px;
+            }
+            .fc-toolbar-title {
+                font-size: 1.2rem; /* Adjust font size on smaller screens */
+            }
+            .fc-button {
+                padding: 0.2rem 0.5rem;
+                font-size: 0.8rem; /* Adjust button size on smaller screens */
+            }
+        }
+
+        /* Customize FullCalendar appearance */
+        .fc-toolbar-title {
+            text-align: left; /* Aligning the title to the left */
+            margin-right: 10px; /* Space between title and buttons */
+        }
+        .fc-toolbar {
+            display: flex;
+            align-items: center;
+            justify-content: start; /* Aligns toolbar items to the left */
+        }
+        .fc-button {
+            background-color: #007bff;
+            border-color: #007bff;
+            color: #fff;
+            margin-left: 5px; /* Space between buttons */
+        }
+        .fc-button:hover {
+            background-color: #0056b3;
+            border-color: #004085;
+        }
+        /* Make sure the day cells are of equal height */
+        .fc-daygrid-day-frame {
+            min-height: 100px;
+        }
+        .fc-event {
+            font-size: 0.85rem;
+            padding: 4px;
+        }
+    </style>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var calendarEl = document.getElementById('calendar');
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                headerToolbar: {
+                    left: 'title',
+                    center: '',
+                    right: 'prev,next'
+                },
+                events: [
+                    @if(!$reports->isEmpty())
+                    // Display reports if available
                     @foreach($reports as $report)
-                        <tr>
-                            <td>{{ \Carbon\Carbon::parse($report->date_submitted)->format('F d, Y') }}</td>
-                            <td>{{ Str::limit($report->key_successes, 50) }}</td>
-                            <td>{{ Str::limit($report->main_challenges, 50) }}</td>
-                            <td>{{ Str::limit($report->plans_for_tomorrow, 50) }}</td>
-                            <td>
-                                <a href="{{ route('end_of_day_reports.show', $report->id) }}" class="btn btn-info"><i class="bi bi-info-circle"></i></a>
-                            </td>
-                        </tr>
+                    {
+                        title: 'View Report',
+                        start: '{{ $report->date_submitted->format("Y-m-d") }}',
+                        backgroundColor: 'green',
+                        url: '{{ route("end_of_day_reports.show", $report->id) }}'
+                    },
                     @endforeach
-                </tbody>
-            </table>
-        @endif
-    @endif
+                    @endif
+                    
+                    @if(!$missingDates->isEmpty())
+                    // Display missing submissions as red
+                    @foreach($missingDates as $missingDate)
+                    {
+                        title: 'Missing Submission',
+                        start: '{{ \Carbon\Carbon::parse($missingDate)->format("Y-m-d") }}',
+                        backgroundColor: 'red'
+                    },
+                    @endforeach
+                    @endif
+
+                    // Today's submission (yellow) if not yet submitted
+                    @if(!$hasSubmittedToday)
+                    {
+                        title: 'Submit Today',
+                        start: '{{ \Carbon\Carbon::now("Asia/Manila")->format("Y-m-d") }}',
+                        backgroundColor: 'yellow',
+                        url: '{{ route("end_of_day_reports.create") }}'
+                    }
+                    @endif
+                ],
+                validRange: {
+                    start: '{{ \Carbon\Carbon::now()->subYear(1)->startOfMonth()->format("Y-m-d") }}',
+                    end: '{{ \Carbon\Carbon::now()->addMonth(1)->startOfMonth()->format("Y-m-d") }}'  // Adds one day to the end of the month
+                },
+                dateClick: function(info) {
+                    var currentDate = '{{ \Carbon\Carbon::now("Asia/Manila")->format("Y-m-d") }}';
+                    if (info.dateStr > currentDate) {
+                        return false; // disable clicks on future dates
+                    }
+                }
+            });
+
+            calendar.render();
+        });
+    </script>
 @endsection

@@ -19,34 +19,34 @@
           <div class="card">
             <div class="card-body">
               <h5 class="card-title">Internship Listings</h5>
-              <p class="small">This table displays all the job listings with applicant counts. You can view the applicants for each job.</p>
-
-              <!-- Table with DataTables formatting -->
-              <table class="table datatable">
-                <thead>
-                    <tr>
-                        <th>Job Title</th>
-                        <th>Industry</th>
-                        <th>Date Posted</th>
-                        <th>Applicants</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach ($jobs as $job)
-                    <tr>
-                        <td>{{ $job->title }}</td>
-                        <td>{{ $job->industry }}</td>
-                        <td>{{ $job->created_at->format('M d, Y') }}</td>
-                        <td>{{ $job->applications_count }}</td>
-                        <td>
-                            <a href="{{ route('company.jobApplications', $job->id) }}" class="btn btn-info btn-sm"><i class="bi bi-info-circle"></i></a>
-                        </td>
-                    </tr>
-                    @endforeach
-                </tbody>
-              </table>
-              <!-- End of table -->
+              <div class="table-responsive">
+                <!-- Table with DataTables formatting -->
+                <table class="table datatable">
+                    <thead>
+                        <tr>
+                            <th>Job Title</th>
+                            <th>Industry</th>
+                            <th>Date</th>
+                            <th>Applicants</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($jobs as $job)
+                        <tr>
+                            <td>{{ $job->title }}</td>
+                            <td>{{ $job->industry }}</td>
+                            <td>{{ $job->created_at->format('M d, Y') }}</td>
+                            <td>{{ $job->applications_count }}</td>
+                            <td>
+                                <a href="{{ route('company.jobApplications', $job->id) }}" class="btn btn-info btn-sm"><i class="bi bi-info-circle"></i></a>
+                            </td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+                <!-- End of table -->
+                </div>
             </div>
           </div>
         </div>

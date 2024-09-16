@@ -20,39 +20,40 @@
           <div class="card">
             <div class="card-body">
               <h5 class="card-title">Jobs List</h5>
-              <!-- Table with stripped rows, formatted for DataTables -->
-              <table class="table datatable">
-                <thead>
-                  <tr>
-                    <th>Job Title</th>
-                    <th>Industry</th>
-                    <th>Available Positions</th>
-                    <th>Work Type</th>
-                    <th>Action</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  @foreach ($jobs as $job)
-                  <tr>
-                    <td>{{ $job->title }}</td>
-                    <td>{{ $job->industry }}</td>
-                    <td>{{ $job->positions_available }}</td>
-                    <td>{{ $job->work_type }}</td>
-                    <td>
-                      <a href="{{ route('jobs.show', $job) }}" class="btn btn-info btn-sm"><i class="bi bi-info-circle"></i></a>
-                      <a href="{{ route('jobs.edit', $job) }}" class="btn btn-warning btn-sm"><i class="bi bi-pencil"></i></a>
-                      <form action="{{ route('jobs.destroy', $job) }}" method="POST" style="display:inline;">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="btn btn-danger btn-sm"><i class="bi bi-trash"></i></button>
-                      </form>
-                    </td>
-                  </tr>
-                  @endforeach
-                </tbody>
-              </table>
-              <!-- End Table with stripped rows -->
-
+              <div class="table-responsive">
+                <!-- Table with stripped rows, formatted for DataTables -->
+                <table class="table datatable">
+                  <thead>
+                    <tr>
+                      <th>Job Title</th>
+                      <th>Industry</th>
+                      <th>Available</th>
+                      <th>Work Type</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @foreach ($jobs as $job)
+                    <tr>
+                      <td>{{ $job->title }}</td>
+                      <td>{{ $job->industry }}</td>
+                      <td>{{ $job->positions_available }}</td>
+                      <td>{{ $job->work_type }}</td>
+                      <td>
+                        <a href="{{ route('jobs.show', $job) }}" class="btn btn-info btn-sm"><i class="bi bi-info-circle"></i></a>
+                        <a href="{{ route('jobs.edit', $job) }}" class="btn btn-warning btn-sm"><i class="bi bi-pencil"></i></a>
+                        <form action="{{ route('jobs.destroy', $job) }}" method="POST" style="display:inline;">
+                          @csrf
+                          @method('DELETE')
+                          <button type="submit" class="btn btn-danger btn-sm"><i class="bi bi-trash"></i></button>
+                        </form>
+                      </td>
+                    </tr>
+                    @endforeach
+                  </tbody>
+                </table>
+                <!-- End Table with stripped rows -->
+              </div>
             </div>
           </div>
         </div>

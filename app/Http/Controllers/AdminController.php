@@ -40,10 +40,16 @@ class AdminController extends Controller
         }
     
         $pendingRegistrations = $pendingRegistrationsQuery->get();
+
+        // Fetch all pending registrations for progress bars, regardless of the filter
+        $allPendingRegistrations = User::with('profile', 'course')
+            ->where('role_id', 5)
+            ->where('status_id', 3)
+            ->get();
         
         $courses = \App\Models\Course::all();
     
-        return view('administrative.pending-registrations', compact('pendingRegistrations', 'courses'));
+        return view('administrative.pending-registrations', compact('pendingRegistrations', 'allPendingRegistrations', 'courses'));
     }
 
     // Method to show approved students
