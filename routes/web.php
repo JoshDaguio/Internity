@@ -102,7 +102,13 @@ Route::middleware(['auth', 'job_access'])->group(function () {
     // Job Applications Page
     Route::get('/company/job-applications/{job}', [CompanyController::class, 'jobApplications'])->name('company.jobApplications');
 
+    // Route for updating application status
+    Route::patch('/company/application/{application}/status/{status}', [CompanyController::class, 'changeStatus'])->name('application.updateStatus');
 
+    // Route for scheduling an interview
+    Route::post('/company/application/{application}/schedule-interview', [CompanyController::class, 'scheduleInterview'])->name('application.scheduleInterview');
+
+    Route::get('/company/interns', [CompanyController::class, 'interns'])->name('company.interns');
 });
 
 // Faculty CRUD. Only Super Admin/Admin
@@ -127,6 +133,7 @@ Route::middleware(['auth', 'administrative'])->group(function () {
     Route::patch('/company/{company}', [CompanyController::class, 'update'])->name('company.update');
     Route::delete('/company/{company}', [CompanyController::class, 'destroy'])->name('company.destroy');
     Route::patch('/company/{company}/reactivate', [CompanyController::class, 'reactivate'])->name('company.reactivate');
+
 });
 
 //Student Registration Process

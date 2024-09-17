@@ -96,7 +96,6 @@
                                         <div class="col-lg-9 col-md-8">
                                             @if ($profile->cv_file_path)
                                                 <button class="btn btn-primary" onclick="showPreview('{{ route('profile.previewCV', $profile->id) }}')"><i class="bi bi-folder"></i></button>
-                                                <a href="{{ Storage::url($profile->cv_file_path) }}" class="btn btn-success" download><i class="bi bi-download"></i></a>
                                             @else
                                                 N/A
                                             @endif

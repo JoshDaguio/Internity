@@ -7,7 +7,7 @@
         <nav>
             <ol class="breadcrumb">
                 <li class="breadcrumb-item">Home</li>
-                <li class="breadcrumb-item">Interns</li>
+                <li class="breadcrumb-item">Internships</li>
                 <li class="breadcrumb-item">Applications</li>
                 <li class="breadcrumb-item active">{{ $job->title }}</li>
             </ol>
@@ -104,6 +104,97 @@
         </div>
     </div>
 
+
+    <!-- Applicants for Interview Section -->
+    <div class="card mt-4">
+        <div class="card-body">
+            <h5 class="card-title">Applicants for Interview</h5>
+            <div class="table-responsive">
+                <table class="table datatable">
+                    <thead>
+                        <tr>
+                            <th>Applicant</th>
+                            <th>Interview Date</th>
+                            <th>Interview Type</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($interviewApplicants as $application)
+                        @if($application->interview)
+                        <tr>
+                            <td>{{ $application->student->profile->first_name }} {{ $application->student->profile->last_name }}</td>
+                            <td>{{ \Carbon\Carbon::parse($application->interview->interview_datetime)->format('F d, Y h:i A') }}</td>
+                            <td>{{ $application->interview->interview_type }}</td>
+                            <td>
+                                <button class="btn btn-info" data-bs-toggle="modal" data-bs-target="#viewApplicantModal{{ $application->id }}">
+                                    <i class="bi bi-info-circle"></i>
+                                </button>
+                            </td>
+                        </tr>
+
+                        <!-- Applicant Modal -->
+                        <div class="modal fade" id="viewApplicantModal{{ $application->id }}" tabindex="-1" aria-labelledby="viewApplicantModalLabel{{ $application->id }}" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="viewApplicantModalLabel{{ $application->id }}">Interview Details</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p><strong>Interview Date & Time:</strong> {{ \Carbon\Carbon::parse($application->interview->interview_datetime)->format('F d, Y h:i A') }} (Philippine Time)</p>
+                                        <p><strong>Interview Type:</strong> {{ $application->interview->interview_type }}</p>
+                                        @if($application->interview->interview_type == 'Online')
+                                        <p><strong>Interview Link:</strong> <a href="{{ $application->interview->interview_link }}" target="_blank">{{ $application->interview->interview_link }}</a></p>
+                                        @endif
+                                        <p><strong>Message:</strong> {{ $application->interview->message }}</p>
+                                        
+                                        <!-- Applicant Information -->
+                                        <hr>
+                                        <p><strong>Full Name:</strong> {{ $application->student->profile->first_name }} {{ $application->student->profile->last_name }}</p>
+                                        <p><strong>Endorsement Letter:</strong> 
+                                            <button class="btn btn-dark" onclick="showPreview('{{ route('application.preview', ['type' => 'endorsement_letter', 'id' => $application->id]) }}')"><i class="bi bi-folder"></i></button>
+                                        </p>
+                                        <p><strong>CV:</strong> 
+                                            <button class="btn btn-dark" onclick="showPreview('{{ route('application.preview', ['type' => 'cv', 'id' => $application->id]) }}')"><i class="bi bi-folder"></i></button>
+                                        </p>
+
+                                        <!-- Action Dropdown: Accept, Reject -->
+                                        <div class="dropdown">
+                                            <button class="btn btn-secondary dropdown-toggle" type="button" id="statusDropdown{{ $application->id }}" data-bs-toggle="dropdown" aria-expanded="false">
+                                                Update Status
+                                            </button>
+                                            <ul class="dropdown-menu" aria-labelledby="statusDropdown{{ $application->id }}">
+                                                <li>
+                                                    <form method="POST" action="{{ route('application.updateStatus', ['application' => $application->id, 'status' => 'Accepted']) }}">
+                                                        @csrf
+                                                        @method('PATCH')
+                                                        <button type="submit" class="dropdown-item">Accept</button>
+                                                    </form>
+                                                </li>
+                                                <li>
+                                                    <form method="POST" action="{{ route('application.updateStatus', ['application' => $application->id, 'status' => 'Rejected']) }}">
+                                                        @csrf
+                                                        @method('PATCH')
+                                                        <button type="submit" class="dropdown-item">Reject</button>
+                                                    </form>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        @endif
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+
+
     <!-- Recommended Applicants Section -->
 
     <div class="card">
@@ -127,7 +218,11 @@
                         <tr>
                             <td>{{ $application->student->profile->first_name }} {{ $application->student->profile->last_name }}</td>
                             <td>{{ $matchingSkills }}</td>
-                            <td>{{ $application->status->status }}</td>
+                            <td>
+                                <span class="badge {{ $application->status->status == 'To Review' ? 'bg-warning' : ($application->status->status == 'Accepted' ? 'bg-success' : ($application->status->status == 'For Interview' ? 'bg-info' : 'bg-danger')) }}">
+                                    {{ $application->status->status }}
+                                </span>
+                            </td>
                             <td>
                                 <button class="btn btn-info" data-bs-toggle="modal" data-bs-target="#viewApplicantModal{{ $application->id }}"><i class="bi bi-info-circle"></i></button>
                             </td>
@@ -147,22 +242,95 @@
                                         <p><strong>Email:</strong> {{ $application->student->email }}</p>
                                         <p><strong>About:</strong> {{ $application->student->profile->about ?? 'N/A' }}</p>
                                         <p><strong>Skills:</strong> {{ $application->student->profile->skillTags->pluck('name')->implode(', ') }}</p>
-                                        <p><strong>Links:</strong></p>
-                                        <ul>
-                                            @foreach ($application->student->profile->links as $link)
-                                            <li><a href="{{ $link->link_url }}" target="_blank">{{ $link->link_name }}</a></li>
-                                            @endforeach
-                                        </ul>
                                         <p><strong>Endorsement Letter:</strong> 
                                             <button class="btn btn-dark" onclick="showPreview('{{ route('application.preview', ['type' => 'endorsement_letter', 'id' => $application->id]) }}')"><i class="bi bi-folder"></i></button>
                                         </p>
                                         <p><strong>CV:</strong> 
                                             <button class="btn btn-dark" onclick="showPreview('{{ route('application.preview', ['type' => 'cv', 'id' => $application->id]) }}')"><i class="bi bi-folder"></i></button>
                                         </p>
+
+                                        <!-- Action Dropdown: For Interview, Accept, Reject -->
+                                        <div class="dropdown">
+                                            <button class="btn btn-secondary dropdown-toggle" type="button" id="statusDropdown{{ $application->id }}" data-bs-toggle="dropdown" aria-expanded="false">
+                                                Update Status
+                                            </button>
+                                            <ul class="dropdown-menu" aria-labelledby="statusDropdown{{ $application->id }}">
+                                                <li>
+                                                    <a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#interviewModal{{ $application->id }}">For Interview</a>
+                                                </li>
+                                                <li>
+                                                    <form method="POST" action="{{ route('application.updateStatus', ['application' => $application->id, 'status' => 'Accepted']) }}">
+                                                        @csrf
+                                                        @method('PATCH')
+                                                        <button type="submit" class="dropdown-item">Accept</button>
+                                                    </form>
+                                                </li>
+                                                <li>
+                                                    <form method="POST" action="{{ route('application.updateStatus', ['application' => $application->id, 'status' => 'Rejected']) }}">
+                                                        @csrf
+                                                        @method('PATCH')
+                                                        <button type="submit" class="dropdown-item">Reject</button>
+                                                    </form>
+                                                </li>
+                                            </ul>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
+
+                        <!-- Interview Modal -->
+                        <div class="modal fade" id="interviewModal{{ $application->id }}" tabindex="-1" aria-labelledby="interviewModalLabel{{ $application->id }}" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="interviewModalLabel{{ $application->id }}">Schedule Interview</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <form method="POST" action="{{ route('application.scheduleInterview', $application->id) }}">
+                                        @csrf
+                                        <div class="modal-body">
+                                            <div class="mb-3">
+                                                <label for="interviewType{{ $application->id }}" class="form-label">Interview Type</label>
+                                                <select name="interview_type" id="interviewType{{ $application->id }}" class="form-select" required>
+                                                    <option value="On-site">On-site</option>
+                                                    <option value="Online">Online</option>
+                                                </select>
+                                            </div>
+                                            <div class="mb-3" id="onlineLinkSection{{ $application->id }}" style="display: none;">
+                                                <label for="interviewLink{{ $application->id }}" class="form-label">Meeting Link/Code</label>
+                                                <input type="text" class="form-control" id="interviewLink{{ $application->id }}" name="interview_link" placeholder="Enter Zoom/Google Meet link or code">
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="interviewDate{{ $application->id }}" class="form-label">Interview Date</label>
+                                                <input type="datetime-local" class="form-control" id="interviewDate{{ $application->id }}" name="interview_datetime" required>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="message{{ $application->id }}" class="form-label">Message</label>
+                                                <textarea class="form-control" id="message{{ $application->id }}" name="message" rows="3" placeholder="Enter a short message for the applicant"></textarea>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="submit" class="btn btn-primary">Schedule Interview</button>
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                        <script>
+                            // Toggle link input based on interview type
+                            document.getElementById('interviewType{{ $application->id }}').addEventListener('change', function () {
+                                const type = this.value;
+                                const linkSection = document.getElementById('onlineLinkSection{{ $application->id }}');
+                                if (type === 'Online') {
+                                    linkSection.style.display = 'block';
+                                } else {
+                                    linkSection.style.display = 'none';
+                                }
+                            });
+                        </script>
                         @endforeach
                     </tbody>
                 </table>
@@ -170,7 +338,7 @@
         </div>
     </div>
 
-    <!-- Other Applicants Section -->
+
     <div class="card">
         <div class="card-body">
             <h5 class="card-title">Other Applicants</h5>
@@ -187,13 +355,18 @@
                         @foreach($otherApplicants as $application)
                         <tr>
                             <td>{{ $application->student->profile->first_name }} {{ $application->student->profile->last_name }}</td>
-                            <td>{{ $application->status->status }}</td>
+                            <td>
+                                <span class="badge {{ $application->status->status == 'To Review' ? 'bg-warning' : ($application->status->status == 'Accepted' ? 'bg-success' : ($application->status->status == 'For Interview' ? 'bg-info' : 'bg-danger')) }}">
+                                    {{ $application->status->status }}
+                                </span>
+                            </td>
                             <td>
                                 <button class="btn btn-info" data-bs-toggle="modal" data-bs-target="#viewApplicantModal{{ $application->id }}"><i class="bi bi-info-circle"></i></button>
                             </td>
                         </tr>
-                                    <!-- Applicant Modal -->
-                                    <div class="modal fade" id="viewApplicantModal{{ $application->id }}" tabindex="-1" aria-labelledby="viewApplicantModalLabel{{ $application->id }}" aria-hidden="true">
+
+                        <!-- Applicant Modal -->
+                        <div class="modal fade" id="viewApplicantModal{{ $application->id }}" tabindex="-1" aria-labelledby="viewApplicantModalLabel{{ $application->id }}" aria-hidden="true">
                             <div class="modal-dialog">
                                 <div class="modal-content">
                                     <div class="modal-header">
@@ -206,29 +379,103 @@
                                         <p><strong>Email:</strong> {{ $application->student->email }}</p>
                                         <p><strong>About:</strong> {{ $application->student->profile->about ?? 'N/A' }}</p>
                                         <p><strong>Skills:</strong> {{ $application->student->profile->skillTags->pluck('name')->implode(', ') }}</p>
-                                        <p><strong>Links:</strong></p>
-                                        <ul>
-                                            @foreach ($application->student->profile->links as $link)
-                                            <li><a href="{{ $link->link_url }}" target="_blank">{{ $link->link_name }}</a></li>
-                                            @endforeach
-                                        </ul>
                                         <p><strong>Endorsement Letter:</strong> 
-                                            <button class="btn btn-secondary" onclick="showPreview('{{ route('application.preview', ['type' => 'endorsement_letter', 'id' => $application->id]) }}')"><i class="bi bi-folder"></i></button>
+                                            <button class="btn btn-dark" onclick="showPreview('{{ route('application.preview', ['type' => 'endorsement_letter', 'id' => $application->id]) }}')"><i class="bi bi-folder"></i></button>
                                         </p>
                                         <p><strong>CV:</strong> 
-                                            <button class="btn btn-secondary" onclick="showPreview('{{ route('application.preview', ['type' => 'cv', 'id' => $application->id]) }}')"><i class="bi bi-folder"></i></button>
+                                            <button class="btn btn-dark" onclick="showPreview('{{ route('application.preview', ['type' => 'cv', 'id' => $application->id]) }}')"><i class="bi bi-folder"></i></button>
                                         </p>
+
+                                        <!-- Action Dropdown: For Interview, Accept, Reject -->
+                                        <div class="dropdown">
+                                            <button class="btn btn-secondary dropdown-toggle" type="button" id="statusDropdown{{ $application->id }}" data-bs-toggle="dropdown" aria-expanded="false">
+                                                Update Status
+                                            </button>
+                                            <ul class="dropdown-menu" aria-labelledby="statusDropdown{{ $application->id }}">
+                                                <li>
+                                                    <a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#interviewModal{{ $application->id }}">For Interview</a>
+                                                </li>
+                                                <li>
+                                                    <form method="POST" action="{{ route('application.updateStatus', ['application' => $application->id, 'status' => 'Accepted']) }}">
+                                                        @csrf
+                                                        @method('PATCH')
+                                                        <button type="submit" class="dropdown-item">Accept</button>
+                                                    </form>
+                                                </li>
+                                                <li>
+                                                    <form method="POST" action="{{ route('application.updateStatus', ['application' => $application->id, 'status' => 'Rejected']) }}">
+                                                        @csrf
+                                                        @method('PATCH')
+                                                        <button type="submit" class="dropdown-item">Reject</button>
+                                                    </form>
+                                                </li>
+                                            </ul>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        @endforeach
 
+                        <!-- Interview Modal -->
+                        <div class="modal fade" id="interviewModal{{ $application->id }}" tabindex="-1" aria-labelledby="interviewModalLabel{{ $application->id }}" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="interviewModalLabel{{ $application->id }}">Schedule Interview</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <form method="POST" action="{{ route('application.scheduleInterview', $application->id) }}">
+                                        @csrf
+                                        <div class="modal-body">
+                                            <div class="mb-3">
+                                                <label for="interviewType{{ $application->id }}" class="form-label">Interview Type</label>
+                                                <select name="interview_type" id="interviewType{{ $application->id }}" class="form-select" required>
+                                                    <option value="On-site">On-site</option>
+                                                    <option value="Online">Online</option>
+                                                </select>
+                                            </div>
+                                            <div class="mb-3" id="onlineLinkSection{{ $application->id }}" style="display: none;">
+                                                <label for="interviewLink{{ $application->id }}" class="form-label">Meeting Link/Code</label>
+                                                <input type="text" class="form-control" id="interviewLink{{ $application->id }}" name="interview_link" placeholder="Enter Zoom/Google Meet link or code">
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="interviewDate{{ $application->id }}" class="form-label">Interview Date</label>
+                                                <input type="datetime-local" class="form-control" id="interviewDate{{ $application->id }}" name="interview_datetime" required>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="message{{ $application->id }}" class="form-label">Message</label>
+                                                <textarea class="form-control" id="message{{ $application->id }}" name="message" rows="3" placeholder="Enter a short message for the applicant"></textarea>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="submit" class="btn btn-primary">Schedule Interview</button>
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                        <script>
+                            // Toggle link input based on interview type
+                            document.getElementById('interviewType{{ $application->id }}').addEventListener('change', function () {
+                                const type = this.value;
+                                const linkSection = document.getElementById('onlineLinkSection{{ $application->id }}');
+                                if (type === 'Online') {
+                                    linkSection.style.display = 'block';
+                                } else {
+                                    linkSection.style.display = 'none';
+                                }
+                            });
+                        </script>
+                        @endforeach
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
+
+
 
 <!-- Modal for file preview -->
 <div class="modal fade" id="filePreviewModal" tabindex="-1" aria-labelledby="filePreviewLabel" aria-hidden="true">

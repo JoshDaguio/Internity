@@ -3,9 +3,14 @@
 namespace App\Http\Controllers;
 use App\Models\Job;
 use App\Models\Application;
+use App\Models\ApplicationStatus;
+use App\Models\StudentAccepted;
+use App\Models\StudentRejected;
+use App\Models\Interview;
 use App\Models\User;
 use App\Models\Profile;
 use App\Mail\CompanyApprovalMail;
+use App\Mail\InterviewScheduled; 
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
@@ -184,7 +189,7 @@ class CompanyController extends Controller
         $applicantsData = $jobs->map(function ($job) {
             return [
                 'job_title' => $job->title,
-                'applicants_count' => $job->applications_count,
+                'applicants_count' => $job->nonAcceptedApplicationsCount(), // Use the new method here
             ];
         });
 
@@ -194,6 +199,12 @@ class CompanyController extends Controller
     public function jobApplications($jobId)
     {
         $job = Job::with(['applications.student.profile.skillTags', 'applications.status'])->findOrFail($jobId);
+
+        // Fetch status ID for 'For Interview'
+        $interviewStatusId = ApplicationStatus::where('status', 'For Interview')->first()->id;
+
+        // Fetch applicants scheduled for interview
+        $interviewApplicants = $job->applications()->where('status_id', $interviewStatusId)->get();
     
         // Separate recommended and other applicants based on matching skills
         $recommendedApplicants = [];
@@ -205,16 +216,102 @@ class CompanyController extends Controller
     
             $matchingSkills = array_intersect($studentSkills, $jobSkills);
     
-            if (!empty($matchingSkills)) {
+            if (!empty($matchingSkills) && $application->status_id == 1) { // Status 1 is "To Review"
                 $recommendedApplicants[] = $application;
-            } else {
+            } elseif ($application->status_id == 1) {
                 $otherApplicants[] = $application;
             }
         }
     
-        return view('company.job_applications', compact('job', 'recommendedApplicants', 'otherApplicants'));
+        return view('company.job_applications', compact('job', 'interviewApplicants', 'recommendedApplicants', 'otherApplicants'));
     }
     
+    public function changeStatus(Request $request, $applicationId, $status)
+    {
+        $application = Application::findOrFail($applicationId);
+        $statusId = ApplicationStatus::where('status', $status)->first()->id;
+        
+        $application->update(['status_id' => $statusId]);
+
+        $job = $application->job; // Get the job associated with the application
+
+        // If the status is "Accepted"
+        if ($status === 'Accepted') {
+            // Decrease the number of available positions for the job
+            $job = $application->job;
+            if ($job->positions_available > 0) {
+                $job->decrement('positions_available', 1); // Decrease by 1
+            }
+
+            // Send an email notification to the accepted intern
+            \Mail::to($application->student->email)->send(new \App\Mail\StudentAccepted($application));
+        } elseif ($status === 'Rejected') {
+            // Send an email notification to the rejected intern
+            \Mail::to($application->student->email)->send(new \App\Mail\StudentRejected($application));
+        }
+
+        // Update the applicant count and notify
+        $job->loadCount(['applications' => function($query) {
+            $acceptedStatusId = ApplicationStatus::where('status', 'Accepted')->first()->id;
+            $rejectedStatusId = ApplicationStatus::where('status', 'Rejected')->first()->id;
+
+            $query->whereNotIn('status_id', [$acceptedStatusId, $rejectedStatusId]);
+        }]);
+
+        return redirect()->back()->with('success', 'Status updated successfully.');
+    }
+
+    public function scheduleInterview(Request $request, $applicationId)
+    {
+        $request->validate([
+            'interview_type' => 'required',
+            'interview_datetime' => 'required|date',
+            'interview_link' => 'nullable|string',
+            'message' => 'nullable|string',
+        ]);
+
+        $application = Application::findOrFail($applicationId);
+
+        // Store interview details
+        $interview = Interview::create([
+            'application_id' => $application->id,
+            'interview_type' => $request->interview_type,
+            'interview_link' => $request->interview_link,
+            'interview_datetime' => $request->interview_datetime,
+            'message' => $request->message,
+        ]);
+
+        // Update status to "For Interview"
+        $statusId = ApplicationStatus::where('status', 'For Interview')->first()->id;
+        $application->update(['status_id' => $statusId]);
+
+        // Send email notification to the student about the interview details
+        Mail::to($application->student->email)->send(new \App\Mail\InterviewScheduled($application, $interview));
+
+        return redirect()->back()->with('success', 'Interview scheduled successfully.');
+    }
+
+    public function interns()
+    {
+        // Fetch accepted interns
+        $acceptedStatusId = ApplicationStatus::where('status', 'Accepted')->first()->id;
+        
+        // Fetch applications with accepted status, and include student profiles and job details
+        $acceptedInterns = Application::with(['student.profile', 'job'])
+            ->where('status_id', $acceptedStatusId)
+            ->get();
+
+        // For each intern, we will check if the CV exists in the application or profile
+        foreach ($acceptedInterns as $intern) {
+            // If CV exists in the application
+            if (!$intern->cv_path && $intern->student->profile->cv_path) {
+                // If CV exists in the profile, use the profile CV
+                $intern->cv_path = $intern->student->profile->cv_path;
+            }
+        }
+
+        return view('company.interns', compact('acceptedInterns'));
+    }
 
 
 }

@@ -24,6 +24,7 @@ return new class extends Migration
             ['id' => 1, 'status' => 'To Review'],
             ['id' => 2, 'status' => 'Accepted'],
             ['id' => 3, 'status' => 'Rejected'],
+            ['id' => 4, 'status' => 'For Interview'],
         ]);
 
         // Create applications table

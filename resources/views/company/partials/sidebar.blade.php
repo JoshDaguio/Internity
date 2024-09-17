@@ -31,10 +31,10 @@
     </li><!-- End Job Listing Nav -->
 
     <li class="nav-item">
-      <a class="nav-link {{ request()->routeIs('company.internApplications', 'company.jobApplications') ? '' : 'collapsed' }}" data-bs-target="#interns-nav" data-bs-toggle="collapse" href="#">
-        <i class="bi bi-people"></i><span>Interns</span><i class="bi bi-chevron-down ms-auto"></i>
+      <a class="nav-link {{ request()->routeIs('company.internApplications', 'company.jobApplications', 'company.interns') ? '' : 'collapsed' }}" data-bs-target="#interns-nav" data-bs-toggle="collapse" href="#">
+        <i class="bi bi-people"></i><span>Internships</span><i class="bi bi-chevron-down ms-auto"></i>
       </a>
-      <ul id="interns-nav" class="nav-content {{ request()->routeIs('company.internApplications', 'company.jobApplications') ? '' : 'collapse' }}" data-bs-parent="#sidebar-nav">
+      <ul id="interns-nav" class="nav-content {{ request()->routeIs('company.internApplications', 'company.jobApplications', 'company.interns') ? '' : 'collapse' }}" data-bs-parent="#sidebar-nav">
         <!-- Applications Link -->
         <li>
           <a href="{{ route('company.internApplications') }}" class="{{ Request::routeIs('company.internApplications', 'company.jobApplications') ? 'active' : '' }}">
@@ -43,8 +43,8 @@
         </li>
         <!-- Interns Placeholder -->
         <li>
-          <a href="#" class="{{ Request::routeIs('interns.someRoute') ? 'active' : '' }}">
-            <i class="bi bi-circle"></i><span>Interns</span> <!-- Placeholder for future content -->
+            <a href="{{ route('company.interns') }}" class="{{ Request::routeIs('company.interns') ? 'active' : '' }}">
+            <i class="bi bi-circle"></i><span>Interns</span> 
           </a>
         </li>
       </ul>

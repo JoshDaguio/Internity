@@ -62,7 +62,6 @@ class StudentController extends Controller
 
         // Fetch submitted applications
         $submittedApplications = Application::where('student_id', $student->id)
-            ->whereNotNull('endorsement_letter_path')  // Only applications where endorsement letter is submitted
             ->with('job', 'status')
             ->get();
 

@@ -46,7 +46,6 @@
 
   <!-- FullCalendar JS -->
   <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.2/main.min.js"></script>
-  <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 
 
 

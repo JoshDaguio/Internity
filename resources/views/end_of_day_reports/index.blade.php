@@ -109,7 +109,7 @@
                     {
                         title: 'Missing Submission',
                         start: '{{ \Carbon\Carbon::parse($missingDate)->format("Y-m-d") }}',
-                        backgroundColor: 'red'
+                        backgroundColor: '#B30600'
                     },
                     @endforeach
                     @endif
@@ -119,7 +119,7 @@
                     {
                         title: 'Submit Today',
                         start: '{{ \Carbon\Carbon::now("Asia/Manila")->format("Y-m-d") }}',
-                        backgroundColor: 'yellow',
+                        backgroundColor: '#FFD700',
                         url: '{{ route("end_of_day_reports.create") }}'
                     }
                     @endif

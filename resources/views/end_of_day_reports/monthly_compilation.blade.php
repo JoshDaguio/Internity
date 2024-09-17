@@ -34,7 +34,7 @@
         </table>
         <div class="mt-3">
             <a href="{{ route('end_of_day_reports.download.monthly') }}" class="btn btn-primary"><i class="bi bi-download"></i> PDF</a>
+    @endif
             <a href="{{ route('end_of_day_reports.index') }}" class="btn btn-secondary">Cancel</a>
         </div>
-    @endif
 @endsection

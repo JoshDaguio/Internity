@@ -35,4 +35,16 @@ class Job extends Model
     {
         return $this->hasMany(Application::class, 'job_id');
     }
+
+    public function nonAcceptedApplicationsCount()
+    {
+        $acceptedStatusId = ApplicationStatus::where('status', 'Accepted')->first()->id;
+        $rejectedStatusId = ApplicationStatus::where('status', 'Rejected')->first()->id;
+
+        
+        return $this->applications()
+                    ->whereNotIn('status_id', [$acceptedStatusId, $rejectedStatusId])
+                    ->count();
+    }
+
 }

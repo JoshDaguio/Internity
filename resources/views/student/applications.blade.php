@@ -80,8 +80,6 @@
                                         @csrf
                                         <button type="submit" class="btn btn-danger">Remove Priority</button>
                                     </form>
-                                @else
-                                    <span class="text-muted"></span>
                                 @endif
                             </td>
                         </tr>
@@ -119,7 +117,7 @@
                                         </ul>
 
                                         <!-- Show submit button only for 1st priority or if 1st is rejected, then 2nd -->
-                                        @if(($priority->priority == 1) || ($priority->priority == 2 && $canApplyToSecondPriority))
+                                        @if(!$submitted && ($priority->priority == 1 || ($priority->priority == 2 && $canApplyToSecondPriority)))
                                         <form method="POST" action="{{ route('internship.submit', $priority->job->id) }}" enctype="multipart/form-data">
                                             @csrf
                                             <div class="mb-3">
@@ -134,6 +132,8 @@
                                             <p class="text-danger">Please upload your CV in your profile before submitting.</p>
                                             @endif
                                         </form>
+                                        @else
+                                        <p class="text-success">Application Submitted</p>
                                         @endif
                                     </div>
                                 </div>
@@ -166,7 +166,11 @@
                             <td>{{ $application->job->title }}</td>
                             <td>{{ $application->job->company->name }}</td>
                             <td>
-                                <span class="badge {{ $application->status->status == 'To Review' ? 'bg-warning' : ($application->status->status == 'Accepted' ? 'bg-success' : 'bg-danger') }}">
+                                <span class="badge 
+                                    {{ $application->status->status == 'To Review' ? 'bg-warning' : 
+                                    ($application->status->status == 'Accepted' ? 'bg-success' : 
+                                    ($application->status->status == 'For Interview' ? 'bg-primary' : 
+                                    'bg-danger')) }}">
                                     {{ $application->status->status }}
                                 </span>
                             </td>
@@ -231,25 +235,28 @@
         </div>
     </div>
 
-<!-- Modal for file preview -->
-<div class="modal fade" id="filePreviewModal" tabindex="-1" aria-labelledby="filePreviewLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="filePreviewLabel">File Preview</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <iframe id="filePreviewIframe" src="" style="width: 100%; height: 500px;" frameborder="0"></iframe>
+    <!-- Modal for file preview -->
+    <div class="modal fade" id="filePreviewModal" tabindex="-1" aria-labelledby="filePreviewLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="filePreviewLabel">File Preview</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <iframe id="filePreviewIframe" src="" style="width: 100%; height: 500px;" frameborder="0"></iframe>
+                </div>
             </div>
         </div>
     </div>
 
-<script>
-    function showPreview(url) {
-        document.getElementById('filePreviewIframe').src = url;
-        var filePreviewModal = new bootstrap.Modal(document.getElementById('filePreviewModal'), {});
-        filePreviewModal.show();
-    }
-</script>
+    <script>
+        function showPreview(url) {
+            document.getElementById('filePreviewIframe').src = url;
+            var filePreviewModal = new bootstrap.Modal(document.getElementById('filePreviewModal'), {});
+            filePreviewModal.show();
+        }
+    </script>
+
 @endsection
+
