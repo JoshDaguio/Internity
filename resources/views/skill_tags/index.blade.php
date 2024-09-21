@@ -12,6 +12,14 @@
         </nav>
     </div><!-- End Page Title -->
 
+    @if(session('success'))
+        <div class="alert alert-success">{{ session('success') }}</div>
+    @endif
+
+    @if(session('error'))
+        <div class="alert alert-danger">{{ session('error') }}</div>
+    @endif
+
     <!-- Button to trigger the modal for adding a new skill tag -->
     <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#createSkillTagModal">
         Add Skill Tag

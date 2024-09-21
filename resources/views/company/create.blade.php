@@ -1,47 +1,70 @@
 @extends('layouts.app')
 
 @section('body')
-<div class="container">
+<div class="pagetitle">
     <h1>Create Company Account</h1>
+    <nav>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">Home</li>
+            <li class="breadcrumb-item">Company</li>
+            <li class="breadcrumb-item active">Create</li>
+        </ol>
+    </nav>
+</div>
 
-    @if ($errors->any())
-        <div class="alert alert-danger">
-            <ul>
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-    @endif
+@if(session('success'))
+    <div class="alert alert-success">{{ session('success') }}</div>
+@endif
 
-    <form action="{{ route('company.store') }}" method="POST">
-        @csrf
-        <div class="mb-3">
-            <label for="name" class="form-label">Company Name</label>
-            <input type="text" name="name" class="form-control" id="name" value="{{ old('name') }}" required>
-        </div>
+@if(session('error'))
+    <div class="alert alert-danger">{{ session('error') }}</div>
+@endif
 
-        <div class="mb-3">
-            <label for="email" class="form-label">Email</label>
-            <input type="email" name="email" class="form-control" id="email" value="{{ old('email') }}" required>
-        </div>
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">Create Company Account Form</h5>
 
-        <div class="mb-3">
-            <label class="form-label">Contact Person</label>
-            <div class="row">
-                <div class="col-md-6">
-                    <input type="text" name="first_name" class="form-control" id="first_name" value="{{ old('first_name') }}" placeholder="First Name" required>
-                </div>
-                <div class="col-md-6">
-                    <input type="text" name="last_name" class="form-control" id="last_name" value="{{ old('last_name') }}" placeholder="Last Name" required>
+        <!-- Floating Labels Form -->
+        <form action="{{ route('company.store') }}" method="POST" class="row g-3">
+            @csrf
+
+            <!-- Company Name -->
+            <div class="col-md-12">
+                <div class="form-floating">
+                    <input type="text" name="name" class="form-control" id="floatingCompanyName" value="{{ old('name') }}" placeholder="Company Name" required>
+                    <label for="floatingCompanyName">Company Name</label>
                 </div>
             </div>
-        </div>
 
-        <div class="mt-3">
-            <button type="submit" class="btn btn-primary">Create</button>
-            <a href="{{ route('company.index') }}" class="btn btn-secondary">Cancel</a>
-        </div>
-    </form>
+            <!-- Email -->
+            <div class="col-md-12">
+                <div class="form-floating">
+                    <input type="email" name="email" class="form-control" id="floatingEmail" value="{{ old('email') }}" placeholder="Email" required>
+                    <label for="floatingEmail">Email</label>
+                </div>
+            </div>
+
+            <!-- Contact Person First Name -->
+            <div class="col-md-6">
+                <div class="form-floating">
+                    <input type="text" name="first_name" class="form-control" id="floatingFirstName" value="{{ old('first_name') }}" placeholder="First Name" required>
+                    <label for="floatingFirstName">Contact Person First Name</label>
+                </div>
+            </div>
+
+            <!-- Contact Person Last Name -->
+            <div class="col-md-6">
+                <div class="form-floating">
+                    <input type="text" name="last_name" class="form-control" id="floatingLastName" value="{{ old('last_name') }}" placeholder="Last Name" required>
+                    <label for="floatingLastName">Contact Person Last Name</label>
+                </div>
+            </div>
+            <!-- Submit and Cancel Buttons -->
+            <div class="text-center">
+                <button type="submit" class="btn btn-primary">Create</button>
+                <a href="{{ route('company.index') }}" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
 </div>
 @endsection

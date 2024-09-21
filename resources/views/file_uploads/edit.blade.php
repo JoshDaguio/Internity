@@ -3,11 +3,11 @@
 @section('body')
 
 <div class="pagetitle">
-    <h1>Upload a New File</h1>
+    <h1>Edit File Upload</h1>
     <nav>
         <ol class="breadcrumb">
             <li class="breadcrumb-item">Home</li>
-            <li class="breadcrumb-item active">Upload File</li>
+            <li class="breadcrumb-item active">Edit File</li>
         </ol>
     </nav>
 </div>
@@ -24,27 +24,28 @@
 
 <div class="card">
     <div class="card-body">
-        <h5 class="card-title">File Upload Form</h5>
+        <h5 class="card-title">Update File Information</h5>
 
-        <form action="{{ route('file_uploads.store') }}" method="POST" enctype="multipart/form-data" class="row g-3">
+        <form action="{{ route('file_uploads.update', $file->id) }}" method="POST" enctype="multipart/form-data" class="row g-3">
             @csrf
-
-            <!-- File Upload -->
-            <div class="col-md-12">
-                <input type="file" name="file" id="file" class="form-control" placeholder="Choose File" required>
-            </div>
+            @method('PATCH')
 
             <!-- Description -->
             <div class="col-md-12">
                 <div class="form-floating">
-                    <textarea name="description" id="description" class="form-control" placeholder="Description" style="height: 150px;" required></textarea>
+                    <input type="text" class="form-control" name="description" value="{{ $file->description }}" placeholder="Description" required>
                     <label for="description">Description</label>
                 </div>
             </div>
 
+            <!-- File Upload (Optional) -->
+            <div class="col-md-12">
+                <input type="file" class="form-control" name="file" placeholder="Upload New File (optional)">
+            </div>
+
             <!-- Submit and Cancel Buttons -->
             <div class="text-center">
-                <button type="submit" class="btn btn-primary">Upload</button>
+                <button type="submit" class="btn btn-primary">Update</button>
                 <a href="{{ route('file_uploads.index') }}" class="btn btn-secondary">Cancel</a>
             </div>
         </form>

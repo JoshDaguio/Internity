@@ -49,13 +49,16 @@ class EndOfDayReportController extends Controller
         // Calculate missing dates
         $missingDates = $this->getMissingSubmissionDates($user->id, $selectedMonth, $currentDateTime);
         
+        // Check if today is a weekday
+        $isWeekday = !$currentDateTime->isWeekend();
+        
         // Check if a report has already been submitted today
         $hasSubmittedToday = EndOfDayReport::where('student_id', $user->id)
             ->whereDate('date_submitted', $currentDateTime->format('Y-m-d'))
             ->exists();
 
     
-        return view('end_of_day_reports.index', compact('reports', 'missingDates', 'selectedMonth', 'availableMonths', 'hasSubmittedToday'));
+        return view('end_of_day_reports.index', compact('reports', 'missingDates', 'selectedMonth', 'availableMonths', 'hasSubmittedToday', 'isWeekday'));
     }
 
     private function getMissingSubmissionDates($studentId, $selectedMonth, $currentDateTime)

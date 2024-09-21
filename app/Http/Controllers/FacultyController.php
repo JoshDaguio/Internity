@@ -108,10 +108,10 @@ class FacultyController extends Controller
             'last_name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email,' . $faculty->id],
             'id_number' => ['required', 'string', 'max:255', 'unique:profiles,id_number,' . $faculty->profile_id],
-            'password' => ['nullable', 'string', 'min:8'], 
+            'password' => ['nullable', 'string', 'min:8'],
             'course_id' => ['required', 'exists:courses,id'],
         ]);
-
+    
         $updatedFields = [];
         $newPassword = null;
     
@@ -121,37 +121,41 @@ class FacultyController extends Controller
             'last_name' => $request->last_name,
             'id_number' => $request->id_number,
         ]);
-        
+    
+        // Update course if changed
+        if ($request->course_id != $faculty->course_id) {
+            $faculty->course_id = $request->course_id;
+        }
+    
         // Check if email is updated
         if ($request->email != $faculty->email) {
             $faculty->email = $request->email;
             $updatedFields[] = 'email';
-
+    
             // Auto-generate a new password if only the email is updated
             $newPassword = 'aufCCSInternshipFaculty' . Str::random(5);
             $faculty->password = Hash::make($newPassword);
             $updatedFields[] = 'password';
         }
-
+    
         // Check if password is updated
         if ($request->filled('password')) {
             $newPassword = $request->password; // Use the password from the request
-            $faculty->password = Hash::make($request->password);
+            $faculty->password = Hash::make($newPassword);
             $updatedFields[] = 'password';
         }
-
+    
         $faculty->save();
-
-        // Send email if either email or password is updated
+    
+        // Send email if either email or password or both are updated
         if (!empty($updatedFields)) {
             \Mail::to($faculty->email)->send(new \App\Mail\FacultyUpdateNotificationMail(
                 $faculty->name,
                 $faculty->email,
                 $updatedFields,
-                $newPassword
+                $newPassword // Pass the new password if updated
             ));
         }
-
     
         return redirect()->route('faculty.index')->with('success', 'Faculty account updated successfully.');
     }

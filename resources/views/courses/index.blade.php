@@ -12,6 +12,14 @@
     </nav>
 </div><!-- End Page Title -->
 
+@if(session('success'))
+    <div class="alert alert-success">{{ session('success') }}</div>
+@endif
+
+@if(session('error'))
+    <div class="alert alert-danger">{{ session('error') }}</div>
+@endif
+
 <a href="{{ route('courses.create') }}" class="btn btn-primary mb-3">Add Course</a>
 
 <div class="row">
@@ -20,36 +28,33 @@
         <div class="card">
             <div class="card-body">
                 <h5 class="card-title">Course List</h5>
-                <table class="table datatable">
-                    <thead>
-                        <tr>
-                            <th scope="col">Course</th>
-                            <th scope="col">Code</th>
-                            <th scope="col">Faculty #</th>
-                            <th scope="col">Student #</th>
-                            <th scope="col">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($courses as $course)
-                        <tr>
-                            <td>{{ $course->course_name }}</td>
-                            <td>{{ $course->course_code }}</td>
-                            <td>{{ $course->faculty_count }}</td>
-                            <td>{{ $course->students_count }}</td>
-                            <td>
-                                <a href="{{ route('courses.show', $course) }}" class="btn btn-info btn-sm"><i class="bi bi-info-circle"></i></a>
-                                <a href="{{ route('courses.edit', $course) }}" class="btn btn-warning btn-sm"><i class="bi bi-pencil"></i></a>
-                                <!-- <form action="{{ route('courses.destroy', $course) }}" method="POST" style="display:inline;">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-danger btn-sm"><i class="bi bi-trash"></i></button>
-                                </form> -->
-                            </td>
-                        </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+                <div class="table-responsive">
+                    <table class="table datatable">
+                        <thead>
+                            <tr>
+                                <th scope="col">Course</th>
+                                <th scope="col">Code</th>
+                                <th scope="col">Faculty</th>
+                                <th scope="col">Students</th>
+                                <th scope="col">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($courses as $course)
+                            <tr>
+                                <td>{{ $course->course_name }}</td>
+                                <td>{{ $course->course_code }}</td>
+                                <td>{{ $course->faculty_count }}</td>
+                                <td>{{ $course->students_count }}</td>
+                                <td>
+                                    <a href="{{ route('courses.show', $course) }}" class="btn btn-info btn-sm"><i class="bi bi-info-circle"></i></a>
+                                    <a href="{{ route('courses.edit', $course) }}" class="btn btn-warning btn-sm"><i class="bi bi-pencil"></i></a>
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>

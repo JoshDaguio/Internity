@@ -1,57 +1,93 @@
 @extends('layouts.app')
 
 @section('body')
+<div class="pagetitle">
     <h1>Edit Faculty Account</h1>
-    <form action="{{ route('faculty.update', $faculty) }}" method="POST">
-        @csrf
-        @method('PATCH')
-        
-        <!-- First Name -->
-        <div class="mb-3">
-            <label for="first_name" class="form-label">First Name</label>
-            <input type="text" class="form-control" id="first_name" name="first_name" value="{{ $faculty->profile->first_name ?? '' }}" required>
-        </div>
-        
-        <!-- Last Name -->
-        <div class="mb-3">
-            <label for="last_name" class="form-label">Last Name</label>
-            <input type="text" class="form-control" id="last_name" name="last_name" value="{{ $faculty->profile->last_name ?? '' }}" required>
-        </div>
-        
-        <!-- ID Number -->
-        <div class="mb-3">
-            <label for="id_number" class="form-label">ID Number</label>
-            <input type="text" class="form-control" id="id_number" name="id_number" value="{{ $faculty->profile->id_number ?? '' }}" required>
-        </div>
-        
-        <!-- Email -->
-        <div class="mb-3">
-            <label for="email" class="form-label">Email</label>
-            <input type="email" class="form-control" id="email" name="email" value="{{ $faculty->email }}" required>
-        </div>
-        
-        <!-- Password -->
-        <div class="mb-3">
-            <label for="password" class="form-label">Password (leave blank to keep current password)</label>
-            <input type="password" class="form-control" id="password" name="password">
-        </div>
+    <nav>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">Home</li>
+            <li class="breadcrumb-item">Faculty</li>
+            <li class="breadcrumb-item active">Edit</li>
+        </ol>
+    </nav>
+</div>
 
-        <!-- Course Selection -->
-        <div class="mb-3">
-            <label for="course_id" class="form-label">Course</label>
-            <select name="course_id" id="course_id" class="form-control">
-                @foreach($courses as $course)
-                    <option value="{{ $course->id }}" {{ $course->id == $faculty->course_id ? 'selected' : '' }}>
-                        {{ $course->course_name }}
-                    </option>
-                @endforeach
-            </select>
-        </div>
-        
-        <!-- Submit and Cancel Buttons -->
-        <div class="d-flex justify-content-end">
-            <button type="submit" class="btn btn-primary me-2">Update</button>
-            <a href="{{ route('faculty.index') }}" class="btn btn-secondary">Cancel</a>
-        </div>
-    </form>
+@if(session('success'))
+    <div class="alert alert-success">{{ session('success') }}</div>
+@endif
+
+@if(session('error'))
+    <div class="alert alert-danger">{{ session('error') }}</div>
+@endif
+
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">Edit Faculty Account Form</h5>
+
+        <form action="{{ route('faculty.update', $faculty) }}" method="POST" class="row g-3">
+            @csrf
+            @method('PATCH')
+
+            <!-- First Name -->
+            <div class="col-md-12">
+                <div class="form-floating">
+                    <input type="text" class="form-control" id="floatingFirstName" name="first_name" value="{{ $faculty->profile->first_name ?? '' }}" placeholder="First Name" required>
+                    <label for="floatingFirstName">First Name</label>
+                </div>
+            </div>
+
+            <!-- Last Name -->
+            <div class="col-md-12">
+                <div class="form-floating">
+                    <input type="text" class="form-control" id="floatingLastName" name="last_name" value="{{ $faculty->profile->last_name ?? '' }}" placeholder="Last Name" required>
+                    <label for="floatingLastName">Last Name</label>
+                </div>
+            </div>
+
+            <!-- ID Number -->
+            <div class="col-md-12">
+                <div class="form-floating">
+                    <input type="text" class="form-control" id="floatingIDNumber" name="id_number" value="{{ $faculty->profile->id_number ?? '' }}" placeholder="ID Number" required>
+                    <label for="floatingIDNumber">ID Number</label>
+                </div>
+            </div>
+
+            <!-- Email -->
+            <div class="col-md-12">
+                <div class="form-floating">
+                    <input type="email" class="form-control" id="floatingEmail" name="email" value="{{ $faculty->email }}" required>
+                    <label for="floatingEmail">Email</label>
+                </div>
+            </div>
+
+            <!-- Password -->
+            <div class="col-md-12">
+                <div class="form-floating">
+                    <input type="password" class="form-control" id="floatingPassword" name="password" placeholder="Password">
+                    <label for="floatingPassword">Password (Leave blank to keep current password)</label>
+                </div>
+            </div>
+
+            <!-- Course Selection -->
+            <div class="col-md-12">
+                <div class="form-floating">
+                    <select name="course_id" id="floatingCourse" class="form-select" required>
+                        @foreach($courses as $course)
+                            <option value="{{ $course->id }}" {{ $course->id == $faculty->course_id ? 'selected' : '' }}>
+                                {{ $course->course_name }}
+                            </option>
+                        @endforeach
+                    </select>
+                    <label for="floatingCourse">Course</label>
+                </div>
+            </div>
+
+            <!-- Submit and Cancel Buttons -->
+            <div class="text-center">
+                <button type="submit" class="btn btn-primary">Update</button>
+                <a href="{{ route('faculty.index') }}" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
 @endsection

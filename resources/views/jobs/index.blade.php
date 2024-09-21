@@ -11,6 +11,15 @@
             </ol>
         </nav>
     </div><!-- End Page Title -->
+
+    <!-- Success and Error Messages -->
+    @if(session('success'))
+        <div class="alert alert-success">{{ session('success') }}</div>
+    @endif
+
+    @if(session('error'))
+        <div class="alert alert-danger">{{ session('error') }}</div>
+    @endif
     
     <a href="{{ route('jobs.create') }}" class="btn btn-primary mb-3">Add Job</a>
 
@@ -59,12 +68,12 @@
         </div>
 
         <div class="col-lg-4">
-        <div class="card">
+          <div class="card">
             <div class="card-body">
-            <h5 class="card-title">Active Internships</h5>
+              <h5 class="card-title">Active Internships</h5>
 
-            <!-- Job list container with fixed height and overflow -->
-            <div class="job-list" style="min-height: 186px; max-height: 200px; overflow-y: auto;">
+              <!-- Job list container with fixed height and overflow -->
+              <div class="job-list" style="min-height: 186px; max-height: 200px; overflow-y: auto;">
                 @if($jobs->isEmpty())
                     <p>No active internships available at the moment.</p>
                 @else
@@ -80,11 +89,10 @@
                         </div>
                     @endforeach
                 @endif
+              </div>
             </div>
-            </div>
+          </div>
         </div>
-        </div>
-
     </div>
 </div>
 @endsection

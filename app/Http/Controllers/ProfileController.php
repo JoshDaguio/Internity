@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Profile;
 use App\Models\Link;
 use App\Models\SkillTag;
+use App\Models\Application;
 use App\Http\Requests\ProfileUpdateRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -27,8 +28,19 @@ class ProfileController extends Controller
         $links = $profile ? $profile->links : [];
         $skillTags = SkillTag::all();
 
+        // Fetch the student's accepted internship application if any
+        $acceptedApplication = null;
+        if ($user->role_id == 5) { // Check if the user is a student
+            $acceptedApplication = Application::where('student_id', $user->id)
+                ->whereHas('status', function($query) {
+                    $query->where('status', 'Accepted');
+                })
+                ->with('job.company')
+                ->first();
+        }
 
-        return view('profile.profile', compact('user', 'profile', 'links', 'skillTags'));
+
+        return view('profile.profile', compact('user', 'profile', 'links', 'skillTags', 'acceptedApplication'));
     }
     
     /**

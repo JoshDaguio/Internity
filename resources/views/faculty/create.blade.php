@@ -1,61 +1,84 @@
 @extends('layouts.app')
 
 @section('body')
-<div class="container">
+<div class="pagetitle">
     <h1>Add New Faculty</h1>
+    <nav>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">Home</li>
+            <li class="breadcrumb-item">Faculty</li>
+            <li class="breadcrumb-item active">Create</li>
+        </ol>
+    </nav>
+</div>
 
-    <!-- Display Validation Errors -->
-    @if ($errors->any())
-        <div class="alert alert-danger">
-            <ul>
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-    @endif
+@if ($errors->any())
+    <div class="alert alert-danger">
+        <ul>
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
 
-    <!-- Faculty Creation Form -->
-    <form action="{{ route('faculty.store') }}" method="POST">
-        @csrf
-        <!-- First Name -->
-        <div class="mb-3">
-            <label for="first_name" class="form-label">First Name</label>
-            <input type="text" name="first_name" class="form-control" id="first_name" value="{{ old('first_name') }}" required>
-        </div>
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">Create Faculty Account Form</h5>
 
-        <!-- Last Name -->
-        <div class="mb-3">
-            <label for="last_name" class="form-label">Last Name</label>
-            <input type="text" name="last_name" class="form-control" id="last_name" value="{{ old('last_name') }}" required>
-        </div>
+        <form action="{{ route('faculty.store') }}" method="POST" class="row g-3">
+            @csrf
 
-        <!-- ID Number -->
-        <div class="mb-3">
-            <label for="id_number" class="form-label">ID Number</label>
-            <input type="text" name="id_number" class="form-control" id="id_number" value="{{ old('id_number') }}" required>
-        </div>
+            <!-- First Name -->
+            <div class="col-md-12">
+                <div class="form-floating">
+                    <input type="text" class="form-control" id="floatingFirstName" name="first_name" value="{{ old('first_name') }}" placeholder="First Name" required>
+                    <label for="floatingFirstName">First Name</label>
+                </div>
+            </div>
 
-        <!-- Email -->
-        <div class="mb-3">
-            <label for="email" class="form-label">Email</label>
-            <input type="email" name="email" class="form-control" id="email" value="{{ old('email') }}" required>
-        </div>
+            <!-- Last Name -->
+            <div class="col-md-12">
+                <div class="form-floating">
+                    <input type="text" class="form-control" id="floatingLastName" name="last_name" value="{{ old('last_name') }}" placeholder="Last Name" required>
+                    <label for="floatingLastName">Last Name</label>
+                </div>
+            </div>
 
-        <!-- Course -->
-        <div class="mb-3">
-            <label for="course_id" class="form-label">Course</label>
-            <select name="course_id" id="course_id" class="form-select" required>
-                @foreach($courses as $course)
-                    <option value="{{ $course->id }}">{{ $course->course_name }}</option>
-                @endforeach
-            </select>
-        </div>
+            <!-- ID Number -->
+            <div class="col-md-12">
+                <div class="form-floating">
+                    <input type="text" class="form-control" id="floatingIDNumber" name="id_number" value="{{ old('id_number') }}" placeholder="ID Number" required>
+                    <label for="floatingIDNumber">ID Number</label>
+                </div>
+            </div>
 
-        <div class="mt-3">
-            <button type="submit" class="btn btn-primary">Create</button>
-            <a href="{{ route('faculty.index') }}" class="btn btn-secondary">Cancel</a>
-        </div>
-    </form>
+            <!-- Email -->
+            <div class="col-md-12">
+                <div class="form-floating">
+                    <input type="email" class="form-control" id="floatingEmail" name="email" value="{{ old('email') }}" placeholder="Email" required>
+                    <label for="floatingEmail">Email</label>
+                </div>
+            </div>
+
+            <!-- Course Selection -->
+            <div class="col-md-12">
+                <div class="form-floating">
+                    <select name="course_id" id="floatingCourse" class="form-select" required>
+                        @foreach($courses as $course)
+                            <option value="{{ $course->id }}">{{ $course->course_name }}</option>
+                        @endforeach
+                    </select>
+                    <label for="floatingCourse">Course</label>
+                </div>
+            </div>
+
+            <!-- Submit and Cancel Buttons -->
+            <div class="text-center">
+                <button type="submit" class="btn btn-primary">Create</button>
+                <a href="{{ route('faculty.index') }}" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
 </div>
 @endsection

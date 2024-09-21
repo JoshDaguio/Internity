@@ -203,47 +203,52 @@ class AdminController extends Controller
             'password' => ['nullable', 'string', 'min:8'],
             'course_id' => ['required', 'exists:courses,id'],
         ]);
-
+    
         $updatedFields = [];
         $newPassword = null;
-
+    
         // Update profile
         $student->profile->update([
             'first_name' => $request->first_name,
             'last_name' => $request->last_name,
             'id_number' => $request->id_number,
         ]);
-
+    
+        // Update course if changed
+        if ($request->course_id != $student->course_id) {
+            $student->course_id = $request->course_id;
+        }
+    
         // Check if email is updated
         if ($request->email != $student->email) {
             $student->email = $request->email;
             $updatedFields[] = 'email';
-
+    
             // Auto-generate a new password if only the email is updated
             $newPassword = 'aufCCSInternship' . Str::random(5);
             $student->password = Hash::make($newPassword);
             $updatedFields[] = 'password';
         }
-
+    
         // Check if password is updated
         if ($request->filled('password')) {
             $newPassword = $request->password; // Use the password from the request
             $student->password = Hash::make($request->password);
             $updatedFields[] = 'password';
         }
-
+    
         $student->save();
-
-        // Send email if either email or password is updated
+    
+        // Send email if either email or password or both are updated
         if (!empty($updatedFields)) {
             \Mail::to($student->email)->send(new \App\Mail\StudentUpdateNotificationMail(
                 $student->name,
                 $student->email,
                 $updatedFields,
-                $newPassword
+                $newPassword // Pass the new password if updated
             ));
         }
-
+    
         return redirect()->route('students.list')->with('success', 'Student account updated successfully.');
     }
 

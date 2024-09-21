@@ -75,7 +75,7 @@ class JobController extends Controller
 
         $job->skillTags()->sync($request->input('skill_tags', [])); // Sync selected skill tags
 
-        return redirect()->route('jobs.index');
+        return redirect()->route('jobs.index')->with('success', 'Job created successfully.');
     }
 
     public function show(Job $job)
@@ -135,7 +135,7 @@ class JobController extends Controller
         ]);
         $job->skillTags()->sync($request->input('skill_tags', []));
     
-        return redirect()->route('jobs.index');
+        return redirect()->route('jobs.index')->with('success', 'Job updated successfully.');
     }
 
     public function destroy(Job $job)

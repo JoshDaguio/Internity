@@ -1,39 +1,47 @@
 @extends('layouts.app')
 
 @section('body')
-    <div class="pagetitle">
-        <h1>Company</h1>
-        <nav>
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item">Home</li>
-                <li class="breadcrumb-item active">Company</li>
-            </ol>
-        </nav>
-    </div><!-- End Page Title -->
+<div class="pagetitle">
+    <h1>Company Accounts</h1>
+    <nav>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">Home</li>
+            <li class="breadcrumb-item active">Company</li>
+        </ol>
+    </nav>
+</div>
 
-    <a href="{{ route('company.create') }}" class="btn btn-primary mb-3">Add Company</a>
+@if(session('success'))
+    <div class="alert alert-success">{{ session('success') }}</div>
+@endif
 
-    <form method="GET" action="{{ route('company.index') }}" class="mb-3">
-        <div class="card">
-            <div class="card-body">
-                <h5 class="card-title">Filter by Status</h5>
-                <div class="row">
-                    <div class="d-flex">
-                        <select name="status_id" id="status_id" class="form-select me-2" onchange="this.form.submit()">
-                            <option value="">All Statuses</option>
-                            <option value="1" {{ request('status_id') == '1' ? 'selected' : '' }}>Active</option>
-                            <option value="2" {{ request('status_id') == '2' ? 'selected' : '' }}>Inactive</option>
-                        </select>
-                    </div>
+@if(session('error'))
+    <div class="alert alert-danger">{{ session('error') }}</div>
+@endif
+
+<a href="{{ route('company.create') }}" class="btn btn-primary mb-3">Add Company</a>
+
+<form method="GET" action="{{ route('company.index') }}" class="mb-3">
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">Filter by Status</h5>
+            <div class="row">
+                <div class="d-flex">
+                    <select name="status_id" id="status_id" class="form-select me-2" onchange="this.form.submit()">
+                        <option value="">All Statuses</option>
+                        <option value="1" {{ request('status_id') == '1' ? 'selected' : '' }}>Active</option>
+                        <option value="2" {{ request('status_id') == '2' ? 'selected' : '' }}>Inactive</option>
+                    </select>
                 </div>
             </div>
         </div>
-    </form>
+    </div>
+</form>
 
-    <div class="card">
-        <div class="card-body">
-            <h5 class="card-title">Partner Company List</h5>
-            
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">Partner Company List</h5>
+        <div class="table-responsive">
             <table class="table datatable">
                 <thead>
                     <tr>
@@ -93,21 +101,21 @@
                     @endforeach
                 </tbody>
             </table>
-        </div>  
-    </div>
+        </div>
+    </div>  
+</div>
 
-    <script>
-        $(document).ready(function() {
-            // Initialize DataTable on the table element
-            $('.datatable').DataTable({
-                paging: true,           // Enable pagination
-                pageLength: 10,         // Number of records to show per page
-                searching: true,        // Enable search functionality
-                lengthChange: true,     // Enable user to change number of rows displayed
-                order: [[0, 'asc']],    // Sort by the first column by default
-            });
+<script>
+    $(document).ready(function() {
+        // Initialize DataTable on the table element
+        $('.datatable').DataTable({
+            paging: true,           // Enable pagination
+            pageLength: 10,         // Number of records to show per page
+            searching: true,        // Enable search functionality
+            lengthChange: true,     // Enable user to change number of rows displayed
+            order: [[0, 'asc']],    // Sort by the first column by default
         });
-    </script>
-
+    });
+</script>
 
 @endsection

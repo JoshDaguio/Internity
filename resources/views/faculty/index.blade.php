@@ -12,6 +12,14 @@
         </nav>
     </div><!-- End Page Title -->
 
+    @if(session('success'))
+        <div class="alert alert-success">{{ session('success') }}</div>
+    @endif
+
+    @if(session('error'))
+        <div class="alert alert-danger">{{ session('error') }}</div>
+    @endif
+
     <a href="{{ route('faculty.create') }}" class="btn btn-primary mb-3">Add Faculty</a>
     
     <div class="row">

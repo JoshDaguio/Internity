@@ -1,49 +1,79 @@
 @extends('layouts.app')
 
 @section('body')
-<div class="container">
-    <h1>Edit Company</h1>
+<div class="pagetitle">
+    <h1>Edit Company Account</h1>
+    <nav>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">Home</li>
+            <li class="breadcrumb-item">Company</li>
+            <li class="breadcrumb-item active">Edit</li>
+        </ol>
+    </nav>
+</div>
 
-    @if ($errors->any())
-        <div class="alert alert-danger">
-            <ul>
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-    @endif
+@if(session('success'))
+    <div class="alert alert-success">{{ session('success') }}</div>
+@endif
 
-    <form action="{{ route('company.update', $company->id) }}" method="POST">
-        @csrf
-        @method('PATCH')
-        <div class="mb-3">
-            <label for="name" class="form-label">Company Name</label>
-            <input type="text" name="name" class="form-control" id="name" value="{{ old('name', $company->name) }}" required>
-        </div>
+@if(session('error'))
+    <div class="alert alert-danger">{{ session('error') }}</div>
+@endif
 
-        <div class="mb-3">
-            <label for="email" class="form-label">Email</label>
-            <input type="email" name="email" class="form-control" id="email" value="{{ old('email', $company->email) }}" required>
-        </div>
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">Edit Company Account Form</h5>
 
-        <div class="mb-3">
-            <label for="first_name" class="form-label">Contact Person First Name</label>
-            <input type="text" name="first_name" class="form-control" id="first_name" value="{{ old('first_name', $company->profile->first_name) }}" required>
-        </div>
+        <form action="{{ route('company.update', $company->id) }}" method="POST" class="row g-3">
+            @csrf
+            @method('PATCH')
 
-        <div class="mb-3">
-            <label for="last_name" class="form-label">Contact Person Last Name</label>
-            <input type="text" name="last_name" class="form-control" id="last_name" value="{{ old('last_name', $company->profile->last_name) }}" required>
-        </div>
+            <!-- Company Name -->
+            <div class="col-md-12">
+                <div class="form-floating">
+                    <input type="text" name="name" class="form-control" id="floatingCompanyName" value="{{ old('name', $company->name) }}" placeholder="Company Name" required>
+                    <label for="floatingCompanyName">Company Name</label>
+                </div>
+            </div>
 
-        <div class="mb-3">
-            <label for="password" class="form-label">Password (leave blank to keep current password)</label>
-            <input type="password" name="password" class="form-control" id="password">
-        </div>
+            <!-- Email -->
+            <div class="col-md-12">
+                <div class="form-floating">
+                    <input type="email" name="email" class="form-control" id="floatingEmail" value="{{ old('email', $company->email) }}" placeholder="Email" required>
+                    <label for="floatingEmail">Email</label>
+                </div>
+            </div>
 
-        <button type="submit" class="btn btn-primary">Update Company</button>
-        <a href="{{ route('company.index') }}" class="btn btn-secondary">Cancel</a>
-    </form>
+            <!-- Contact Person First Name -->
+            <div class="col-md-6">
+                <div class="form-floating">
+                    <input type="text" name="first_name" class="form-control" id="floatingFirstName" value="{{ old('first_name', $company->profile->first_name) }}" placeholder="First Name" required>
+                    <label for="floatingFirstName">Contact Person First Name</label>
+                </div>
+            </div>
+
+            <!-- Contact Person Last Name -->
+            <div class="col-md-6">
+                <div class="form-floating">
+                    <input type="text" name="last_name" class="form-control" id="floatingLastName" value="{{ old('last_name', $company->profile->last_name) }}" placeholder="Last Name" required>
+                    <label for="floatingLastName">Contact Person Last Name</label>
+                </div>
+            </div>
+
+            <!-- Password (Optional) -->
+            <div class="col-12">
+                <div class="form-floating">
+                    <input type="password" name="password" class="form-control" id="floatingPassword" placeholder="Password">
+                    <label for="floatingPassword">Password (Leave blank to keep current password)</label>
+                </div>
+            </div>
+
+            <!-- Submit and Cancel Buttons -->
+            <div class="text-center">
+                <button type="submit" class="btn btn-primary">Update</button>
+                <a href="{{ route('company.index') }}" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
 </div>
 @endsection

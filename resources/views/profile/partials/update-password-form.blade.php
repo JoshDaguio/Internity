@@ -1,45 +1,64 @@
 <section>
-    <form id="password-update-form" method="post" action="{{ route('password.update') }}" novalidate>
+    <form id="password-update-form" method="post" action="{{ route('password.update') }}">
         @csrf
         @method('put')
 
+        <!-- Current Password Field -->
         <div class="row mb-3">
             <label for="update_password_current_password" class="col-md-4 col-lg-3 col-form-label">{{ __('Current Password') }}</label>
             <div class="col-md-8 col-lg-9">
-                <input id="update_password_current_password" name="current_password" type="password" class="form-control" autocomplete="current-password">
+                <div class="input-group">
+                    <input id="update_password_current_password" name="current_password" type="password" class="form-control" required>
+                    <button type="button" class="btn btn-outline-secondary toggle-password" data-target="#update_password_current_password">
+                        <i class="bi bi-eye-slash"></i>
+                    </button>
+                </div>
+                <!-- Custom error message for incorrect current password -->
                 @error('current_password')
-                    <span class="text-danger mt-2">{{ $message }}</span>
+                    <span class="text-danger">{{ $message }}</span>
                 @enderror
             </div>
         </div>
 
+        <!-- New Password Field -->
         <div class="row mb-3">
             <label for="update_password_password" class="col-md-4 col-lg-3 col-form-label">{{ __('New Password') }}</label>
             <div class="col-md-8 col-lg-9">
-                <input id="update_password_password" name="password" type="password" class="form-control" autocomplete="new-password">
+                <div class="input-group">
+                    <input id="update_password_password" name="password" type="password" class="form-control" required>
+                    <button type="button" class="btn btn-outline-secondary toggle-password" data-target="#update_password_password">
+                        <i class="bi bi-eye-slash"></i>
+                    </button>
+                </div>
+                <!-- Custom error messages for password format validation -->
                 @error('password')
-                    <span class="text-danger mt-2">{{ $message }}</span>
+                    <span class="text-danger">{{ $message }}</span>
                 @enderror
             </div>
         </div>
 
+        <!-- Confirm Password Field -->
         <div class="row mb-3">
             <label for="update_password_password_confirmation" class="col-md-4 col-lg-3 col-form-label">{{ __('Confirm Password') }}</label>
             <div class="col-md-8 col-lg-9">
-                <input id="update_password_password_confirmation" name="password_confirmation" type="password" class="form-control" autocomplete="new-password">
+                <div class="input-group">
+                    <input id="update_password_password_confirmation" name="password_confirmation" type="password" class="form-control" required>
+                    <button type="button" class="btn btn-outline-secondary toggle-password" data-target="#update_password_password_confirmation">
+                        <i class="bi bi-eye-slash"></i>
+                    </button>
+                </div>
+                <!-- Custom error message for password confirmation mismatch -->
                 @error('password_confirmation')
-                    <span class="text-danger mt-2">{{ $message }}</span>
+                    <span class="text-danger">{{ $message }}</span>
                 @enderror
             </div>
         </div>
 
         <div class="text-center">
-            <!-- Button to trigger the modal -->
-            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#confirmPasswordChangeModal">
-                {{ __('Change Password') }}
-            </button>
+            <button type="submit" class="btn btn-primary">{{ __('Change Password') }}</button>
         </div>
 
+        <!-- Success message after password is updated -->
         @if (session('status') === 'password-updated')
             <div class="alert alert-success mt-2">
                 {{ __('Password updated successfully.') }}
@@ -48,27 +67,20 @@
     </form>
 </section>
 
-<!-- Modal -->
-<div class="modal fade" id="confirmPasswordChangeModal" tabindex="-1" aria-labelledby="confirmPasswordChangeModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="confirmPasswordChangeModalLabel">Confirm Password Change</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                Are you sure you want to change your password?
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-primary" id="confirm-change-password">Confirm</button>
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-            </div>
-        </div>
-    </div>
-</div>
-
+<!-- JavaScript for toggling password visibility -->
 <script>
-    document.getElementById('confirm-change-password').addEventListener('click', function () {
-        document.getElementById('password-update-form').submit();
+    document.querySelectorAll('.toggle-password').forEach(button => {
+        button.addEventListener('click', function() {
+            const target = document.querySelector(this.getAttribute('data-target'));
+            const icon = this.querySelector('i');
+
+            if (target.type === 'password') {
+                target.type = 'text';
+                icon.classList.replace('bi-eye-slash', 'bi-eye');
+            } else {
+                target.type = 'password';
+                icon.classList.replace('bi-eye', 'bi-eye-slash');
+            }
+        });
     });
 </script>

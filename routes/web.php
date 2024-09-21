@@ -198,6 +198,8 @@ Route::middleware(['auth', 'facultyaccess'])->group(function () {
     Route::post('/file_uploads', [FileUploadController::class, 'store'])->name('file_uploads.store');
     Route::delete('/file_uploads/{file}', [FileUploadController::class, 'destroy'])->name('file_uploads.destroy');
     Route::get('/file_uploads/preview/{file}', [FileUploadController::class, 'preview'])->name('file_uploads.preview');
+    Route::get('/file_uploads/{file}/edit', [FileUploadController::class, 'edit'])->name('file_uploads.edit'); // Add edit route
+    Route::patch('/file_uploads/{file}', [FileUploadController::class, 'update'])->name('file_uploads.update'); // Add update route
 });
 
 Route::middleware(['auth'])->group(function () {

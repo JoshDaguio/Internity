@@ -91,5 +91,42 @@ class FileUploadController extends Controller
             'Content-Type' => $fileMimeType,
         ]);
     }
+
+    public function edit($id)
+    {
+        $file = FileUpload::findOrFail($id);
+        return view('file_uploads.edit', compact('file'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        $file = FileUpload::findOrFail($id);
+
+        $request->validate([
+            'description' => 'required|string|max:255',
+            'file' => 'nullable|file|max:2048', // File is optional in update
+        ]);
+
+        // Update description
+        $file->description = $request->description;
+
+        // If a new file is uploaded, update the file
+        if ($request->hasFile('file')) {
+            // Delete old file
+            Storage::delete($file->file_path);
+
+            // Store new file
+            $uploadedFile = $request->file('file');
+            $filePath = $uploadedFile->store('uploads');
+            
+            $file->file_name = $uploadedFile->getClientOriginalName();
+            $file->file_path = $filePath;
+        }
+
+        $file->save();
+
+        return redirect()->route('file_uploads.index')->with('success', 'File updated successfully.');
+    }
+
     
 }

@@ -23,7 +23,10 @@ class FacultyUpdateNotificationMail extends Mailable
      */
     public function __construct($name, $email, $updatedFields, $newPassword = null)
     {
-        //
+        $this->name = $name;
+        $this->email = $email;
+        $this->updatedFields = $updatedFields;
+        $this->newPassword = $newPassword; // Pass the new password
     }
         /**
      * Build the message.
