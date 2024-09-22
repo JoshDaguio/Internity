@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Course;
 use App\Models\User;
 use App\Models\Profile;
+use App\Models\ActivityLog;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 
 class CourseController extends Controller
@@ -45,7 +47,18 @@ class CourseController extends Controller
             'course_name' => 'required|string|max:255',
         ]);
 
-        Course::create($request->all());
+        $course = Course::create($request->all());
+
+        // Log the creation of the course
+        ActivityLog::create([
+            'admin_id' => Auth::id(),
+            'action' => 'Created Course',
+            'target' => $course->course_code . ' - ' . $course->course_name,
+            'changes' => json_encode([
+                'course_code' => $course->course_code,
+                'course_name' => $course->course_name,
+            ]),
+        ]);
 
         return redirect()->route('courses.index')->with('success', 'Course created successfully.');
     }
@@ -94,7 +107,34 @@ class CourseController extends Controller
         ]);
 
         $course = Course::findOrFail($id);
+            
+        // Capture the old values before updating
+        $oldCourseCode = $course->course_code;
+        $oldCourseName = $course->course_name;
+
+        // Update the course
         $course->update($request->all());
+
+        // Log the changes if any
+        $updatedFields = [];
+        if ($oldCourseCode != $course->course_code) {
+            $updatedFields['Course Code'] = ['old' => $oldCourseCode, 'new' => $course->course_code];
+        }
+        if ($oldCourseName != $course->course_name) {
+            $updatedFields['Course Name'] = ['old' => $oldCourseName, 'new' => $course->course_name];
+        }
+
+        $course->update($request->all());
+
+
+        if (!empty($updatedFields)) {
+            ActivityLog::create([
+                'admin_id' => Auth::id(),
+                'action' => 'Updated Course',
+                'target' => $course->course_code,
+                'changes' => json_encode($updatedFields),
+            ]);
+        }
 
         return redirect()->route('courses.index')->with('success', 'Course updated successfully.');
     }

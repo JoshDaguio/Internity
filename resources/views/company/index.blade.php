@@ -55,22 +55,25 @@
                 <tbody>
                     @foreach($companies as $company)
                         <tr>
-                            <td>{{ $company->name }}</td>
+                            <td>
+                                <a href="{{ route('company.show', $company->id) }}" class="btn btn-light btn-sm">
+                                    {{ $company->name }}
+                                </a>
+                            </td>
                             <td>{{ $company->email }}</td>
                             <td>{{ $company->profile->first_name ?? 'N/A' }} {{ $company->profile->last_name ?? '' }}</td>
                             <td>{{ $company->status_id == 1 ? 'Active' : 'Inactive' }}</td>
                             <td>
                                 @if($company->status_id == 1)
-                                    <a href="{{ route('company.show', $company->id) }}" class="btn btn-info"><i class="bi bi-info-circle"></i></a>
-                                    <a href="{{ route('company.edit', $company->id) }}" class="btn btn-warning"><i class="bi bi-pencil"></i></a>
-                                    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deactivateModal-{{ $company->id }}">
+                                    <a href="{{ route('company.edit', $company->id) }}" class="btn btn-warning btn-sm"><i class="bi bi-pencil"></i></a>
+                                    <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deactivateModal-{{ $company->id }}">
                                         Deactivate
                                     </button>
                                 @else
                                     <form action="{{ route('company.reactivate', $company->id) }}" method="POST" style="display:inline-block;">
                                         @csrf
                                         @method('PATCH')
-                                        <button type="submit" class="btn btn-success">Reactivate</button>
+                                        <button type="submit" class="btn btn-success btn-sm">Reactivate</button>
                                     </form>
                                 @endif
                             </td>

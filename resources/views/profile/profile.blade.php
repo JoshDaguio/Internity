@@ -104,14 +104,14 @@
                                     </div>
 
                                     <h5 class="card-title mt-4">Internship</h5>
-                                    @if ($acceptedApplication)
+                                    @if ($acceptedInternship)
                                         <div class="row">
                                             <div class="col-lg-3 col-md-4 label">Company Name</div>
-                                            <div class="col-lg-9 col-md-8">{{ $acceptedApplication->job->company->name }}</div>
+                                            <div class="col-lg-9 col-md-8">{{ $acceptedInternship->job->company->name }}</div>
                                         </div>
                                         <div class="row">
                                             <div class="col-lg-3 col-md-4 label">Position</div>
-                                            <div class="col-lg-9 col-md-8">{{ $acceptedApplication->job->title }}</div>
+                                            <div class="col-lg-9 col-md-8">{{ $acceptedInternship->job->title }}</div>
                                         </div>
                                     @else
                                         <p>No Internship Yet, Please Apply or Wait for Acceptance</p>

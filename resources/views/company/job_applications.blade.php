@@ -15,7 +15,7 @@
     </div><!-- End Page Title -->
 
     <!-- Back Button -->
-    <a href="{{ route('company.internApplications') }}" class="btn btn-secondary mb-3">Back to Intern Applications</a>
+    <a href="{{ route('company.internApplications') }}" class="btn btn-secondary mb-3">Back</a>
     
     <!-- Job Information Section -->
     <div class="row mb-0">
@@ -166,11 +166,10 @@
                                             </button>
                                             <ul class="dropdown-menu" aria-labelledby="statusDropdown{{ $application->id }}">
                                                 <li>
-                                                    <form method="POST" action="{{ route('application.updateStatus', ['application' => $application->id, 'status' => 'Accepted']) }}">
-                                                        @csrf
-                                                        @method('PATCH')
-                                                        <button type="submit" class="dropdown-item">Accept</button>
-                                                    </form>
+                                                    <!-- Accept Button with Start Date -->
+                                                    <button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#acceptModal{{ $application->id }}">
+                                                        Accept
+                                                    </button>
                                                 </li>
                                                 <li>
                                                     <form method="POST" action="{{ route('application.updateStatus', ['application' => $application->id, 'status' => 'Rejected']) }}">
@@ -185,6 +184,29 @@
                                 </div>
                             </div>
                         </div>
+
+                        <!-- Accept Modal -->
+                        <div class="modal fade" id="acceptModal{{ $application->id }}" tabindex="-1" aria-labelledby="acceptModalLabel{{ $application->id }}" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="acceptModalLabel{{ $application->id }}">Set Start Date</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form method="POST" action="{{ route('application.updateStatus', ['application' => $application->id, 'status' => 'Accepted']) }}">
+                                            @csrf
+                                            @method('PATCH')
+                                            <div class="form-group">
+                                                <label for="start_date">Start Date:</label>
+                                                <input type="date" name="start_date" id="start_date" class="form-control" required>
+                                            </div>
+                                            <button type="submit" class="btn btn-success mt-3">Accept</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         @endif
                         @endforeach
                     </tbody>
@@ -192,6 +214,7 @@
             </div>
         </div>
     </div>
+
 
 
 
@@ -258,13 +281,13 @@
                                                 <li>
                                                     <a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#interviewModal{{ $application->id }}">For Interview</a>
                                                 </li>
-                                                <li>
+                                                <!-- <li>
                                                     <form method="POST" action="{{ route('application.updateStatus', ['application' => $application->id, 'status' => 'Accepted']) }}">
                                                         @csrf
                                                         @method('PATCH')
                                                         <button type="submit" class="dropdown-item">Accept</button>
                                                     </form>
-                                                </li>
+                                                </li> -->
                                                 <li>
                                                     <form method="POST" action="{{ route('application.updateStatus', ['application' => $application->id, 'status' => 'Rejected']) }}">
                                                         @csrf
@@ -395,13 +418,13 @@
                                                 <li>
                                                     <a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#interviewModal{{ $application->id }}">For Interview</a>
                                                 </li>
-                                                <li>
+                                                <!-- <li>
                                                     <form method="POST" action="{{ route('application.updateStatus', ['application' => $application->id, 'status' => 'Accepted']) }}">
                                                         @csrf
                                                         @method('PATCH')
                                                         <button type="submit" class="dropdown-item">Accept</button>
                                                     </form>
-                                                </li>
+                                                </li> -->
                                                 <li>
                                                     <form method="POST" action="{{ route('application.updateStatus', ['application' => $application->id, 'status' => 'Rejected']) }}">
                                                         @csrf

@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Profile;
 use App\Models\User;
+use App\Models\ActivityLog;
 use App\Mail\AdminApprovalMail;
+use App\Mail\AdminUpdateNotificationMail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
@@ -71,6 +73,18 @@ class AdminAccountController extends Controller
         ));
 
         return redirect()->route('admin-accounts.index')->with('success', 'Admin account created successfully.');
+    }
+
+    // Method to show admin details
+    public function show(User $admin)
+    {
+        // Make sure the user is an admin
+        if ($admin->role_id !== 2) {
+            return redirect()->route('admin-accounts.index')->with('error', 'User is not an admin.');
+        }
+        $logs = ActivityLog::where('admin_id', $admin->id)->latest()->get();
+
+        return view('super_admin.admin-accounts.show', compact('admin', 'logs'));
     }
 
     public function edit(User $admin)

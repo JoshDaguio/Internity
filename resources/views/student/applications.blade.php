@@ -38,7 +38,7 @@
                     @if($student->profile->skillTags->isNotEmpty())
                         <p style="white-space: nowrap;">{{ $student->profile->skillTags->pluck('name')->implode(', ') }}</p>
                     @else
-                        <p>No skills added yet. Please add skills to your profile.</p>
+                        <p>No skills added yet.</p>
                     @endif
                 </div>
             </div>

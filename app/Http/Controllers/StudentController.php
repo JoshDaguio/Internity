@@ -30,12 +30,12 @@ class StudentController extends Controller
         // Recommended Listings: Jobs that match the student's skills
         $recommendedJobs = Job::whereHas('skillTags', function ($query) use ($profileSkills) {
             $query->whereIn('skill_tag_id', $profileSkills);
-        })->get();
+        })->where('positions_available', '>', 0)->get();
 
         // Other Listings: Jobs that don't match student's skills
         $otherJobs = Job::whereDoesntHave('skillTags', function ($query) use ($profileSkills) {
             $query->whereIn('skill_tag_id', $profileSkills);
-        })->get();
+        })->where('positions_available', '>', 0)->get();
 
         return view('student.listings', compact('student', 'recommendedJobs', 'otherJobs'));
     }

@@ -4,17 +4,21 @@ namespace App\Http\Controllers;
 use App\Models\Job;
 use App\Models\Application;
 use App\Models\ApplicationStatus;
+use App\Models\AcceptedInternship;
 use App\Models\StudentAccepted;
 use App\Models\StudentRejected;
 use App\Models\Interview;
 use App\Models\User;
 use App\Models\Profile;
+use App\Models\ActivityLog;
 use App\Mail\CompanyApprovalMail;
 use App\Mail\InterviewScheduled; 
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
+use Carbon\Carbon;
+
 
 
 use Illuminate\Http\Request;
@@ -70,6 +74,17 @@ class CompanyController extends Controller
             'profile_id' => $profile->id,
         ]);
 
+        // Log the creation of the company
+        ActivityLog::create([
+            'admin_id' => Auth::id(),
+            'action' => 'Created Company',
+            'target' => $company->name, // Company name as the target
+            'changes' => json_encode([
+                'name' => $company->name,
+                'email' => $company->email,
+            ]),
+        ]);
+
             // Send the email with login details
         \Mail::to($company->email)->send(new \App\Mail\CompanyApprovalMail(
             $company->name,
@@ -115,7 +130,22 @@ class CompanyController extends Controller
         ]);
 
         $updatedFields = [];
-        $newPassword = null; // To store the new auto-generated password
+        $newPassword = null; 
+        $sendEmail = false;
+
+        // Check and log changes to the company name
+        if ($company->name != $request->name) {
+            $updatedFields['Company Name'] = ['old' => $company->name, 'new' => $request->name];
+            $company->name = $request->name;
+        }
+
+        // Check and log specific changes to profile
+        if ($company->profile->first_name != $request->first_name) {
+            $updatedFields['First Name'] = ['old' => $company->profile->first_name, 'new' => $request->first_name];
+        }
+        if ($company->profile->last_name != $request->last_name) {
+            $updatedFields['Last Name'] = ['old' => $company->profile->last_name, 'new' => $request->last_name];
+        }
 
         // Update profile for the contact person
         $company->profile->update([
@@ -125,32 +155,61 @@ class CompanyController extends Controller
 
         // Check if email is updated
         if ($request->email != $company->email) {
+            $updatedFields['email'] = 'Email Changed';
             $company->email = $request->email;
-            $updatedFields[] = 'email';
 
             // Auto-generate a new password if only the email is updated
             $newPassword = 'aufCCSInternshipCompany' . Str::random(5); // Generate new password
             $company->password = Hash::make($newPassword); // Hash the new password
-            $updatedFields[] = 'password';
+            $updatedFields['password'] = 'Generated Neww';
+
+            $sendEmail = true;
         }
 
         // Check if password is updated
         if ($request->filled('password')) {
             $newPassword = $request->password; // Use the password from the request
             $company->password = Hash::make($request->password); // Hash the new password
-            $updatedFields[] = 'password';
+            $updatedFields['password'] = 'Manually Changed';
+
+            $sendEmail = true;
         }
 
         $company->save();
 
-        // Send email if either email or password is updated
-        if (!empty($updatedFields)) {
-            \Mail::to($company->email)->send(new \App\Mail\CompanyUpdateNotificationMail(
-                $company->name,
-                $company->email,
-                $updatedFields,
-                $newPassword // Pass the new password if updated
-            ));
+
+        // Log the update with detailed changes
+        ActivityLog::create([
+            'admin_id' => Auth::id(),
+            'action' => 'Updated Company',
+            'target' => $company->name, // Company name as target
+            'changes' => json_encode($updatedFields),
+        ]);
+
+        // Send email if email or password is updated
+        if ($sendEmail) {
+            if (isset($updatedFields['email']) && isset($updatedFields['password'])) {
+                \Mail::to($company->email)->send(new \App\Mail\CompanyUpdateNotificationMail(
+                    $company->name,
+                    $company->email,
+                    ['email', 'password'],
+                    $newPassword
+                ));
+            } elseif (isset($updatedFields['email'])) {
+                \Mail::to($company->email)->send(new \App\Mail\CompanyUpdateNotificationMail(
+                    $company->name,
+                    $company->email,
+                    ['email', 'password'],
+                    $newPassword
+                ));
+            } elseif (isset($updatedFields['password'])) {
+                \Mail::to($company->email)->send(new \App\Mail\CompanyUpdateNotificationMail(
+                    $company->name,
+                    $company->email,
+                    ['password'],
+                    $newPassword
+                ));
+            }
         }
 
 
@@ -166,6 +225,14 @@ class CompanyController extends Controller
         // Set the company's status to inactive instead of deleting
         $company->update(['status_id' => 2]); // 2 means Inactive
 
+        // Log the deactivation
+        ActivityLog::create([
+            'admin_id' => Auth::id(),
+            'action' => 'Deactivated Company',
+            'target' => $company->name,
+            'changes' => json_encode(['status' => 'Deactivated']),
+        ]);
+
         return redirect()->route('company.index')->with('success', 'Company account deactivated successfully.');
     }
 
@@ -173,6 +240,14 @@ class CompanyController extends Controller
     {
         // Set the company's status to active
         $company->update(['status_id' => 1]); // 1 means Active
+
+        // Log the reactivation
+        ActivityLog::create([
+            'admin_id' => Auth::id(),
+            'action' => 'Reactivated Company',
+            'target' => $company->name,
+            'changes' => json_encode(['status' => 'Reactivated']),
+        ]);
 
         return redirect()->route('company.index')->with('success', 'Company account reactivated successfully.');
     }
@@ -230,34 +305,64 @@ class CompanyController extends Controller
     {
         $application = Application::findOrFail($applicationId);
         $statusId = ApplicationStatus::where('status', $status)->first()->id;
-        
+    
         $application->update(['status_id' => $statusId]);
-
+    
         $job = $application->job; // Get the job associated with the application
-
+    
         // If the status is "Accepted"
         if ($status === 'Accepted') {
+            // Validate the start date
+            $request->validate([
+                'start_date' => 'required|date|after_or_equal:today',
+            ]);
+    
             // Decrease the number of available positions for the job
-            $job = $application->job;
             if ($job->positions_available > 0) {
                 $job->decrement('positions_available', 1); // Decrease by 1
             }
-
-            // Send an email notification to the accepted intern
-            \Mail::to($application->student->email)->send(new \App\Mail\StudentAccepted($application));
+    
+            // Decode the schedule JSON from the job
+            $schedule = json_decode($job->schedule, true);
+            
+            // Convert time to 24-hour format for start_time and end_time
+            $startTime = Carbon::createFromFormat('H:i', $schedule['start_time'])->format('H:i');
+            $endTime = Carbon::createFromFormat('H:i', $schedule['end_time'])->format('H:i');
+    
+            // Store the accepted internship details in the new table
+            AcceptedInternship::create([
+                'student_id' => $application->student_id,
+                'company_id' => $job->company_id,
+                'job_id' => $job->id,
+                'schedule' => $job->schedule, 
+                'work_type' => $job->work_type,
+                'start_time' => $startTime, // Use 24-hour format
+                'end_time' => $endTime, // Use 24-hour format
+                'start_date' => $request->start_date,
+            ]);
+    
+            // Send an email notification to the accepted intern, including the start date, schedule, and time
+            \Mail::to($application->student->email)->send(new \App\Mail\StudentAccepted(
+                $application, 
+                $request->start_date, 
+                $schedule['days'], 
+                $job->work_type, 
+                $startTime, // Passing 24-hour start time
+                $endTime // Passing 24-hour end time
+            ));
         } elseif ($status === 'Rejected') {
             // Send an email notification to the rejected intern
             \Mail::to($application->student->email)->send(new \App\Mail\StudentRejected($application));
         }
-
+    
         // Update the applicant count and notify
         $job->loadCount(['applications' => function($query) {
             $acceptedStatusId = ApplicationStatus::where('status', 'Accepted')->first()->id;
             $rejectedStatusId = ApplicationStatus::where('status', 'Rejected')->first()->id;
-
+    
             $query->whereNotIn('status_id', [$acceptedStatusId, $rejectedStatusId]);
         }]);
-
+    
         return redirect()->back()->with('success', 'Status updated successfully.');
     }
 
@@ -293,22 +398,10 @@ class CompanyController extends Controller
 
     public function interns()
     {
-        // Fetch accepted interns
-        $acceptedStatusId = ApplicationStatus::where('status', 'Accepted')->first()->id;
-        
-        // Fetch applications with accepted status, and include student profiles and job details
-        $acceptedInterns = Application::with(['student.profile', 'job'])
-            ->where('status_id', $acceptedStatusId)
+        // Fetch accepted interns from the accepted_internships table
+        $acceptedInterns = AcceptedInternship::with(['student.profile', 'job'])
+            ->where('company_id', Auth::id()) // Make sure to fetch only for the current company
             ->get();
-
-        // For each intern, we will check if the CV exists in the application or profile
-        foreach ($acceptedInterns as $intern) {
-            // If CV exists in the application
-            if (!$intern->cv_path && $intern->student->profile->cv_path) {
-                // If CV exists in the profile, use the profile CV
-                $intern->cv_path = $intern->student->profile->cv_path;
-            }
-        }
 
         return view('company.interns', compact('acceptedInterns'));
     }

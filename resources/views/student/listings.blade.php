@@ -31,10 +31,14 @@
             </div>
         </div>
         <div class="col-md-4">
-            <div class="card">
-                <div class="card-body">
+            <div class="card" style="height: 125px;"> <!-- Set fixed height -->
+                <div class="card-body" style="overflow-x: auto;"> <!-- Enable horizontal scrolling -->
                     <h5 class="card-title">Skills</h5>
-                    <p>{{ $student->profile->skillTags->pluck('name')->implode(', ') }}</p>
+                    @if($student->profile->skillTags->isNotEmpty())
+                        <p style="white-space: nowrap;">{{ $student->profile->skillTags->pluck('name')->implode(', ') }}</p>
+                    @else
+                        <p>No skills added yet.</p>
+                    @endif
                 </div>
             </div>
         </div>

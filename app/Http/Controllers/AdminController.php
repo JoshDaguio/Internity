@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Models\Course;
 use App\Models\Profile;
+use App\Models\ActivityLog;
 use App\Mail\StudentApprovalMail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -112,6 +113,14 @@ class AdminController extends Controller
             $student->course->course_name
         ));
 
+        // Manually log the approval action
+        ActivityLog::create([
+            'admin_id' => $user->id,
+            'action' => 'Approved Student Registration',
+            'target' => $student->profile->first_name . ' ' . $student->profile->last_name, // Full name as target
+            'changes' => json_encode(['status' => 'Approved']),
+        ]);
+
         return redirect()->route('registrations.pending')->with('success', 'Student registration approved successfully.');
     }
 
@@ -119,6 +128,17 @@ class AdminController extends Controller
     public function deactivateStudent(User $student)
     {
         $student->update(['status_id' => 2]); // Set status to Inactive
+
+        // Log the deactivation
+        ActivityLog::create([
+            'admin_id' => Auth::id(),
+            'action' => 'Deactivated Student',
+            'target' => $student->profile->first_name . ' ' . $student->profile->last_name, // Full name as target
+            'changes' => json_encode(['status' => 'Deactivated']),
+        ]);
+
+
+
         return redirect()->route('students.list')->with('success', 'Student account deactivated successfully.');
     }
 
@@ -126,6 +146,16 @@ class AdminController extends Controller
     public function reactivateStudent(User $student)
     {
         $student->update(['status_id' => 1]); // Set status to Active
+
+        // Log the reactivation
+        ActivityLog::create([
+            'admin_id' => Auth::id(),
+            'action' => 'Reactivated Student',
+            'target' => $student->profile->first_name . ' ' . $student->profile->last_name, // Full name as target
+            'changes' => json_encode(['status' => 'Reactivated']),
+        ]);
+
+
         return redirect()->route('students.list')->with('success', 'Student account reactivated successfully.');
     }
 
@@ -174,6 +204,19 @@ class AdminController extends Controller
             'course_id' => $request->course_id,
         ]);
 
+        // Log the creation of the student
+        ActivityLog::create([
+            'admin_id' => Auth::id(),
+            'action' => 'Created Student',
+            'target' => $student->profile->first_name . ' ' . $student->profile->last_name, // Full name as target
+            'changes' => json_encode([
+                'name' => $student->name,
+                'email' => $student->email,
+                'course_id' => $student->course_id
+            ]),
+        ]);
+
+
         // Send the email with the login details
         \Mail::to($student->email)->send(new \App\Mail\StudentApprovalMail(
             $student->name,
@@ -203,53 +246,104 @@ class AdminController extends Controller
             'password' => ['nullable', 'string', 'min:8'],
             'course_id' => ['required', 'exists:courses,id'],
         ]);
-    
+
         $updatedFields = [];
         $newPassword = null;
-    
+        $sendEmail = false;
+
+        // Check and log specific changes
+        if ($student->profile->first_name != $request->first_name) {
+            $updatedFields['First Name'] = ['old' => $student->profile->first_name, 'new' => $request->first_name];
+        }
+        if ($student->profile->last_name != $request->last_name) {
+            $updatedFields['Last Name'] = ['old' => $student->profile->last_name, 'new' => $request->last_name];
+        }
+        if ($student->profile->id_number != $request->id_number) {
+            $updatedFields['ID'] = ['old' => $student->profile->id_number, 'new' => $request->id_number];
+        }
+
         // Update profile
         $student->profile->update([
             'first_name' => $request->first_name,
             'last_name' => $request->last_name,
             'id_number' => $request->id_number,
         ]);
-    
-        // Update course if changed
+
+        // Update course if changed and log the change with course code
         if ($request->course_id != $student->course_id) {
+            $oldCourse = $student->course->course_code;
+            $newCourse = \App\Models\Course::find($request->course_id); // Fetch the course details
+            $updatedFields['course'] = ['old' => $student->course->course_code, 'new' => $newCourse->course_code];
             $student->course_id = $request->course_id;
         }
-    
+
         // Check if email is updated
         if ($request->email != $student->email) {
+            $updatedFields['email'] = 'Email Changed';
             $student->email = $request->email;
-            $updatedFields[] = 'email';
-    
-            // Auto-generate a new password if only the email is updated
+
+            // Generate a new password when email changes
             $newPassword = 'aufCCSInternship' . Str::random(5);
             $student->password = Hash::make($newPassword);
-            $updatedFields[] = 'password';
+            $updatedFields['password'] = 'Generated New';
+
+            // Set flag to send email with new email and password
+            $sendEmail = true;
         }
-    
-        // Check if password is updated
+
+        // Check if password is updated independently
         if ($request->filled('password')) {
             $newPassword = $request->password; // Use the password from the request
-            $student->password = Hash::make($request->password);
-            $updatedFields[] = 'password';
+            $student->password = Hash::make($newPassword);
+            $updatedFields['password'] = 'Manually Changed';
+
+            // Set flag to send email with new password only
+            $sendEmail = true;
         }
-    
+
+        // Save the student changes
         $student->save();
-    
-        // Send email if either email or password or both are updated
-        if (!empty($updatedFields)) {
-            \Mail::to($student->email)->send(new \App\Mail\StudentUpdateNotificationMail(
-                $student->name,
-                $student->email,
-                $updatedFields,
-                $newPassword // Pass the new password if updated
-            ));
+
+        // Log the update with proper target name and detailed changes
+        ActivityLog::create([
+            'admin_id' => Auth::id(),
+            'action' => 'Updated Student',
+            'target' => $student->profile->first_name . ' ' . $student->profile->last_name, // Full name as target
+            'changes' => json_encode($updatedFields),
+        ]);
+
+        // Send email based on changes
+        if ($sendEmail) {
+            // Send email only if either email or password or both are updated
+            if (isset($updatedFields['email']) && isset($updatedFields['password'])) {
+                // Both email and password changed
+                \Mail::to($student->email)->send(new \App\Mail\StudentUpdateNotificationMail(
+                    $student->name,
+                    $student->email,
+                    ['email', 'password'], // Specify both in updated fields
+                    $newPassword // Pass the new password
+                ));
+            } elseif (isset($updatedFields['email'])) {
+                // Only email changed
+                \Mail::to($student->email)->send(new \App\Mail\StudentUpdateNotificationMail(
+                    $student->name,
+                    $student->email,
+                    ['email', 'password'], // Pass both email and new password
+                    $newPassword
+                ));
+            } elseif (isset($updatedFields['password'])) {
+                // Only password changed
+                \Mail::to($student->email)->send(new \App\Mail\StudentUpdateNotificationMail(
+                    $student->name,
+                    $student->email,
+                    ['password'], // Pass only password
+                    $newPassword
+                ));
+            }
         }
-    
+
         return redirect()->route('students.list')->with('success', 'Student account updated successfully.');
     }
+
 
 }

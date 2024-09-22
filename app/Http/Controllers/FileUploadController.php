@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\FileUpload;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Models\ActivityLog;
 use Illuminate\Support\Facades\Storage;
 
 class FileUploadController extends Controller
@@ -55,11 +56,23 @@ class FileUploadController extends Controller
         $file = $request->file('file');
         $filePath = $file->store('uploads');
 
-        FileUpload::create([
+        $fileUpload = FileUpload::create([
             'file_name' => $file->getClientOriginalName(),
             'file_path' => $filePath,
             'description' => $request->description,
             'uploaded_by' => Auth::id(),
+        ]);
+
+
+        // Log the file upload
+        ActivityLog::create([
+            'admin_id' => Auth::id(),
+            'action' => 'Uploaded File',
+            'target' => $fileUpload->file_name,
+            'changes' => json_encode([
+                'file_name' => $fileUpload->file_name,
+                'description' => $fileUpload->description,
+            ]),
         ]);
 
         return redirect()->route('file_uploads.index')->with('success', 'File uploaded successfully.');
@@ -75,6 +88,15 @@ class FileUploadController extends Controller
     {
         $file = FileUpload::findOrFail($id);
         Storage::delete($file->file_path);
+
+            // Log the file deletion
+        ActivityLog::create([
+            'admin_id' => Auth::id(),
+            'action' => 'Deleted File',
+            'target' => $file->file_name,
+            'changes' => json_encode(['file_name' => $file->file_name]),
+        ]);
+        
         $file->delete();
 
         return redirect()->route('file_uploads.index')->with('success', 'File deleted successfully.');
@@ -107,8 +129,13 @@ class FileUploadController extends Controller
             'file' => 'nullable|file|max:2048', // File is optional in update
         ]);
 
+        $updatedFields = [];
+    
         // Update description
-        $file->description = $request->description;
+        if ($file->description != $request->description) {
+            $updatedFields['description'] = ['old' => $file->description, 'new' => $request->description];
+            $file->description = $request->description;
+        }
 
         // If a new file is uploaded, update the file
         if ($request->hasFile('file')) {
@@ -124,6 +151,16 @@ class FileUploadController extends Controller
         }
 
         $file->save();
+
+        // Log the file update if changes were made
+        if (!empty($updatedFields)) {
+            ActivityLog::create([
+                'admin_id' => Auth::id(),
+                'action' => 'Updated File',
+                'target' => $file->file_name,
+                'changes' => json_encode($updatedFields),
+            ]);
+        }
 
         return redirect()->route('file_uploads.index')->with('success', 'File updated successfully.');
     }

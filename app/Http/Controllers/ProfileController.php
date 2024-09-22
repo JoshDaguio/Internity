@@ -6,6 +6,7 @@ use App\Models\Profile;
 use App\Models\Link;
 use App\Models\SkillTag;
 use App\Models\Application;
+use App\Models\AcceptedInternship;
 use App\Http\Requests\ProfileUpdateRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -28,19 +29,16 @@ class ProfileController extends Controller
         $links = $profile ? $profile->links : [];
         $skillTags = SkillTag::all();
 
-        // Fetch the student's accepted internship application if any
-        $acceptedApplication = null;
+        // Fetch the student's accepted internship details if any
+        $acceptedInternship = null;
         if ($user->role_id == 5) { // Check if the user is a student
-            $acceptedApplication = Application::where('student_id', $user->id)
-                ->whereHas('status', function($query) {
-                    $query->where('status', 'Accepted');
-                })
+            $acceptedInternship = AcceptedInternship::where('student_id', $user->id)
                 ->with('job.company')
                 ->first();
         }
 
 
-        return view('profile.profile', compact('user', 'profile', 'links', 'skillTags', 'acceptedApplication'));
+        return view('profile.profile', compact('user', 'profile', 'links', 'skillTags', 'acceptedInternship'));
     }
     
     /**
@@ -62,6 +60,31 @@ class ProfileController extends Controller
     {
         $user = Auth::user();
         $profile = $user->profile;
+
+       // Validate input, excluding the 'name' for non-company users
+       $rules = [
+            'first_name' => 'nullable|string|max:255',
+            'middle_name' => 'nullable|string|max:255',
+            'last_name' => 'nullable|string|max:255',
+            'id_number' => 'nullable|string|max:255',
+            'about' => 'nullable|string|max:1000',
+            'address' => 'nullable|string|max:255',
+            'contact_number' => 'nullable|string|max:255',
+            'email' => 'nullable|email|unique:users,email,' . $user->id, // Handle email validation for Super Admin/Admin
+        ];
+
+        // Only validate the 'name' if the user is a company (role_id = 4)
+        if ($user->role_id == 4) {
+            $rules['name'] = 'nullable|string|max:255'; // Company Name
+        }
+
+        // Validate the request with the dynamically built rules
+        $request->validate($rules);
+
+        // Update the company name in the User table, but only for company accounts
+        if ($user->role_id == 4) {
+            $user->update(['name' => $request->input('name')]); // Save Company Name in User table
+        }
     
         // Update profile information
         $profile->update($request->only([

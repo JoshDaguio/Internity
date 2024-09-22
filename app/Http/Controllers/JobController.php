@@ -4,21 +4,23 @@ namespace App\Http\Controllers;
 
 use App\Models\Job;
 use App\Models\SkillTag;
+use App\Models\AcceptedInternship;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class JobController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         // Retrieve jobs for the logged-in company or all jobs for Super Admin and Admin
         $jobs = (Auth::user()->role_id === 4) // Company
             ? Job::where('company_id', Auth::id())->get()
             : Job::all();
         
-        $totalPositions = $jobs->sum('positions_available');
+        // Calculate the total number of accepted internships based on the AcceptedInternship table
+        $totalAcceptedInternships = AcceptedInternship::whereIn('job_id', $jobs->pluck('id'))->count();
 
-        return view('jobs.index', compact('jobs', 'totalPositions'));
+        return view('jobs.index', compact('jobs', 'totalAcceptedInternships'));
     }
 
     public function create()
@@ -80,7 +82,12 @@ class JobController extends Controller
 
     public function show(Job $job)
     {
-        return view('jobs.show', compact('job'));
+        // Fetch accepted interns related to the job
+        $acceptedInterns = AcceptedInternship::with('student.profile', 'student.course')
+            ->where('job_id', $job->id)
+            ->get();
+
+        return view('jobs.show', compact('job', 'acceptedInterns'));
     }
 
     public function edit(Job $job)

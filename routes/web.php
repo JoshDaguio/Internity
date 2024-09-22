@@ -167,6 +167,7 @@ Route::middleware(['auth', 'super_admin'])->group(function () {
     Route::patch('/admin-accounts/{admin}', [AdminAccountController::class, 'update'])->name('admin-accounts.update');
     Route::delete('/admin-accounts/{admin}', [AdminAccountController::class, 'destroy'])->name('admin-accounts.destroy');
     Route::patch('/admin-accounts/{admin}/reactivate', [AdminAccountController::class, 'reactivate'])->name('admin-accounts.reactivate');
+    Route::get('/admin-accounts/{admin}', [AdminAccountController::class, 'show'])->name('admin-accounts.show');
 });
 
 

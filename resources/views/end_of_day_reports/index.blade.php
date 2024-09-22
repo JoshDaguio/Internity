@@ -20,11 +20,71 @@
         <div class="alert alert-danger">{{ session('error') }}</div>
     @endif
 
-
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
             <a href="{{ route('end_of_day_reports.compile.weekly') }}" class="btn btn-success me-2"><i class="bi bi-download"></i> Weekly</a>
             <a href="{{ route('end_of_day_reports.compile.monthly') }}" class="btn btn-success me-2"><i class="bi bi-download"></i> Monthly</a>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <!-- Internship Details Card -->
+        <div class="col-md-4">
+            <div class="card h-100">
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title">Internship Details</h5>
+                    <p class="mb-1"><strong>Company:</strong> {{ $acceptedInternship->job->company->name }}</p>
+                    <p class="mb-1"><strong>Job:</strong> {{ $acceptedInternship->job->title }}</p>
+                    <p class="mb-0"><strong>Work Type and Days:</strong> 
+                        @php
+                            $schedule = json_decode($acceptedInternship->schedule, true);
+                            $workType = $acceptedInternship->work_type;
+                            if ($workType === 'Hybrid') {
+                                echo "Onsite: " . implode(', ', $schedule['onsite_days'] ?? []);
+                                echo " | Remote: " . implode(', ', $schedule['remote_days'] ?? []);
+                            } else {
+                                echo implode(', ', $schedule['days'] ?? []);
+                            }
+                        @endphp
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Schedule Card -->
+        <div class="col-md-4">
+            <div class="card h-100">
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title">Schedule</h5>
+                    <p class="mb-1"><strong>Start Date:</strong> {{ $startDate->format('F d, Y') }}</p>
+                    <p class="mb-1"><strong>Schedule Time:</strong> 
+                        {{ \Carbon\Carbon::parse($schedule['start_time'])->format('g:i A') }} - 
+                        {{ \Carbon\Carbon::parse($schedule['end_time'])->format('g:i A') }}
+                    </p>
+                    <p class="mb-0"><strong>Current Date:</strong> {{ $currentDateTime->format('F d, Y h:i A') }}</p> <!-- Using API time -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Submissions Card -->
+        <div class="col-md-4">
+            <div class="card h-100">
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title">Submissions</h5>
+                    <p class="mb-1">
+                        <strong>
+                            <span class="badge bg-danger"><i class="bi bi-exclamation-octagon me-1"></i> Missing Reports:</span>
+                        </strong> 
+                        {{ $missingDates->count() }}
+                    </p>
+                    <p class="mb-0">
+                        <strong>              
+                            <span class="badge bg-success"><i class="bi bi-check-circle"></i> Created Reports:</span>
+                        </strong> 
+                        {{ $reports->count() }}
+                    </p>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -99,20 +159,20 @@
                     right: 'prev,next'
                 },
                 events: [
+                    // Display submitted reports as blue
                     @if(!$reports->isEmpty())
-                    // Display reports if available
                     @foreach($reports as $report)
                     {
                         title: 'View Report',
                         start: '{{ $report->date_submitted->format("Y-m-d") }}',
-                        backgroundColor: 'green',
+                        backgroundColor: 'blue',
                         url: '{{ route("end_of_day_reports.show", $report->id) }}'
                     },
                     @endforeach
                     @endif
                     
-                    @if(!$missingDates->isEmpty())
                     // Display missing submissions as red
+                    @if(!$missingDates->isEmpty())
                     @foreach($missingDates as $missingDate)
                     {
                         title: 'Missing Submission',
@@ -122,8 +182,15 @@
                     @endforeach
                     @endif
 
-                    // Today's submission (yellow) if not yet submitted
-                    @if(!$hasSubmittedToday && $isWeekday)
+                    // Mark the start date in green
+                    {
+                        title: 'Internship Start Date',
+                        start: '{{ $startDate->format("Y-m-d") }}',
+                        backgroundColor: 'green'
+                    },
+
+                    // Today's submission (yellow) if scheduled and not yet submitted
+                    @if(!$hasSubmittedToday && $isScheduledDay)
                     {
                         title: 'Submit Today',
                         start: '{{ \Carbon\Carbon::now("Asia/Manila")->format("Y-m-d") }}',
@@ -134,17 +201,31 @@
                 ],
                 validRange: {
                     start: '{{ \Carbon\Carbon::now()->subYear(1)->startOfMonth()->format("Y-m-d") }}',
-                    end: '{{ \Carbon\Carbon::now()->addMonth(1)->startOfMonth()->format("Y-m-d") }}'  // Adds one day to the end of the month
+                    end: '{{ \Carbon\Carbon::now()->endOfMonth()->format("Y-m-d") }}'
                 },
                 dateClick: function(info) {
                     var currentDate = '{{ \Carbon\Carbon::now("Asia/Manila")->format("Y-m-d") }}';
-                    if (info.dateStr > currentDate) {
-                        return false; // disable clicks on future dates
+                    
+                    // Disable clicks on future dates or dates before the start date
+                    if (info.dateStr > currentDate || info.dateStr < '{{ $startDate->format("Y-m-d") }}') {
+                        return false;
                     }
-                }
+
+                    // Allow submission only on scheduled days
+                    const allowedDays = {!! json_encode($scheduleDays) !!};
+                    const clickedDay = new Date(info.dateStr).toLocaleDateString('en-US', { weekday: 'long' });
+
+                    if (!allowedDays.includes(clickedDay)) {
+                        alert("You can only submit reports on your scheduled days.");
+                        return false;
+                    }
+                },
+                nowIndicator: true, // Show the current date
+                now: '{{ \Carbon\Carbon::now("Asia/Manila")->format("Y-m-d") }}'
             });
 
             calendar.render();
         });
     </script>
+
 @endsection

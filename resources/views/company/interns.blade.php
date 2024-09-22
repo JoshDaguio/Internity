@@ -24,8 +24,7 @@
                         <th>Intern</th>
                         <th>Job</th>
                         <th>Email</th>
-                        <th>Course</th>
-                        <th>CV</th>
+                        <th>Start Date</th>
                         <th>Action</th>
                     </tr>
                 </thead>
@@ -35,18 +34,11 @@
                         <td>{{ $intern->student->profile->first_name }} {{ $intern->student->profile->last_name }}</td>
                         <td>{{ $intern->job->title }}</td>
                         <td>{{ $intern->student->email }}</td>
-                        <td>{{ $intern->student->course->course_code }}</td>
+                        <td>{{ \Carbon\Carbon::parse($intern->start_date)->format('F d, Y') }}</td>
                         <td>
-                            @if($intern->cv_path) <!-- CV in Application -->
-                                <button class="btn btn-dark btn-sm" onclick="showPreview('{{ route('application.preview', ['type' => 'cv', 'id' => $intern->id]) }}')"><i class="bi bi-folder"></i></button>
-                            @elseif($intern->student->profile->cv_path) <!-- CV in Profile -->
-                                <button class="btn btn-dark btn-sm" onclick="showPreview('{{ route('profile.preview', ['type' => 'cv', 'id' => $intern->student->profile->id]) }}')"><i class="bi bi-folder"></i></button>
-                            @else
-                                <span class="text-muted">No CV</span>
-                            @endif
-                        </td>
-                        <td>
-                            <button class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#viewInternModal{{ $intern->id }}"><i class="bi bi-info-circle"></i></button>
+                            <button class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#viewInternModal{{ $intern->id }}">
+                                <i class="bi bi-info-circle"></i>
+                            </button>
                         </td>
                     </tr>
 
@@ -63,6 +55,7 @@
                                     <p><strong>Course:</strong> {{ $intern->student->course->course_code }}</p>
                                     <p><strong>Email:</strong> {{ $intern->student->email }}</p>
                                     <p><strong>Job Title:</strong> {{ $intern->job->title }}</p>
+                                    <p><strong>Start Date:</strong> {{ \Carbon\Carbon::parse($intern->start_date)->format('F d, Y') }}</p>
                                 </div>
                             </div>
                         </div>

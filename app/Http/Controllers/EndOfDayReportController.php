@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\EndOfDayReport;
 use App\Models\DailyTask;
+use App\Models\AcceptedInternship;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
@@ -19,6 +20,17 @@ class EndOfDayReportController extends Controller
     {
         $user = Auth::user();
 
+        // Fetch the student's accepted internship
+        $acceptedInternship = AcceptedInternship::where('student_id', $user->id)->first();
+        
+        if (!$acceptedInternship) {
+            return redirect()->back()->with('error', 'No accepted internship found.');
+        }
+    
+        $startDate = Carbon::parse($acceptedInternship->start_date);
+        $schedule = json_decode($acceptedInternship->schedule, true); // Extract schedule details
+        $scheduleDays = array_merge($schedule['days'] ?? [], $schedule['onsite_days'] ?? [], $schedule['remote_days'] ?? []); // Combine all schedule days
+    
         // Fetch the current date and time from the API or fallback to server time
         try {
             $response = Http::get('http://worldtimeapi.org/api/timezone/Asia/Manila');
@@ -45,32 +57,48 @@ class EndOfDayReportController extends Controller
         $reports = EndOfDayReport::where('student_id', $user->id)
             ->whereMonth('date_submitted', $selectedMonth)
             ->get();
-
-        // Calculate missing dates
-        $missingDates = $this->getMissingSubmissionDates($user->id, $selectedMonth, $currentDateTime);
+    
+        // Calculate missing dates, only start calculating from the Start Date
+        $missingDates = $this->getMissingSubmissionDates($user->id, $selectedMonth, $currentDateTime, $scheduleDays, $startDate);
         
-        // Check if today is a weekday
-        $isWeekday = !$currentDateTime->isWeekend();
-        
+        // Check if today is in the student's schedule and after the start date
+        $isScheduledDay = in_array($currentDateTime->format('l'), $scheduleDays) && $currentDateTime->gte($startDate);
+    
         // Check if a report has already been submitted today
         $hasSubmittedToday = EndOfDayReport::where('student_id', $user->id)
             ->whereDate('date_submitted', $currentDateTime->format('Y-m-d'))
             ->exists();
-
     
-        return view('end_of_day_reports.index', compact('reports', 'missingDates', 'selectedMonth', 'availableMonths', 'hasSubmittedToday', 'isWeekday'));
+        // Pass variables to the view, including the schedule days
+        return view('end_of_day_reports.index', compact(
+            'reports', 
+            'missingDates', 
+            'selectedMonth', 
+            'availableMonths', 
+            'hasSubmittedToday', 
+            'isScheduledDay', 
+            'startDate', 
+            'scheduleDays',
+            'acceptedInternship',
+            'currentDateTime'
+        ));
     }
 
-    private function getMissingSubmissionDates($studentId, $selectedMonth, $currentDateTime)
+    private function getMissingSubmissionDates($studentId, $selectedMonth, $currentDateTime, $scheduleDays, $startDate)
     {
         $startOfMonth = Carbon::create($currentDateTime->year, $selectedMonth, 1)->startOfMonth();
         $today = $selectedMonth == $currentDateTime->month ? $currentDateTime->copy() : $startOfMonth->copy()->endOfMonth();
     
-        // Get all weekdays between the start of the month and today
-        $allWeekdays = collect();
+        // Only check dates starting from the Start Date
+        if ($startDate->gt($startOfMonth)) {
+            $startOfMonth = $startDate->copy();
+        }
+    
+        // Get all scheduled days between the start of the month and today
+        $allScheduledDays = collect();
         for ($date = $startOfMonth; $date->lte($today); $date->addDay()) {
-            if (!$date->isWeekend()) {
-                $allWeekdays->push($date->copy()->format('Y-m-d'));
+            if (in_array($date->format('l'), $scheduleDays)) {
+                $allScheduledDays->push($date->copy()->format('Y-m-d'));
             }
         }
     
@@ -84,7 +112,7 @@ class EndOfDayReportController extends Controller
             });
     
         // Calculate missing dates
-        return $allWeekdays->diff($submissionDates);
+        return $allScheduledDays->diff($submissionDates);
     }
 
     /**

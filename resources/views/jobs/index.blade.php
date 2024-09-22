@@ -44,18 +44,28 @@
                   <tbody>
                     @foreach ($jobs as $job)
                     <tr>
-                      <td>{{ $job->title }}</td>
+                      <td>
+                        <a href="{{ route('jobs.show',$job) }}" class="btn btn-light btn-sm">
+                            {{ $job->title }}
+                        </a>
+                      </td>
                       <td>{{ $job->industry }}</td>
-                      <td>{{ $job->positions_available }}</td>
+                      <td>
+                          @if($job->positions_available > 0)
+                              {{ $job->positions_available }}
+                          @else
+                              <span class="text-danger">No more available positions</span>
+                          @endif
+                      </td>
                       <td>{{ $job->work_type }}</td>
                       <td>
-                        <a href="{{ route('jobs.show', $job) }}" class="btn btn-info btn-sm"><i class="bi bi-info-circle"></i></a>
+                        <!-- <a href="{{ route('jobs.show', $job) }}" class="btn btn-info btn-sm"><i class="bi bi-info-circle"></i></a> -->
                         <a href="{{ route('jobs.edit', $job) }}" class="btn btn-warning btn-sm"><i class="bi bi-pencil"></i></a>
-                        <form action="{{ route('jobs.destroy', $job) }}" method="POST" style="display:inline;">
+                        <!-- <form action="{{ route('jobs.destroy', $job) }}" method="POST" style="display:inline;">
                           @csrf
                           @method('DELETE')
                           <button type="submit" class="btn btn-danger btn-sm"><i class="bi bi-trash"></i></button>
-                        </form>
+                        </form> -->
                       </td>
                     </tr>
                     @endforeach
@@ -67,6 +77,7 @@
           </div>
         </div>
 
+        <!-- Active Internships Section -->
         <div class="col-lg-4">
           <div class="card">
             <div class="card-body">
@@ -79,9 +90,12 @@
                 @else
                     @foreach ($jobs as $job)
                         @php
-                            $percentage = ($job->positions_available / $totalPositions) * 100;
+                            // Calculate the number of accepted internships for this job
+                            $acceptedInternships = \App\Models\AcceptedInternship::where('job_id', $job->id)->count();
+                            // Calculate percentage of accepted internships for this job
+                            $percentage = $totalAcceptedInternships > 0 ? ($acceptedInternships / $totalAcceptedInternships) * 100 : 0;
                         @endphp
-                        <p>{{ $job->title }} ({{ $job->positions_available }})</p>
+                        <p>{{ $job->title }} ({{ $acceptedInternships }} accepted)</p>
                         <div class="progress mb-3">
                             <div class="progress-bar" role="progressbar" style="width: {{ $percentage }}%; background-color: #B30600;" aria-valuenow="{{ $percentage }}" aria-valuemin="0" aria-valuemax="100">
                                 {{ round($percentage, 2) }}%

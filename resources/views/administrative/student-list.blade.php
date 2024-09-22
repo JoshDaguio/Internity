@@ -108,46 +108,53 @@
                                 @forelse($approvedStudents as $student)
                                     <tr>
                                         <td>{{ $student->profile ? $student->profile->id_number : 'N/A' }}</td>
-                                        <td>{{ $student->profile ? $student->profile->last_name : 'N/A' }}, {{ $student->profile ? $student->profile->first_name : 'N/A' }}</td>
+                                        <td>
+                                            <a href="{{ route('students.show', $student->id) }}" class="btn btn-light btn-sm">
+                                                {{ $student->profile->last_name}}, {{ $student->profile->first_name}}
+                                            </a>
+                                        </td>
                                         <td>{{ $student->email }}</td>
                                         <td>{{ $student->course ? $student->course->course_code : 'N/A' }}</td>
                                         <td>{{ $student->status_id == 1 ? 'Active' : 'Inactive' }}</td>
                                         <td>
                                             @if($student->status_id == 1)
-                                                <a href="{{ route('students.show', $student->id) }}" class="btn btn-info"><i class="bi bi-info-circle"></i></a>
-                                                <a href="{{ route('students.edit', $student->id) }}" class="btn btn-warning"><i class="bi bi-pencil"></i></a>
-                                                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deactivateModal-{{ $student->id }}">
-                                                    Deactivate
-                                                </button>
+                                                @if(auth()->user()->role_id == 1 || auth()->user()->role_id == 2) <!-- Super Admin or Admin -->
+                                                    <a href="{{ route('students.edit', $student->id) }}" class="btn btn-warning btn-sm"><i class="bi bi-pencil"></i></a>
+                                                    <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deactivateModal-{{ $student->id }}">
+                                                        Deactivate
+                                                    </button>
 
-                                                <!-- Deactivate Modal -->
-                                                <div class="modal fade" id="deactivateModal-{{ $student->id }}" tabindex="-1" aria-labelledby="deactivateModalLabel-{{ $student->id }}" aria-hidden="true">
-                                                    <div class="modal-dialog">
-                                                        <div class="modal-content">
-                                                            <div class="modal-header">
-                                                                <h5 class="modal-title" id="deactivateModalLabel-{{ $student->id }}">Deactivate Student Account</h5>
-                                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                            </div>
-                                                            <div class="modal-body">
-                                                                Are you sure you want to deactivate this student account?
-                                                            </div>
-                                                            <div class="modal-footer">
-                                                                <form action="{{ route('students.deactivate', $student->id) }}" method="POST" style="display:inline;">
-                                                                    @csrf
-                                                                    @method('DELETE')
-                                                                    <button type="submit" class="btn btn-danger">Deactivate</button>
-                                                                </form>
-                                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                    <!-- Deactivate Modal -->
+                                                    <div class="modal fade" id="deactivateModal-{{ $student->id }}" tabindex="-1" aria-labelledby="deactivateModalLabel-{{ $student->id }}" aria-hidden="true">
+                                                        <div class="modal-dialog">
+                                                            <div class="modal-content">
+                                                                <div class="modal-header">
+                                                                    <h5 class="modal-title" id="deactivateModalLabel-{{ $student->id }}">Deactivate Student Account</h5>
+                                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                                </div>
+                                                                <div class="modal-body">
+                                                                    Are you sure you want to deactivate this student account?
+                                                                </div>
+                                                                <div class="modal-footer">
+                                                                    <form action="{{ route('students.deactivate', $student->id) }}" method="POST" style="display:inline;">
+                                                                        @csrf
+                                                                        @method('DELETE')
+                                                                        <button type="submit" class="btn btn-danger">Deactivate</button>
+                                                                    </form>
+                                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     </div>
-                                                </div>
+                                                @endif
                                             @else
-                                                <form action="{{ route('students.reactivate', $student->id) }}" method="POST" style="display:inline;">
-                                                    @csrf
-                                                    @method('PATCH')
-                                                    <button type="submit" class="btn btn-success">Reactivate</button>
-                                                </form>
+                                                @if(auth()->user()->role_id == 1 || auth()->user()->role_id == 2) <!-- Super Admin or Admin -->
+                                                    <form action="{{ route('students.reactivate', $student->id) }}" method="POST" style="display:inline;">
+                                                        @csrf
+                                                        @method('PATCH')
+                                                        <button type="submit" class="btn btn-success btn-sm">Reactivate</button>
+                                                    </form>
+                                                @endif
                                             @endif
                                         </td>
                                     </tr>

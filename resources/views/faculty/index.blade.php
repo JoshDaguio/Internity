@@ -107,11 +107,9 @@
                                 @foreach($faculties as $faculty)
                                     <tr>
                                         <td>
-                                            @if($faculty->profile)
-                                                {{ $faculty->profile->first_name }} {{ $faculty->profile->last_name }}
-                                            @else
-                                                N/A
-                                            @endif
+                                            <a href="{{ route('faculty.show', $faculty->id) }}" class="btn btn-light btn-sm">
+                                                {{ $faculty->profile->first_name ?? 'N/A' }} {{ $faculty->profile->last_name ?? '' }}
+                                            </a>
                                         </td>
                                         <td>{{ $faculty->email }}</td>
                                         <td>
@@ -127,9 +125,8 @@
                                         </td>
                                         <td>
                                             @if($faculty->status_id == 1)
-                                                <a href="{{ route('faculty.show', $faculty->id) }}" class="btn btn-info"><i class="bi bi-info-circle"></i></a>
-                                                <a href="{{ route('faculty.edit', $faculty) }}" class="btn btn-warning"><i class="bi bi-pencil"></i></a>
-                                                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deactivateModal-{{ $faculty->id }}">
+                                                <a href="{{ route('faculty.edit', $faculty) }}" class="btn btn-warning btn-sm"><i class="bi bi-pencil"></i></a>
+                                                <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deactivateModal-{{ $faculty->id }}">
                                                     Deactivate
                                                 </button>
 
@@ -159,7 +156,7 @@
                                                 <form action="{{ route('faculty.reactivate', $faculty) }}" method="POST" style="display:inline;">
                                                     @csrf
                                                     @method('PATCH')
-                                                    <button type="submit" class="btn btn-success">Reactivate</button>
+                                                    <button type="submit" class="btn btn-success btn-sm">Reactivate</button>
                                                 </form>
                                             @endif
                                         </td>

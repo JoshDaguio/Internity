@@ -5,7 +5,7 @@
 <ul class="sidebar-nav" id="sidebar-nav">
 
   <li class="nav-item">
-    <a class="nav-link {{ request()->is('admin/dashboard') ? '' : 'collapsed' }}" href="{{ url('super_admin/dashboard') }}">
+    <a class="nav-link {{ request()->is('super_admin/dashboard') ? '' : 'collapsed' }}" href="{{ url('super_admin/dashboard') }}">
       <i class="bi bi-grid"></i>
       <span>Dashboard</span>
     </a>
@@ -23,7 +23,7 @@
   <li class="nav-heading">User Management</li>
 
   <li class="nav-item">
-    <a class="nav-link {{ request()->routeIs('admin-accounts.index', 'admin-accounts.create', 'admin-accounts.edit') ? '' : 'collapsed' }}" href="{{ route('admin-accounts.index') }}">
+    <a class="nav-link {{ request()->routeIs('admin-accounts.index', 'admin-accounts.create', 'admin-accounts.edit', 'admin-accounts.show') ? '' : 'collapsed' }}" href="{{ route('admin-accounts.index') }}">
       <i class="bi bi-person-badge"></i>
       <span>Admin</span>  
     </a>
