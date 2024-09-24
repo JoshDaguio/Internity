@@ -26,6 +26,13 @@
 <div class="card">
     <div class="card-body">
         <h5 class="card-title">New End of Day Report Form</h5>
+        <p>
+            <strong>
+                <h5>
+                    <span class="badge bg-info text-dark"><i class="bi bi-calendar"></i> Current Date:</span>
+                    </strong> {{ $currentDateTime->format('F d, Y h:i A') }}
+                </h5>
+        </p>
 
         <form action="{{ route('end_of_day_reports.store') }}" method="POST" class="row g-3">
             @csrf

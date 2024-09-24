@@ -24,7 +24,9 @@ class EndOfDayReportController extends Controller
         $acceptedInternship = AcceptedInternship::where('student_id', $user->id)->first();
         
         if (!$acceptedInternship) {
-            return redirect()->back()->with('error', 'No accepted internship found.');
+            return view('end_of_day_reports.index', [
+                'noInternship' => true, // Pass a flag to show a message in the view
+            ]);
         }
     
         $startDate = Carbon::parse($acceptedInternship->start_date);
@@ -68,6 +70,9 @@ class EndOfDayReportController extends Controller
         $hasSubmittedToday = EndOfDayReport::where('student_id', $user->id)
             ->whereDate('date_submitted', $currentDateTime->format('Y-m-d'))
             ->exists();
+
+        // Set $noInternship to false as there is an internship
+        $noInternship = false;
     
         // Pass variables to the view, including the schedule days
         return view('end_of_day_reports.index', compact(
@@ -80,7 +85,8 @@ class EndOfDayReportController extends Controller
             'startDate', 
             'scheduleDays',
             'acceptedInternship',
-            'currentDateTime'
+            'currentDateTime',
+            'noInternship'
         ));
     }
 
@@ -120,7 +126,15 @@ class EndOfDayReportController extends Controller
      */
     public function create()
     {
-        return view('end_of_day_reports.create');
+        // Fetch the current date and time from the API or fallback to server time
+        try {
+            $response = Http::get('http://worldtimeapi.org/api/timezone/Asia/Manila');
+            $currentDateTime = Carbon::parse($response->json('datetime'));
+        } catch (\Exception $e) {
+            $currentDateTime = Carbon::now(new \DateTimeZone('Asia/Manila'));
+        }
+
+        return view('end_of_day_reports.create', compact('currentDateTime'));
     }
 
     /**

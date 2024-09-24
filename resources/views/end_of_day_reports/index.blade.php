@@ -20,6 +20,13 @@
         <div class="alert alert-danger">{{ session('error') }}</div>
     @endif
 
+    @if(isset($noInternship) && $noInternship)
+        <div class="alert alert-danger text-center">
+            <p><strong>Section is Locked</strong></p>
+            <p>No Internship Yet, Please Apply or Wait for Acceptance</p>
+        </div>
+    @else
+
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
             <a href="{{ route('end_of_day_reports.compile.weekly') }}" class="btn btn-success me-2"><i class="bi bi-download"></i> Weekly</a>
@@ -201,7 +208,7 @@
                 ],
                 validRange: {
                     start: '{{ \Carbon\Carbon::now()->subYear(1)->startOfMonth()->format("Y-m-d") }}',
-                    end: '{{ \Carbon\Carbon::now()->endOfMonth()->format("Y-m-d") }}'
+                    end: '{{ \Carbon\Carbon::now()->addMonth(1)->startOfMonth()->format("Y-m-d") }}' // Up to the start of next month
                 },
                 dateClick: function(info) {
                     var currentDate = '{{ \Carbon\Carbon::now("Asia/Manila")->format("Y-m-d") }}';
@@ -227,5 +234,5 @@
             calendar.render();
         });
     </script>
-
+    @endif
 @endsection

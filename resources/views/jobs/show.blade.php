@@ -105,7 +105,6 @@
                         <th>Email</th>
                         <th>Course</th>
                         <th>Start Date</th>
-                        <th>CV</th>
                         <th>Action</th>
                     </tr>
                 </thead>
@@ -116,13 +115,6 @@
                         <td>{{ $intern->student->email }}</td>
                         <td>{{ $intern->student->course->course_code }}</td>
                         <td>{{ \Carbon\Carbon::parse($intern->start_date)->format('F d, Y') }}</td>
-                        <td>
-                            @if($intern->student->profile->cv_path)
-                                <button class="btn btn-dark btn-sm" onclick="showPreview('{{ route('profile.preview', ['type' => 'cv', 'id' => $intern->student->profile->id]) }}')"><i class="bi bi-folder"></i></button>
-                            @else
-                                <span class="text-muted">No CV</span>
-                            @endif
-                        </td>
                         <td>
                             <button class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#viewInternModal{{ $intern->id }}"><i class="bi bi-info-circle"></i></button>
                         </td>
