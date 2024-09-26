@@ -16,13 +16,21 @@ class CourseController extends Controller
      */
     public function index()
     {
-        $courses = Course::withCount(['faculty', 'students'])->get();
+        // Only count students and faculty who are Active (status_id 1) or Inactive (status_id 2)
+        $courses = Course::withCount([
+            'students' => function ($query) {
+                $query->whereIn('status_id', [1, 2]); // Only Active and Inactive students
+            },
+            'faculty' => function ($query) {
+                $query->whereIn('status_id', [1, 2]); // Only Active and Inactive faculty
+            }
+        ])->get();
 
         // Prepare data for the pie chart (total population per course)
         $coursePopulationData = $courses->map(function ($course) {
             return [
                 'course' => $course->course_code,
-                'population' => $course->faculty_count + $course->students_count,
+                'population' => $course->faculty_count + $course->students_count, // Use the filtered count
             ];
         });
 
@@ -68,24 +76,38 @@ class CourseController extends Controller
      */
     public function show(string $id)
     {
-        $course = Course::withCount(['students', 'faculty'])->findOrFail($id);
+        // Only count students and faculty who are Active (status_id 1) or Inactive (status_id 2)
+        $course = Course::withCount([
+            'students' => function ($query) {
+                $query->whereIn('status_id', [1, 2]); // Active and Inactive
+            },
+            'faculty' => function ($query) {
+                $query->whereIn('status_id', [1, 2]); // Active and Inactive
+            }
+        ])->findOrFail($id);
 
-        // Prepare data for students chart
-        $totalStudents = User::where('role_id', 5)->count(); // Assuming role_id 5 is for students
+        // Total students with Active and Inactive status
+        $totalStudents = User::where('role_id', 5)
+            ->whereIn('status_id', [1, 2]) // Only active and inactive students
+            ->count();
+
         $studentsChartData = [
-            ['name' => $course->course_code, 'value' => $course->students->count()],
-            ['name' => 'Other Courses', 'value' => $totalStudents - $course->students->count()],
+            ['name' => $course->course_code, 'value' => $course->students_count], // This will now only count active and inactive
+            ['name' => 'Other Courses', 'value' => $totalStudents - $course->students_count],
         ];
 
-        // Prepare data for faculty chart
-        $totalFaculty = User::where('role_id', 3)->count(); // Assuming role_id 3 is for faculty
+        // Total faculty with Active and Inactive status
+        $totalFaculty = User::where('role_id', 3)
+            ->whereIn('status_id', [1, 2]) // Only active and inactive faculty
+            ->count();
+
         $facultyChartData = [
-            ['name' => $course->course_code, 'value' => $course->faculty->count()],
-            ['name' => 'Other Courses', 'value' => $totalFaculty - $course->faculty->count()],
+            ['name' => $course->course_code, 'value' => $course->faculty_count], // This will now only count active and inactive
+            ['name' => 'Other Courses', 'value' => $totalFaculty - $course->faculty_count],
         ];
 
-        return view('courses.show', compact('course', 'studentsChartData', 'facultyChartData'));
-    }
+            return view('courses.show', compact('course', 'studentsChartData', 'facultyChartData'));
+        }
 
     /**
      * Show the form for editing the specified resource.

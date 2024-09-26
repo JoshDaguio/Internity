@@ -30,6 +30,7 @@
                 <thead>
                     <tr>
                         <th>Course Code</th>
+                        <th>Course Name</th>
                         <th>Hours</th>
                         <th>Actions</th>
                     </tr>
@@ -38,14 +39,15 @@
                     @foreach($internshipHours as $internshipHour)
                         <tr>
                             <td>{{ $internshipHour->course->course_code }}</td>
+                            <td>{{ $internshipHour->course->course_name }}</td>
                             <td>{{ $internshipHour->hours }}</td>
                             <td>
                                 <a href="{{ route('internship_hours.edit', $internshipHour->id) }}" class="btn btn-warning btn-sm"><i class="bi bi-pencil"></i></a>
-                                <form action="{{ route('internship_hours.destroy', $internshipHour->id) }}" method="POST" style="display:inline;">
+                                <!-- <form action="{{ route('internship_hours.destroy', $internshipHour->id) }}" method="POST" style="display:inline;">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="btn btn-danger btn-sm"><i class="bi bi-trash"></i></button>
-                                </form>
+                                </form> -->
                             </td>
                         </tr>
                     @endforeach

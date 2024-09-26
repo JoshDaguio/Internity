@@ -32,8 +32,8 @@
                     <table class="table datatable">
                         <thead>
                             <tr>
-                                <th scope="col">Course</th>
-                                <th scope="col">Code</th>
+                                <th scope="col">Course Code</th>
+                                <th scope="col">Course Name</th>
                                 <th scope="col">Faculty</th>
                                 <th scope="col">Students</th>
                                 <th scope="col">Action</th>
@@ -42,12 +42,16 @@
                         <tbody>
                             @foreach ($courses as $course)
                             <tr>
+                                <td>
+                                    <a href="{{ route('courses.show', $course) }}" class="btn btn-light btn-sm">
+                                        {{ $course->course_code }}
+                                    </a>
+                                </td>
                                 <td>{{ $course->course_name }}</td>
-                                <td>{{ $course->course_code }}</td>
                                 <td>{{ $course->faculty_count }}</td>
                                 <td>{{ $course->students_count }}</td>
                                 <td>
-                                    <a href="{{ route('courses.show', $course) }}" class="btn btn-info btn-sm"><i class="bi bi-info-circle"></i></a>
+                                    <!-- <a href="{{ route('courses.show', $course) }}" class="btn btn-info btn-sm"><i class="bi bi-info-circle"></i></a> -->
                                     <a href="{{ route('courses.edit', $course) }}" class="btn btn-warning btn-sm"><i class="bi bi-pencil"></i></a>
                                 </td>
                             </tr>

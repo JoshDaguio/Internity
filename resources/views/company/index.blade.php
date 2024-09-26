@@ -67,13 +67,15 @@
                                 @if($company->status_id == 1)
                                     <a href="{{ route('company.edit', $company->id) }}" class="btn btn-warning btn-sm"><i class="bi bi-pencil"></i></a>
                                     <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deactivateModal-{{ $company->id }}">
-                                        Deactivate
+                                        <i class="bi bi-trash"></i>
                                     </button>
                                 @else
                                     <form action="{{ route('company.reactivate', $company->id) }}" method="POST" style="display:inline-block;">
                                         @csrf
                                         @method('PATCH')
-                                        <button type="submit" class="btn btn-success btn-sm">Reactivate</button>
+                                        <button type="submit" class="btn btn-success btn-sm">
+                                            <i class="bi bi-arrow-repeat"></i>
+                                        </button>
                                     </form>
                                 @endif
                             </td>

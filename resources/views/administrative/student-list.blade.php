@@ -96,8 +96,8 @@
                         <table class="table datatable">
                             <thead>
                                 <tr>
-                                    <th>ID Number</th>
                                     <th>Full Name</th>
+                                    <th>ID Number</th>
                                     <th>Email</th>
                                     <th>Course</th>
                                     <th>Status</th>
@@ -107,12 +107,12 @@
                             <tbody>
                                 @forelse($approvedStudents as $student)
                                     <tr>
-                                        <td>{{ $student->profile ? $student->profile->id_number : 'N/A' }}</td>
                                         <td>
                                             <a href="{{ route('students.show', $student->id) }}" class="btn btn-light btn-sm">
                                                 {{ $student->profile->last_name}}, {{ $student->profile->first_name}}
                                             </a>
                                         </td>
+                                        <td>{{ $student->profile ? $student->profile->id_number : 'N/A' }}</td>
                                         <td>{{ $student->email }}</td>
                                         <td>{{ $student->course ? $student->course->course_code : 'N/A' }}</td>
                                         <td>{{ $student->status_id == 1 ? 'Active' : 'Inactive' }}</td>
@@ -121,7 +121,7 @@
                                                 @if(auth()->user()->role_id == 1 || auth()->user()->role_id == 2) <!-- Super Admin or Admin -->
                                                     <a href="{{ route('students.edit', $student->id) }}" class="btn btn-warning btn-sm"><i class="bi bi-pencil"></i></a>
                                                     <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deactivateModal-{{ $student->id }}">
-                                                        Deactivate
+                                                        <i class="bi bi-trash"></i>
                                                     </button>
 
                                                     <!-- Deactivate Modal -->
@@ -152,7 +152,7 @@
                                                     <form action="{{ route('students.reactivate', $student->id) }}" method="POST" style="display:inline;">
                                                         @csrf
                                                         @method('PATCH')
-                                                        <button type="submit" class="btn btn-success btn-sm">Reactivate</button>
+                                                        <button type="submit" class="btn btn-success btn-sm"><i class="bi bi-arrow-repeat"></i></button>
                                                     </form>
                                                 @endif
                                             @endif

@@ -96,8 +96,8 @@
                             <thead>
                                 <tr>
                                     <th>Name</th>
-                                    <th>Email</th>
                                     <th>ID Number</th>
+                                    <th>Email</th>
                                     <th>Course</th>
                                     <th>Status</th>
                                     <th>Action</th>
@@ -111,7 +111,6 @@
                                                 {{ $faculty->profile->first_name ?? 'N/A' }} {{ $faculty->profile->last_name ?? '' }}
                                             </a>
                                         </td>
-                                        <td>{{ $faculty->email }}</td>
                                         <td>
                                             @if($faculty->profile)
                                                 {{ $faculty->profile->id_number }}
@@ -119,6 +118,7 @@
                                                 N/A
                                             @endif
                                         </td>
+                                        <td>{{ $faculty->email }}</td>
                                         <td>{{ $faculty->course ? $faculty->course->course_code : 'N/A' }}</td>
                                         <td>
                                             {{ $faculty->status_id == 1 ? 'Active' : 'Inactive' }}
@@ -127,7 +127,7 @@
                                             @if($faculty->status_id == 1)
                                                 <a href="{{ route('faculty.edit', $faculty) }}" class="btn btn-warning btn-sm"><i class="bi bi-pencil"></i></a>
                                                 <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deactivateModal-{{ $faculty->id }}">
-                                                    Deactivate
+                                                    <i class="bi bi-trash"></i>
                                                 </button>
 
                                                 <!-- Deactivate Modal -->
@@ -156,7 +156,9 @@
                                                 <form action="{{ route('faculty.reactivate', $faculty) }}" method="POST" style="display:inline;">
                                                     @csrf
                                                     @method('PATCH')
-                                                    <button type="submit" class="btn btn-success btn-sm">Reactivate</button>
+                                                    <button type="submit" class="btn btn-success btn-sm">
+                                                        <i class="bi bi-arrow-repeat"></i>
+                                                    </button>
                                                 </form>
                                             @endif
                                         </td>

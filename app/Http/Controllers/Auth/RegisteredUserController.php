@@ -35,8 +35,16 @@ class RegisteredUserController extends Controller
             'first_name' => ['required', 'string', 'max:255'],
             'last_name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-            'id_number' => ['required', 'string', 'max:255', 'unique:profiles'],
+            'id_number' => [
+                'required', 
+                'string', 
+                'max:255', 
+                'unique:profiles',
+                'regex:/^\d{2}-\d{4}-\d{3}$/', // Regex for format 00-0000-000
+            ],
             'course_id' => ['required', 'exists:courses,id'],
+        ], [
+            'id_number.regex' => 'The ID number must follow the format 00-0000-000.', // Custom error message
         ]);
 
         // Generate a unique password with aufCCSInternship + random characters

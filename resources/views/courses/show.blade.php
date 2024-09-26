@@ -52,28 +52,46 @@
             <div class="card mb-4">
                 <div class="card-body">
                     <h5 class="card-title">Students in this Course</h5>
-                    <table class="table datatable">
-                        <thead>
-                            <tr>
-                                <th>Name</th>
-                                <th>Course</th>
-                                <th>ID Number</th>
-                                <th>Email</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($course->students as $student)
-                            <tr>
-                                <td>{{ $student->profile->first_name }} {{ $student->profile->last_name }}</td>
-                                <td>{{ $course->course_code }}</td>
-                                <td>{{ $student->profile->id_number }}</td>
-                                <td>{{ $student->email }}</td>
-                                <td><a href="{{ route('students.show', $student->id) }}" class="btn btn-info btn-sm"><i class="bi bi-info-circle"></i></a></td>
-                            </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
+                    <div class="table-responsive">
+                        <table class="table datatable">
+                            <thead>
+                                <tr>
+                                    <th>ID Number</th>
+                                    <th>Last Name</th>
+                                    <th>First Name</th>
+                                    <th>Course</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($course->students->whereIn('status_id', [1, 2]) as $student)
+                                <tr>
+                                    <td>
+                                        <a href="{{ route('students.show', $student->id) }}" class="btn btn-light btn-sm">
+                                            {{ $student->profile->id_number }}
+                                        </a>
+                                    </td>
+                                    <td>{{ $student->profile->last_name }}</td>
+                                    <td>{{ $student->profile->first_name }}</td>
+                                    <td>{{ $course->course_code }}</td>
+                                    <!-- <td>{{ $student->profile->id_number }}</td> -->
+                                    <!-- <td>{{ $student->email }}</td> -->
+                                    <td>
+                                    @if($student->status_id == 1)
+                                        Active
+                                    @elseif($student->status_id == 2)
+                                        Inactive
+                                    @elseif($student->status_id == 3)
+                                        Pending
+                                    @else
+                                        Unknown
+                                    @endif
+                                    </td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
@@ -136,28 +154,46 @@
             <div class="card mb-4">
                 <div class="card-body">
                     <h5 class="card-title">Faculty in this Course</h5>
-                    <table class="table datatable">
-                        <thead>
-                            <tr>
-                                <th>Name</th>
-                                <th>Course</th>
-                                <th>ID Number</th>
-                                <th>Email</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($course->faculty as $faculty)
-                            <tr>
-                                <td>{{ $faculty->profile->first_name }} {{ $faculty->profile->last_name }}</td>
-                                <td>{{ $course->course_code }}</td>
-                                <td>{{ $faculty->profile->id_number }}</td>
-                                <td>{{ $faculty->email }}</td>
-                                <td><a href="{{ route('faculty.show', $faculty->id) }}" class="btn btn-info btn-sm"><i class="bi bi-info-circle"></i></a></td>
-                            </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
+                    <div class="table-responsive">
+                        <table class="table datatable">
+                            <thead>
+                                <tr>
+                                    <th>ID Number</th>
+                                    <th>Last Name</th>
+                                    <th>First Name</th>
+                                    <th>Course</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($course->faculty->whereIn('status_id', [1, 2]) as $faculty)
+                                <tr>
+                                    <td>
+                                        <a href="{{ route('faculty.show', $faculty->id) }}" class="btn btn-light btn-sm">
+                                            {{ $faculty->profile->id_number }}
+                                        </a>
+                                    </td>
+                                    <td>{{ $faculty->profile->last_name }}</td>
+                                    <td>{{ $faculty->profile->first_name }}</td>
+                                    <td>{{ $course->course_code }}</td>
+                                    <!-- <td>{{ $faculty->profile->id_number }}</td> -->
+                                    <!-- <td>{{ $faculty->email }}</td> -->
+                                    <td>
+                                    @if($student->status_id == 1)
+                                        Active
+                                    @elseif($student->status_id == 2)
+                                        Inactive
+                                    @elseif($student->status_id == 3)
+                                        Pending
+                                    @else
+                                        Unknown
+                                    @endif
+                                    </td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>      
                 </div>
             </div>
         </div>

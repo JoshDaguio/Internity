@@ -68,7 +68,7 @@
                                 <!-- Show the Deactivate button only if the account is active -->
                                 @if($admin->status_id == 1)
                                         <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deactivateModal-{{ $admin->id }}">
-                                            Deactivate
+                                            <i class="bi bi-trash"></i>
                                         </button>
 
                                         <!-- Deactivate Modal -->
@@ -100,7 +100,9 @@
                                         <form action="{{ route('admin-accounts.reactivate', $admin) }}" method="POST" style="display:inline;">
                                             @csrf
                                             @method('PATCH')
-                                            <button type="submit" class="btn btn-success btn-sm">Reactivate</button>
+                                            <button type="submit" class="btn btn-success btn-sm">
+                                                <i class="bi bi-arrow-repeat"></i>
+                                            </button>
                                         </form>
                                     @endif
                             </td>
