@@ -12,6 +12,14 @@
         </nav>
     </div><!-- End Page Title -->
 
+    @if(session('success'))
+        <div class="alert alert-success">{{ session('success') }}</div>
+    @endif
+
+    @if(session('error'))
+        <div class="alert alert-danger">{{ session('error') }}</div>
+    @endif
+
     <!-- Student Details -->
     <div class="row mb-0">
         <div class="col-md-4">

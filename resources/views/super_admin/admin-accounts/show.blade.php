@@ -12,6 +12,9 @@
     </nav>
 </div>
 
+<!-- Back to List Button -->
+<a href="{{ route('admin-accounts.index') }}" class="btn btn-secondary mb-3">Back</a>
+
 <div class="card">
     <div class="card-body">
         <h5 class="card-title">Admin Details</h5>
@@ -39,7 +42,7 @@
                 <!-- Show the Deactivate button only if the account is active -->
                     @if($admin->status_id == 1)
                         <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deactivateModal-{{ $admin->id }}">
-                            Deactivate
+                            <i class="bi bi-trash"></i>
                         </button>
 
                         <!-- Deactivate Modal -->
@@ -71,12 +74,11 @@
                         <form action="{{ route('admin-accounts.reactivate', $admin) }}" method="POST" style="display:inline;">
                             @csrf
                             @method('PATCH')
-                            <button type="submit" class="btn btn-success">Reactivate</button>
+                            <button type="submit" class="btn btn-success">
+                                <i class="bi bi-arrow-repeat"></i>
+                            </button>
                         </form>
                     @endif
-
-
-                <a href="{{ route('admin-accounts.index') }}" class="btn btn-secondary">Back</a>
             </div>
         </div>
     </div>

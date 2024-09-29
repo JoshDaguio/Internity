@@ -29,7 +29,7 @@
             <!-- Filters Section -->
             <div class="card mb-3">
                 <div class="card-body">
-                    <h5 class="card-title">Filter by Course and Status</h5>
+                    <h5 class="card-title">Filter</h5>
                     <form method="GET" action="{{ route('students.list') }}">
                         <div class="mb-3">
                             <select name="course_id" id="course_id" class="form-select" onchange="this.form.submit()">
@@ -39,6 +39,14 @@
                                         {{ $course->course_code }}
                                     </option>
                                 @endforeach
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <select name="requirements_status" id="requirements_status" class="form-select" onchange="this.form.submit()">
+                                <option value="">All Requirements</option>
+                                <option value="complete" {{ request('requirements_status') == 'complete' ? 'selected' : '' }}>Complete</option>
+                                <option value="incomplete" {{ request('requirements_status') == 'incomplete' ? 'selected' : '' }}>To Review</option>
+                                <option value="no_submission" {{ request('requirements_status') == 'no_submission' ? 'selected' : '' }}>No Submission</option>
                             </select>
                         </div>
                         <div class="mb-3">
@@ -58,7 +66,7 @@
             <div class="card mb-3">
                 <div class="card-body">
                     <h5 class="card-title">Approved Students by Course</h5>
-                    <div class="progress-container" style="min-height: 107px; max-height: 107px; overflow-y: auto;">
+                    <div class="progress-container" style="min-height: 163px; max-height: 163px; overflow-y: auto;">
                         @php
                             $totalApproved = $approvedStudents->count();
                         @endphp
@@ -98,8 +106,9 @@
                                 <tr>
                                     <th>Full Name</th>
                                     <th>ID Number</th>
-                                    <th>Email</th>
+                                    <!-- <th>Email</th> -->
                                     <th>Course</th>
+                                    <th>Requirements</th>
                                     <th>Status</th>
                                     <th>Actions</th>
                                 </tr>
@@ -109,12 +118,25 @@
                                     <tr>
                                         <td>
                                             <a href="{{ route('students.show', $student->id) }}" class="btn btn-light btn-sm">
-                                                {{ $student->profile->last_name}}, {{ $student->profile->first_name}}
+                                                {{ $student->profile->last_name }}, {{ $student->profile->first_name }}
                                             </a>
                                         </td>
                                         <td>{{ $student->profile ? $student->profile->id_number : 'N/A' }}</td>
-                                        <td>{{ $student->email }}</td>
+                                        <!-- <td>{{ $student->email }}</td> -->
                                         <td>{{ $student->course ? $student->course->course_code : 'N/A' }}</td>
+                                        <td>
+                                            @if($student->requirements)
+                                                <a href="{{ route('requirements.review', $student->requirements->id) }}">
+                                                    @if($student->requirements->status_id == 2) <!-- Accepted -->
+                                                        <span class="badge bg-success">Complete</span>
+                                                    @else
+                                                        <span class="badge bg-warning">To Complete</span>
+                                                    @endif
+                                                </a>
+                                            @else
+                                                <span class="badge bg-secondary">No Submission</span>
+                                            @endif
+                                        </td>
                                         <td>{{ $student->status_id == 1 ? 'Active' : 'Inactive' }}</td>
                                         <td>
                                             @if($student->status_id == 1)
@@ -160,7 +182,7 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="6">No students found.</td>
+                                        <td colspan="7">No students found.</td>
                                     </tr>
                                 @endforelse
                             </tbody>

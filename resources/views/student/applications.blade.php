@@ -13,6 +13,14 @@
         </nav>
     </div><!-- End Page Title -->
 
+    @if(session('success'))
+        <div class="alert alert-success">{{ session('success') }}</div>
+    @endif
+
+    @if(session('error'))
+        <div class="alert alert-danger">{{ session('error') }}</div>
+    @endif
+
     <!-- Student Details -->
     <div class="row mb-0">
         <div class="col-md-4">
@@ -84,61 +92,87 @@
                             </td>
                         </tr>
 
-                        <!-- Job Modal -->
-                        <div class="modal fade" id="jobModal{{ $priority->job->id }}" tabindex="-1" aria-labelledby="jobModalLabel{{ $priority->job->id }}" aria-hidden="true">
-                            <div class="modal-dialog">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title" id="jobModalLabel{{ $priority->job->id }}">Job Information</h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <p><strong>Company:</strong> {{ $priority->job->company->name }}</p>
-                                        <p><strong>Job Title:</strong> {{ $priority->job->title }}</p>
-                                        <p><strong>Location:</strong> {{ $priority->job->location }}</p>
-                                        <p><strong>Work Type:</strong> {{ $priority->job->work_type }}</p>
-                                        <p><strong>Description:</strong> {{ $priority->job->description }}</p>
-                                        <p><strong>Qualifications:</strong> {{ $priority->job->qualification }}</p>
+                        
+<!-- Job Modal -->
+<div class="modal fade" id="jobModal{{ $priority->job->id }}" tabindex="-1" aria-labelledby="jobModalLabel{{ $priority->job->id }}" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="jobModalLabel{{ $priority->job->id }}">Job Information</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p><strong>Company:</strong> {{ $priority->job->company->name }}</p>
+                <p><strong>Job Title:</strong> {{ $priority->job->title }}</p>
+                <p><strong>Location:</strong> {{ $priority->job->location }}</p>
+                <p><strong>Work Type:</strong> {{ $priority->job->work_type }}</p>
+                <p><strong>Description:</strong> {{ $priority->job->description }}</p>
+                <p><strong>Qualifications:</strong> {{ $priority->job->qualification }}</p>
 
-                                        <!-- Schedule Details -->
-                                        @php
-                                            $schedule = json_decode($priority->job->schedule, true);
-                                            $startTime = \Carbon\Carbon::createFromFormat('H:i', $schedule['start_time'])->format('g:i A');
-                                            $endTime = \Carbon\Carbon::createFromFormat('H:i', $schedule['end_time'])->format('g:i A');
-                                        @endphp
-                                        <p><strong>Schedule:</strong></p>
-                                        <ul>
-                                            <li>Days: {{ implode(', ', $schedule['days'] ?? []) }}</li>
-                                            @if ($priority->job->work_type === 'Hybrid')
-                                                <li>On-site Days: {{ implode(', ', $schedule['onsite_days'] ?? []) }}</li>
-                                                <li>Remote Days: {{ implode(', ', $schedule['remote_days'] ?? []) }}</li>
-                                            @endif
-                                            <li>Time: {{ $startTime }} - {{ $endTime }}</li>
-                                        </ul>
+                <!-- Schedule Details -->
+                @php
+                    $schedule = json_decode($priority->job->schedule, true);
+                    $startTime = \Carbon\Carbon::createFromFormat('H:i', $schedule['start_time'])->format('g:i A');
+                    $endTime = \Carbon\Carbon::createFromFormat('H:i', $schedule['end_time'])->format('g:i A');
+                @endphp
+                <p><strong>Schedule:</strong></p>
+                <ul>
+                    <li>Days: {{ implode(', ', $schedule['days'] ?? []) }}</li>
+                    @if ($priority->job->work_type === 'Hybrid')
+                        <li>On-site Days: {{ implode(', ', $schedule['onsite_days'] ?? []) }}</li>
+                        <li>Remote Days: {{ implode(', ', $schedule['remote_days'] ?? []) }}</li>
+                    @endif
+                    <li>Time: {{ $startTime }} - {{ $endTime }}</li>
+                </ul>
 
-                                        <!-- Show submit button only for 1st priority or if 1st is rejected, then 2nd -->
-                                        @if(!$submitted && ($priority->priority == 1 || ($priority->priority == 2 && $canApplyToSecondPriority)))
-                                        <form method="POST" action="{{ route('internship.submit', $priority->job->id) }}" enctype="multipart/form-data">
-                                            @csrf
-                                            <div class="mb-3">
-                                                <label for="endorsement_letter" class="form-label">Endorsement Letter</label>
-                                                <input type="file" class="form-control" id="endorsement_letter" name="endorsement_letter" required>
-                                            </div>
-
-                                            @if($student->profile->cv_file_path)
-                                            <p>Your CV will be automatically included in this application.</p>
-                                            <button type="submit" class="btn btn-primary">Submit Application</button>
-                                            @else
-                                            <p class="text-danger">Please upload your CV in your profile before submitting.</p>
-                                            @endif
-                                        </form>
-                                        @else
-                                        <p class="text-success">Application Submitted</p>
-                                        @endif
-                                    </div>
-                                </div>
+                <!-- Show submit button only for 1st priority or if 1st is rejected or submitted, then 2nd -->
+                @if(!$submitted)
+                    @if($priority->priority == 1)
+                        <!-- First priority application -->
+                        <form method="POST" action="{{ route('internship.submit', $priority->job->id) }}" enctype="multipart/form-data">
+                            @csrf
+                            <div class="mb-3">
+                                <label for="endorsement_letter" class="form-label">Endorsement Letter</label>
+                                <input type="file" class="form-control" id="endorsement_letter" name="endorsement_letter" required>
                             </div>
-                        </div>
+
+                            @if($student->profile->cv_file_path)
+                                <p>Your CV will be automatically included in this application.</p>
+                                <button type="submit" class="btn btn-primary">Submit Application</button>
+                            @else
+                                <p class="text-danger">Please upload your CV in your profile before submitting.</p>
+                            @endif
+                        </form>
+                    @elseif($priority->priority == 2 && $firstPrioritySubmittedOrRejected)
+                        <!-- Second priority application -->
+                        <form method="POST" action="{{ route('internship.submit', $priority->job->id) }}" enctype="multipart/form-data">
+                            @csrf
+                            <div class="mb-3">
+                                <label for="endorsement_letter" class="form-label">Endorsement Letter</label>
+                                <input type="file" class="form-control" id="endorsement_letter" name="endorsement_letter" required>
+                            </div>
+
+                            @if($student->profile->cv_file_path)
+                                <p>Your CV will be automatically included in this application.</p>
+                                <button type="submit" class="btn btn-primary">Submit Application</button>
+                            @else
+                                <p class="text-danger">Please upload your CV in your profile before submitting.</p>
+                            @endif
+                        </form>
+                    @else
+                        <!-- If priority is 2 but the first priority hasn't been submitted or rejected -->
+                        <p class="text-danger">First Priority Application Still In Progress</p>
+                    @endif
+                @else
+                    <!-- If already submitted -->
+                    <p class="text-success">Application Submitted</p>
+                @endif
+            </div>
+        </div>
+    </div>
+</div>
+
+
                         @endforeach
                     </tbody>
                 </table>

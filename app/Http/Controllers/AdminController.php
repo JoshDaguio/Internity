@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Models\Course;
 use App\Models\Profile;
+use App\Models\Requirement;
 use App\Models\ActivityLog;
 use App\Mail\StudentApprovalMail;
 use Illuminate\Http\Request;
@@ -58,7 +59,7 @@ class AdminController extends Controller
     {
         $user = Auth::user();
     
-        $query = User::with('profile', 'course')
+        $query = User::with('profile', 'course', 'requirements')
             ->where('role_id', 5) // Students
             ->where('status_id', '!=', 3); // Exclude pending students (status_id = 3)
     
@@ -71,7 +72,26 @@ class AdminController extends Controller
         if ($request->filled('course_id')) {
             $query->where('course_id', $request->course_id);
         }
-    
+
+        // Apply requirements filter (completed, to complete, or no submission)
+        if ($request->filled('requirements_status')) {
+            if ($request->requirements_status == 'complete') {
+                $query->whereHas('requirements', function ($q) {
+                    $q->whereNotNull('waiver_form')
+                    ->whereNotNull('medical_certificate')
+                    ->where('status_id', 2); // 'Accepted'
+                });
+            } elseif ($request->requirements_status == 'incomplete') {
+                $query->whereHas('requirements', function ($q) {
+                    $q->whereNull('waiver_form')
+                    ->orWhereNull('medical_certificate')
+                    ->orWhere('status_id', '!=', 2); // Not 'Accepted'
+                });
+            } elseif ($request->requirements_status == 'no_submission') {
+                $query->whereDoesntHave('requirements'); // Students with no submission
+            }
+        }
+
         // If user is Faculty, filter by their course_id
         if ($user->role_id == 3) {
             $query->where('course_id', $user->course_id);

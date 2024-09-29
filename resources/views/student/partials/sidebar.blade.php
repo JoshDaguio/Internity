@@ -1,4 +1,6 @@
 @php
+  $requirements = Auth::user()->requirements;
+  $step1Completed = $requirements ? $requirements->step1Completed() : false;
 @endphp
 <!-- ======= Sidebar ======= -->
 
@@ -23,11 +25,14 @@
   <li class="nav-heading">Internship Management</li>
 
   <li class="nav-item">
-    <a class="nav-link collapsed" href="#">
+    <a class="nav-link {{ request()->routeIs('requirements.index') ? '' : 'collapsed' }}" href="{{ route('requirements.index') }}">
       <i class="bi bi-clipboard-check"></i>
       <span>Requirements</span>  
     </a>
   </li><!-- End Requirement Nav -->
+
+  @if($step1Completed)
+
 
   <li class="nav-item">
     <a class="nav-link {{ request()->routeIs('internship.listings', 'internship.applications') ? '' : 'collapsed' }}" data-bs-target="#internship-nav" data-bs-toggle="collapse" href="#">
@@ -72,6 +77,8 @@
       <span>Reports</span>  
     </a>
   </li><!-- End Reports Nav -->
+
+  @endif
 
   <li class="nav-item">
     <a class="nav-link collapsed" href="#">

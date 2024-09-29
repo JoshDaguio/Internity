@@ -15,10 +15,10 @@ use App\Http\Controllers\AdminAccountController;
 use App\Http\Controllers\EndOfDayReportController;
 use App\Http\Controllers\FileUploadController;
 use App\Http\Controllers\SkillTagController;
-
-//For Password Reset
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\NewPasswordController;
+use App\Http\Controllers\RequirementController;
+
 
 
 Route::get('/', function () {
@@ -221,6 +221,7 @@ Route::middleware(['auth', 'facultyaccess'])->group(function () {
     Route::get('/file_uploads/preview/{file}', [FileUploadController::class, 'preview'])->name('file_uploads.preview');
     Route::get('/file_uploads/{file}/edit', [FileUploadController::class, 'edit'])->name('file_uploads.edit'); // Add edit route
     Route::patch('/file_uploads/{file}', [FileUploadController::class, 'update'])->name('file_uploads.update'); // Add update route
+    Route::post('/file_uploads/restore/{id}', [FileUploadController::class, 'restore'])->name('file_uploads.restore');
 });
 
 Route::middleware(['auth'])->group(function () {
@@ -242,5 +243,32 @@ Route::middleware('auth')->group(function () {
     Route::post('/internship/submit/{jobId}', [StudentController::class, 'submitApplication'])->name('internship.submit');
     Route::get('/application/preview/{type}/{id}', [StudentController::class, 'previewFile'])->name('application.preview');
     Route::post('/internship/remove-priority/{jobId}', [StudentController::class, 'removePriority'])->name('internship.removePriority');
+});
+
+//Requirements
+//Student Side
+Route::middleware(['auth'])->group(function () {
+    Route::get('/requirements', [RequirementController::class, 'index'])->name('requirements.index');
+    Route::post('/requirements/submit', [RequirementController::class, 'submit'])->name('requirements.submit');
+
+    // Specific routes for each requirement
+    Route::post('/requirements/submit-waiver', [RequirementController::class, 'submitWaiver'])->name('submit.waiver');
+    Route::post('/requirements/submit-medical', [RequirementController::class, 'submitMedical'])->name('submit.medical');
+    // Route::post('/requirements/submit-consent', [RequirementController::class, 'submitConsent'])->name('submit.consent');
+    Route::get('/requirements/preview/{type}/{id}', [RequirementController::class, 'previewFile'])->name('preview.requirement');
+    Route::get('/requirements/download/{type}/{id}', [RequirementController::class, 'downloadFile'])->name('download.requirement');
+
+});
+
+// Admin Side
+Route::middleware(['auth', 'administrative'])->group(function () {
+    // Admin Requirement Review
+    Route::get('/requirements/review/{studentId}', [RequirementController::class, 'review'])->name('requirements.review');
+    Route::post('/requirements/accept-waiver/{id}', [RequirementController::class, 'acceptWaiver'])->name('admin.accept.waiver');
+    Route::post('/requirements/reject-waiver/{id}', [RequirementController::class, 'rejectWaiver'])->name('admin.reject.waiver');
+    Route::post('/requirements/accept-medical/{id}', [RequirementController::class, 'acceptMedical'])->name('admin.accept.medical');
+    Route::post('/requirements/reject-medical/{id}', [RequirementController::class, 'rejectMedical'])->name('admin.reject.medical');
+    Route::post('/requirements/upload-endorsement/{id}', [RequirementController::class, 'uploadEndorsement'])->name('admin.upload.endorsement');
+    Route::get('/requirements/download/{type}/{id}', [RequirementController::class, 'downloadFile'])->name('download.requirement');
 });
 

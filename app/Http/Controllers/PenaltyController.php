@@ -31,7 +31,9 @@ class PenaltyController extends Controller
     {
         $request->validate([
             'violation' => 'required|string|max:255',
-            'penalty_hours' => 'required|integer|min:1',
+            'penalty_type' => 'required|in:fixed,conditional',
+            'penalty_hours' => 'required_if:penalty_type,fixed|nullable|integer|min:1',
+            'conditions' => 'required_if:penalty_type,conditional|nullable|string|max:255',
         ]);
 
         Penalty::create($request->all());
@@ -64,7 +66,9 @@ class PenaltyController extends Controller
     {
         $request->validate([
             'violation' => 'required|string|max:255',
-            'penalty_hours' => 'required|integer|min:1',
+            'penalty_type' => 'required|in:fixed,conditional',
+            'penalty_hours' => 'required_if:penalty_type,fixed|nullable|integer|min:1',
+            'conditions' => 'required_if:penalty_type,conditional|nullable|string|max:255',
         ]);
         
         $penalty = Penalty::findOrFail($id);

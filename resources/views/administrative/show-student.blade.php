@@ -2,7 +2,20 @@
 
 @section('body')
 <div class="container">
-    <h1>Student Details</h1>
+
+    <div class="pagetitle">
+        <h1>Student Details</h1>
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">Home</li>
+                <li class="breadcrumb-item">Student</li>
+                <li class="breadcrumb-item">Student List</li>
+                <li class="breadcrumb-item active">{{$student->profile->first_name . ' ' . $student->profile->last_name}}</li>
+            </ol>
+        </nav>
+    </div><!-- End Page Title -->
+
+    <a href="javascript:history.back()" class="btn btn-secondary mb-3">Back</a>
 
     <div class="card mb-3">
         <div class="card-body">
@@ -14,17 +27,19 @@
         </div>
     </div>
 
-    <a href="{{ route('students.edit', $student->id) }}" class="btn btn-warning">Edit</a>
-    <a href="javascript:history.back()" class="btn btn-secondary">Back</a>
+
+    <a href="{{ route('students.edit', $student->id) }}" class="btn btn-warning"><i class="bi bi-pencil"></i></a>
     @if($student->status_id == 1)
         <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deactivateModal-{{ $student->id }}">
-            Deactivate
+            <i class="bi bi-trash"></i>
         </button>
     @else
         <form action="{{ route('students.reactivate', $student->id) }}" method="POST" style="display:inline-block;">
             @csrf
             @method('PATCH')
-            <button type="submit" class="btn btn-success">Reactivate</button>
+            <button type="submit" class="btn btn-success">
+                <i class="bi bi-arrow-repeat"></i>
+            </button>
         </form>
     @endif
 
@@ -40,12 +55,12 @@
                     Are you sure you want to deactivate this student account?
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                     <form action="{{ route('students.deactivate', $student->id) }}" method="POST" style="display:inline;">
                         @csrf
                         @method('DELETE')
                         <button type="submit" class="btn btn-danger">Deactivate</button>
                     </form>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                 </div>
             </div>
         </div>

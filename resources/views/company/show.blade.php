@@ -12,7 +12,7 @@
             </ol>
         </nav>
     </div><!-- End Page Title -->
-    <a href="{{ route('company.index') }}" class="btn btn-secondary">Back to List</a>
+    <a href="{{ route('company.index') }}" class="btn btn-secondary mb-3">Back to List</a>
 
 
     <table class="table table-bordered">

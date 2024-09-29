@@ -7,7 +7,8 @@
     <nav>
         <ol class="breadcrumb">
             <li class="breadcrumb-item">Home</li>
-            <li class="breadcrumb-item active">Upload File</li>
+            <li class="breadcrumb-item">Files</li>
+            <li class="breadcrumb-item active">Upload</li>
         </ol>
     </nav>
 </div>

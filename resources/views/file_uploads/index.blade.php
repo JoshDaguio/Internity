@@ -12,7 +12,6 @@
     </nav>
 </div><!-- End Page Title -->
 
-
 @if(Auth::user()->role_id != 5) <!-- This condition hides the button for students -->
     @if(session('success'))
         <div class="alert alert-success">{{ session('success') }}</div>
@@ -70,19 +69,31 @@
                                 @endif
                             </td>
                             <td>
-                                <button class="btn btn-dark" onclick="showPreview('{{ route('file_uploads.preview', $file->id) }}')"><i class="bi bi-folder"></i></button>
-                                <a href="{{ route('file_uploads.download', $file->id) }}" class="btn btn-success"><i class="bi bi-download"></i></a>
-                                @if(in_array(Auth::user()->role_id, [1, 2, 3]))
-                                    <a href="{{ route('file_uploads.edit', $file->id) }}" class="btn btn-warning">
-                                        <i class="bi bi-pencil"></i>
-                                    </a>
-                                @endif
-                                @if(Auth::user()->role_id == 1 || Auth::user()->role_id == 2)
-                                    <form action="{{ route('file_uploads.destroy', $file->id) }}" method="POST" style="display:inline;">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn btn-danger"><i class="bi bi-trash"></i></button>
-                                    </form>
+                                @if(!$file->trashed())
+                                    <button class="btn btn-dark" onclick="showPreview('{{ route('file_uploads.preview', $file->id) }}')"><i class="bi bi-folder"></i></button>
+                                    <a href="{{ route('file_uploads.download', $file->id) }}" class="btn btn-success"><i class="bi bi-download"></i></a>
+                                    @if(Auth::id() == $file->uploaded_by || in_array(Auth::user()->role_id, [1, 2]))
+                                        <a href="{{ route('file_uploads.edit', $file->id) }}" class="btn btn-warning">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                    @endif
+
+                                    @if(Auth::user()->role_id == 1 || Auth::user()->role_id == 2)
+                                        <form action="{{ route('file_uploads.destroy', $file->id) }}" method="POST" style="display:inline;">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn btn-danger"><i class="bi bi-trash"></i></button>
+                                        </form>
+                                    @endif
+                                @else
+                                    <!-- Restore Button for Soft Deleted Files -->
+                                    @if(Auth::user()->role_id == 1 || Auth::user()->role_id == 2)
+                                        <form action="{{ route('file_uploads.restore', $file->id) }}" method="POST" style="display:inline;">
+                                            @csrf
+                                            @method('POST')
+                                            <button type="submit" class="btn btn-success"><i class="bi bi-arrow-repeat"></i></button>
+                                        </form>
+                                    @endif
                                 @endif
                             </td>
                         </tr>

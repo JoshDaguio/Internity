@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('file_path');
             $table->string('description');
             $table->foreignId('uploaded_by')->constrained('users'); // Admin who uploaded
+            $table->softDeletes(); 
             $table->timestamps();
         });
     }

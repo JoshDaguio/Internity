@@ -85,4 +85,9 @@ class User extends Authenticatable
         $this->notify(new ResetPasswordNotification($token));
     }
 
+    public function requirements()
+    {
+        return $this->hasOne(Requirement::class, 'student_id');
+    }
+
 }

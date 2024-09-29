@@ -14,6 +14,10 @@
             <label for="penalty_hours" class="form-label">Penalty Hours</label>
             <input type="number" id="penalty_hours" name="penalty_hours" class="form-control" value="{{ $penalty->penalty_hours }}" required min="1">
         </div>
+        <div class="mb-3">
+            <label for="conditions" class="form-label">Conditions (Optional)</label>
+            <input type="text" id="conditions" name="conditions" class="form-control" value="{{ $penalty->conditions }}">
+        </div>
         <div class="mt-3">
             <button type="submit" class="btn btn-primary">Update</button>
             <a href="{{ route('penalties.index') }}" class="btn btn-secondary">Cancel</a>

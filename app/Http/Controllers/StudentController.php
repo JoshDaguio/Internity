@@ -50,22 +50,30 @@ class StudentController extends Controller
             ->with('job')
             ->orderBy('priority')  // Sort by priority (1st, 2nd)
             ->get();
-
-        // Check if the 1st priority job is rejected or accepted
+    
+        // Check if the 1st priority job is submitted or rejected
+        $firstPriorityJob = $priorityListings->where('priority', 1)->first();
+    
+        // Determine if the student can apply for the second priority
         $firstPriorityApplication = Application::where('student_id', $student->id)
-            ->whereHas('job', function($query) use ($priorityListings) {
-                $query->where('id', $priorityListings->where('priority', 1)->first()->job_id ?? null);
-            })
+            ->where('job_id', $firstPriorityJob->job_id ?? null)
             ->first();
-
-        $canApplyToSecondPriority = $firstPriorityApplication && $firstPriorityApplication->status->status == 'Rejected';
-
+    
+        // Determine if the first priority is either submitted or rejected
+        $firstPrioritySubmittedOrRejected = $firstPriorityApplication 
+            && in_array($firstPriorityApplication->status->status, ['Submitted', 'Rejected']);
+    
         // Fetch submitted applications
         $submittedApplications = Application::where('student_id', $student->id)
             ->with('job', 'status')
             ->get();
-
-        return view('student.applications', compact('student', 'priorityListings', 'submittedApplications', 'canApplyToSecondPriority'));
+    
+        return view('student.applications', compact(
+            'student', 
+            'priorityListings', 
+            'submittedApplications', 
+            'firstPrioritySubmittedOrRejected'
+        ));
     }
 
 

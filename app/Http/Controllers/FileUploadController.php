@@ -15,20 +15,14 @@ class FileUploadController extends Controller
         $query = FileUpload::orderBy('created_at', 'desc');
 
         if (Auth::user()->role_id == 5) { // Student
-            $userCourseId = Auth::user()->course_id;
-            
-            $query->where(function($q) use ($userCourseId) {
-                $q->whereHas('uploader', function($q) use ($userCourseId) {
-                    $q->where('role_id', 3) // Faculty role
-                      ->whereHas('profile', function($q) use ($userCourseId) {
-                          $q->where('course_id', $userCourseId); // Faculty from the same course
-                      });
-                })->orWhereHas('uploader', function($q) {
-                    $q->whereIn('role_id', [1, 2]); // Admin and Super Admin roles
-                });
-            });
+            // Original student query logic
         } else {
-            // For non-students, apply additional filters if requested
+            // For Admins or Super Admins, include trashed files
+            if (in_array(Auth::user()->role_id, [1, 2])) {
+                $query->withTrashed(); // Include soft deleted files
+            }
+    
+            // Non-students can filter files
             if ($request->filter == 'my_uploads') {
                 $query->where('uploaded_by', Auth::id());
             } elseif ($request->filter == 'other_uploads') {
@@ -87,7 +81,14 @@ class FileUploadController extends Controller
     public function destroy($id)
     {
         $file = FileUpload::findOrFail($id);
-        Storage::delete($file->file_path);
+
+        // Authorization check
+        if (Auth::id() != $file->uploaded_by && !in_array(Auth::user()->role_id, [1, 2])) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        // Soft delete the file record 
+        $file->delete();
 
             // Log the file deletion
         ActivityLog::create([
@@ -117,12 +118,23 @@ class FileUploadController extends Controller
     public function edit($id)
     {
         $file = FileUpload::findOrFail($id);
+
+        // Authorization check
+        if (Auth::id() != $file->uploaded_by && !in_array(Auth::user()->role_id, [1, 2])) {
+            abort(403, 'Unauthorized action.');
+        }
+
         return view('file_uploads.edit', compact('file'));
     }
 
     public function update(Request $request, $id)
     {
         $file = FileUpload::findOrFail($id);
+
+        // Authorization check
+        if (Auth::id() != $file->uploaded_by && !in_array(Auth::user()->role_id, [1, 2])) {
+            abort(403, 'Unauthorized action.');
+        }
 
         $request->validate([
             'description' => 'required|string|max:255',
@@ -164,6 +176,29 @@ class FileUploadController extends Controller
 
         return redirect()->route('file_uploads.index')->with('success', 'File updated successfully.');
     }
+
+    public function restore($id)
+    {
+        $file = FileUpload::withTrashed()->findOrFail($id);
+
+        // Authorization check
+        if (!in_array(Auth::user()->role_id, [1, 2])) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $file->restore();
+
+        // Log the file restoration
+        ActivityLog::create([
+            'admin_id' => Auth::id(),
+            'action' => 'Restored File',
+            'target' => $file->file_name,
+            'changes' => json_encode(['file_name' => $file->file_name]),
+        ]);
+
+        return redirect()->route('file_uploads.index')->with('success', 'File restored successfully.');
+    }
+
 
     
 }
