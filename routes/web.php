@@ -18,6 +18,8 @@ use App\Http\Controllers\SkillTagController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\RequirementController;
+use App\Http\Controllers\AcademicYearController;
+
 
 
 
@@ -272,3 +274,14 @@ Route::middleware(['auth', 'administrative'])->group(function () {
     Route::get('/requirements/download/{type}/{id}', [RequirementController::class, 'downloadFile'])->name('download.requirement');
 });
 
+// Academic Year Management Routes for Super Admin
+Route::middleware(['auth', 'super_admin'])->group(function () {
+    Route::get('/academic-years', [AcademicYearController::class, 'index'])->name('academic-years.index');
+    Route::get('/academic-years/create', [AcademicYearController::class, 'create'])->name('academic-years.create');
+    Route::post('/academic-years', [AcademicYearController::class, 'store'])->name('academic-years.store');
+    Route::get('/academic-years/{academicYear}/edit', [AcademicYearController::class, 'edit'])->name('academic-years.edit');
+    Route::patch('/academic-years/{academicYear}', [AcademicYearController::class, 'update'])->name('academic-years.update');
+    Route::post('/academic-years/{academicYear}/set-current', [AcademicYearController::class, 'setCurrent'])->name('academic-years.set-current');
+    Route::post('/academic-years/{academicYear}/deactivate', [AcademicYearController::class, 'deactivate'])->name('academic-years.deactivate');
+    Route::get('/academic-years/{id}/show', [AcademicYearController::class, 'show'])->name('academic-years.show');
+});

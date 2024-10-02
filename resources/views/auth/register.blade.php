@@ -118,7 +118,7 @@
                       <div class="col-12 mt-4">
                           <label for="id_number" class="form-label">ID Number</label>
                           <div class="input-group has-validation">
-                              <input type="text" name="id_number" class="form-control" id="id_number" :value="old('id_number')" required autocomplete="id_number">
+                              <input type="text" name="id_number" class="form-control" id="id_number" :value="old('id_number')" required autocomplete="id_number" placeholder="00-0000-000">
                               <div class="invalid-feedback">Please enter your ID number! Format: 00-0000-000</div>
                           </div>
                           <x-input-error :messages="$errors->get('id_number')" class="mt-2" />

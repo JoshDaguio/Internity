@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\Profile;
 use App\Models\User;
+use App\Models\AcademicYear;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -57,6 +58,9 @@ class RegisteredUserController extends Controller
             'id_number' => $request->id_number,
         ]);
 
+        // Get the current academic year
+        $currentAcademicYear = AcademicYear::where('is_current', true)->first();
+
         // Create the user and link the profile
         $user = User::create([
             'name' => $request->first_name,
@@ -66,6 +70,7 @@ class RegisteredUserController extends Controller
             'role_id' => 5, // Student role
             'status_id' => 3, // Pending registration status
             'profile_id' => $profile->id, // Link the profile
+            'academic_year_id' => $currentAcademicYear->id, // Assign current academic year
         ]);
 
         return redirect()->route('register.success');

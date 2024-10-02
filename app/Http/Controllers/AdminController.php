@@ -7,6 +7,7 @@ use App\Models\Course;
 use App\Models\Profile;
 use App\Models\Requirement;
 use App\Models\ActivityLog;
+use App\Models\AcademicYear;
 use App\Mail\StudentApprovalMail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -213,6 +214,9 @@ class AdminController extends Controller
         // Generate a random password
         $password = 'aufCCSInternship' . Str::random(5);
 
+        // Get the current academic year
+        $currentAcademicYear = AcademicYear::where('is_current', true)->first();
+
         // Create student account
         $student = User::create([
             'name' => $request->first_name,
@@ -222,6 +226,7 @@ class AdminController extends Controller
             'status_id' => 1, // Active status
             'profile_id' => $profile->id,
             'course_id' => $request->course_id,
+            'academic_year_id' => $currentAcademicYear->id, // Assign current academic year
         ]);
 
         // Log the creation of the student

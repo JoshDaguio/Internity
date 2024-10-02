@@ -26,6 +26,7 @@ class User extends Authenticatable
         'role_id',
         'status_id',
         'profile_id',
+        'academic_year_id', 
     ];
 
     /**
@@ -54,6 +55,12 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Profile::class);
     }
+
+    public function status()
+    {
+        return $this->belongsTo(AccountStatus::class, 'status_id');
+    }
+
 
     public function course()
     {
@@ -88,6 +95,11 @@ class User extends Authenticatable
     public function requirements()
     {
         return $this->hasOne(Requirement::class, 'student_id');
+    }
+
+    public function academicYear()
+    {
+        return $this->belongsTo(AcademicYear::class);
     }
 
 }

@@ -73,6 +73,14 @@
   <li class="nav-heading">Internship Management</li>
 
   <li class="nav-item">
+    <a class="nav-link {{ request()->routeIs('academic-years.index', 'academic-years.create', 'academic-years.edit', 'academic-years.show') ? '' : 'collapsed' }}" href="{{ route('academic-years.index') }}">
+        <i class="bi bi-calendar3"></i>
+        <span>S.Y. Configuration</span>  
+    </a>
+  </li><!-- End S.Y. Configuration Nav -->
+
+
+  <li class="nav-item">
     <a class="nav-link {{ request()->routeIs('internship_hours.index', 'internship_hours.create', 'internship_hours.edit') ? '' : 'collapsed' }}" href="{{ route('internship_hours.index') }}">
       <i class="bi bi-clock-history"></i>
       <span>Internship Hours</span>  

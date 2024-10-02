@@ -24,6 +24,20 @@ return new class extends Migration
             ['id' => 2, 'status' => 'Inactive'],
             ['id' => 3, 'status' => 'Pending'],
         ]);
+
+        Schema::create('academic_years', function (Blueprint $table) {
+            $table->id();
+            $table->string('start_year');
+            $table->string('end_year');
+            $table->boolean('is_current')->default(false); // To mark the current academic year
+            $table->timestamps();
+        });
+
+        // Seed initial data (optional)
+        DB::table('academic_years')->insert([
+            ['start_year' => '2024', 'end_year' => '2025', 'is_current' => true],
+        ]);
+
     }
 
     /**
@@ -32,5 +46,6 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('account_statuses');
+        Schema::dropIfExists('academic_years');
     }
 };

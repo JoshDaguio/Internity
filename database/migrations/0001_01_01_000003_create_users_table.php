@@ -51,6 +51,7 @@ return new class extends Migration
             $table->string('password');
             $table->foreignId('role_id')->constrained('roles');
             $table->foreignId('status_id')->constrained('account_statuses');
+            $table->foreignId('academic_year_id')->nullable()->constrained('academic_years');
             $table->foreignId('course_id')->nullable()->constrained('courses');
             $table->foreignId('profile_id')->nullable()->constrained('profiles');
             $table->rememberToken();
