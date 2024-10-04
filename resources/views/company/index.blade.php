@@ -45,9 +45,10 @@
             <table class="table datatable">
                 <thead>
                     <tr>
-                        <th>Company Name</th>
+                        <th>Company</th>
                         <th>Email</th>
                         <th>Contact Person</th>
+                        <th>Expiry Date</th>
                         <th>Status</th>
                         <th>Actions</th>
                     </tr>
@@ -62,6 +63,7 @@
                             </td>
                             <td>{{ $company->email }}</td>
                             <td>{{ $company->profile->first_name ?? 'N/A' }} {{ $company->profile->last_name ?? '' }}</td>
+                            <td>{{ $company->expiry_date ? \Carbon\Carbon::parse($company->expiry_date)->toFormattedDateString() : 'N/A' }}</td>
                             <td>{{ $company->status_id == 1 ? 'Active' : 'Inactive' }}</td>
                             <td>
                                 @if($company->status_id == 1)

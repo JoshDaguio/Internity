@@ -95,7 +95,7 @@
                             // Calculate percentage of accepted internships for this job
                             $percentage = $totalAcceptedInternships > 0 ? ($acceptedInternships / $totalAcceptedInternships) * 100 : 0;
                         @endphp
-                        <p>{{ $job->title }} ({{ $acceptedInternships }} accepted)</p>
+                        <p>{{ $job->title }} ({{ $acceptedInternships }})</p>
                         <div class="progress mb-3">
                             <div class="progress-bar" role="progressbar" style="width: {{ $percentage }}%; background-color: #B30600;" aria-valuenow="{{ $percentage }}" aria-valuemin="0" aria-valuemax="100">
                                 {{ round($percentage, 2) }}%

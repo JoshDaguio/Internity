@@ -27,6 +27,7 @@ class User extends Authenticatable
         'status_id',
         'profile_id',
         'academic_year_id', 
+        'expiry_date', // Ensure this is included
     ];
 
     /**

@@ -98,7 +98,7 @@
                             @if($requirements->medical_status_id != 2) <!-- Hide Accept/Reject buttons if accepted -->
                                 <form action="{{ route('admin.accept.medical', $requirements->id) }}" method="POST" class="d-inline">
                                     @csrf
-                                    <button type="submit" class="btn btn-success">Accept</button>
+                                    <button type="submit" class="btn btn-success">Approve</button>
                                 </form>
                                 <form action="{{ route('admin.reject.medical', $requirements->id) }}" method="POST" class="d-inline">
                                     @csrf
@@ -128,7 +128,7 @@
         <form action="{{ route('admin.upload.endorsement', $requirements->id) }}" method="POST" enctype="multipart/form-data">
             @csrf
             <div class="mb-3">
-                <label for="endorsement_letter" class="form-label">Upload or Re-upload Endorsement Letter</label>
+                <label for="endorsement_letter" class="form-label">Upload Endorsement Letter</label>
                 <input type="file" class="form-control" name="endorsement_letter" required>
             </div>
             <button type="submit" class="btn btn-primary">Upload</button>

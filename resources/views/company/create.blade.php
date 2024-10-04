@@ -59,6 +59,15 @@
                     <label for="floatingLastName">Contact Person Last Name</label>
                 </div>
             </div>
+
+            <!-- Expiry Date Field in Blade Form -->
+            <div class="col-md-12">
+                <div class="form-floating">
+                    <input type="date" name="expiry_date" class="form-control" id="expiry_date" value="{{ old('expiry_date', $company->expiry_date ?? '') }}" placeholder="Expiry Date" required min="{{ date('Y-m-d') }}">
+                    <label for="expiry_date">Expiry Date</label>
+                </div>
+            </div>
+
             <!-- Submit and Cancel Buttons -->
             <div class="text-center">
                 <button type="submit" class="btn btn-primary">Create</button>

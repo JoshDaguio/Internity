@@ -84,10 +84,10 @@ class RequirementController extends Controller
     }
 
     // Method to review a student's requirement
-    public function review($studentId)
+    public function review($requirementId)
     {
         // Find requirements by student_id instead of requirement id
-        $requirements = Requirement::where('student_id', $studentId)->with('student')->firstOrFail();
+        $requirements = Requirement::with('student')->findOrFail($requirementId);
         
         // Check if Step 1 is completed
         $step1Completed = $requirements->waiver_form && $requirements->medical_certificate && $requirements->status_id == 2;

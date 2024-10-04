@@ -31,6 +31,7 @@ class CompanyController extends Controller
         // You can pass any necessary data to the dashboard view
         return view('company.dashboard');
     }
+    
     public function index(Request $request)
     {
         $query = User::where('role_id', 4); // Assuming role_id 4 is for companies
@@ -52,6 +53,7 @@ class CompanyController extends Controller
             'email' => 'required|email|unique:users',
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
+            'expiry_date' => 'required|date|after_or_equal:today', 
         ]);
 
         // Create profile for the contact person
@@ -72,6 +74,7 @@ class CompanyController extends Controller
             'role_id' => 4, // Company role
             'status_id' => 1, // Active status
             'profile_id' => $profile->id,
+            'expiry_date' => $request->expiry_date, // Store the expiry date
         ]);
 
         // Log the creation of the company
@@ -127,6 +130,7 @@ class CompanyController extends Controller
             'first_name' => 'required|string|max:255',
             'password' => ['nullable', 'string', 'min:8'],
             'last_name' => 'required|string|max:255',
+            'expiry_date' => 'required|date|after_or_equal:today', 
         ]);
 
         $updatedFields = [];
@@ -174,6 +178,13 @@ class CompanyController extends Controller
 
             $sendEmail = true;
         }
+
+        // Update expiry date if provided
+        if ($request->expiry_date != $company->expiry_date) {
+            $updatedFields['Expiry Date'] = ['old' => $company->expiry_date, 'new' => $request->expiry_date];
+            $company->expiry_date = $request->expiry_date;
+        }
+
 
         $company->save();
 

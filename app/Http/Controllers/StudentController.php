@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Job;
 use App\Models\User;
 use App\Models\Profile;
+use App\Models\Requirement;
 use App\Models\Priority;
 use App\Models\SkillTag;
 use App\Models\Application;
@@ -105,16 +106,12 @@ class StudentController extends Controller
             ]
         );
 
-        return redirect()->back()->with('status', 'Priority set successfully.');
+        return redirect()->back()->with('success', 'Priority set successfully.');
     }
 
         // Submit Application for a Job
         public function submitApplication(Request $request, $jobId)
         {
-            $request->validate([
-                'endorsement_letter' => 'required|file|mimes:pdf,doc,docx',
-            ]);
-    
             $student = Auth::user();
             $job = Job::findOrFail($jobId);
     
@@ -122,9 +119,15 @@ class StudentController extends Controller
             if (!$student->profile->cv_file_path) {
                 return redirect()->back()->withErrors('Please upload your CV in your profile first.');
             }
+
+            // Check if endorsement letter exists in the requirements
+            if (!$student->requirements || !$student->requirements->endorsement_letter) {
+                return redirect()->back()->withErrors('Please wait for the endorsement letter to be uploaded in the requirements.');
+            }
+            
     
-            // Store the Endorsement Letter
-            $endorsementLetterPath = $request->file('endorsement_letter')->store('endorsement_letters');
+            // Retrieve the endorsement letter from the student's requirements
+            $endorsementLetterPath = $student->requirements->endorsement_letter;
     
             // Update or create the application
             Application::updateOrCreate(
@@ -133,13 +136,13 @@ class StudentController extends Controller
                     'job_id' => $job->id,
                 ],
                 [
-                    'endorsement_letter_path' => $endorsementLetterPath,
-                    'cv_path' => $student->profile->cv_file_path,
+                    'endorsement_letter_path' => $endorsementLetterPath, // Use endorsement letter from requirements
+                    'cv_path' => $student->profile->cv_file_path, // Use CV from the profile
                     'status_id' => 1, // "To Review"
                 ]
             );
-    
-            return redirect()->route('internship.applications')->with('status', 'Application submitted successfully.');
+
+            return redirect()->route('internship.applications')->with('success', 'Application submitted successfully.');
         }
 
         // File Preview Method
@@ -181,6 +184,6 @@ class StudentController extends Controller
                 ->where('job_id', $jobId)
                 ->delete();
 
-            return redirect()->back()->with('status', 'Priority removed successfully.');
+            return redirect()->back()->with('error', 'Priority removed successfully.');
         }
 }

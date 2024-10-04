@@ -31,8 +31,6 @@
     </a>
   </li><!-- End Requirement Nav -->
 
-  @if($step1Completed)
-
 
   <li class="nav-item">
     <a class="nav-link {{ request()->routeIs('internship.listings', 'internship.applications') ? '' : 'collapsed' }}" data-bs-target="#internship-nav" data-bs-toggle="collapse" href="#">
@@ -52,7 +50,7 @@
     </ul>
 </li><!-- End Internship Nav -->
 
-
+@if($step1Completed)
   <li class="nav-item">
     <a class="nav-link {{ request()->routeIs('dtr.logging', 'dtr.reports') ? '' : 'collapsed' }}" data-bs-target="#dtr-nav" data-bs-toggle="collapse" href="#">
       <i class="bi bi-clock"></i><span>Daily Time Record</span><i class="bi bi-chevron-down ms-auto"></i>

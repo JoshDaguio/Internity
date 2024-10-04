@@ -129,44 +129,65 @@
                 @if(!$submitted)
                     @if($priority->priority == 1)
                         <!-- First priority application -->
-                        <form method="POST" action="{{ route('internship.submit', $priority->job->id) }}" enctype="multipart/form-data">
+                        <form method="POST" action="{{ route('internship.submit', $priority->job->id) }}">
                             @csrf
-                            <div class="mb-3">
-                                <label for="endorsement_letter" class="form-label">Endorsement Letter</label>
-                                <input type="file" class="form-control" id="endorsement_letter" name="endorsement_letter" required>
-                            </div>
 
+                            <!-- Check if endorsement letter exists -->
+                            @if($student->requirements && $student->requirements->endorsement_letter)
+                                <p class="text-success">Your endorsement letter will be automatically included in this application.</p>
+                            @else
+                                <p class="text-danger">Please wait for your endorsement letter to be uploaded in the requirements.</p>
+                            @endif
+
+                            <!-- Check if CV exists -->
                             @if($student->profile->cv_file_path)
-                                <p>Your CV will be automatically included in this application.</p>
-                                <button type="submit" class="btn btn-primary">Submit Application</button>
+                                <p class="text-success">Your CV will be automatically included in this application.</p>
                             @else
                                 <p class="text-danger">Please upload your CV in your profile before submitting.</p>
+                            @endif
+
+                            <!-- Only show the submit button if both CV and endorsement letter exist -->
+                            @if($student->profile->cv_file_path && $student->requirements && $student->requirements->endorsement_letter)
+                                <button type="submit" class="btn btn-primary">Submit Application</button>
+                            @else
+                                <p class="text-danger">You cannot submit your application until both your CV and endorsement letter are uploaded.</p>
                             @endif
                         </form>
                     @elseif($priority->priority == 2 && $firstPrioritySubmittedOrRejected)
                         <!-- Second priority application -->
-                        <form method="POST" action="{{ route('internship.submit', $priority->job->id) }}" enctype="multipart/form-data">
+                        <form method="POST" action="{{ route('internship.submit', $priority->job->id) }}">
                             @csrf
-                            <div class="mb-3">
-                                <label for="endorsement_letter" class="form-label">Endorsement Letter</label>
-                                <input type="file" class="form-control" id="endorsement_letter" name="endorsement_letter" required>
-                            </div>
 
+                            <!-- Check if endorsement letter exists -->
+                            @if($student->requirements && $student->requirements->endorsement_letter)
+                                <p class="text-success">Your endorsement letter will be automatically included in this application.</p>
+                            @else
+                                <p class="text-danger">Please wait for your endorsement letter to be uploaded in the requirements.</p>
+                            @endif
+
+                            <!-- Check if CV exists -->
                             @if($student->profile->cv_file_path)
-                                <p>Your CV will be automatically included in this application.</p>
-                                <button type="submit" class="btn btn-primary">Submit Application</button>
+                                <p class="text-success">Your CV will be automatically included in this application.</p>
                             @else
                                 <p class="text-danger">Please upload your CV in your profile before submitting.</p>
+                            @endif
+
+                            <!-- Only show the submit button if both CV and endorsement letter exist -->
+                            @if($student->profile->cv_file_path && $student->requirements && $student->requirements->endorsement_letter)
+                                <button type="submit" class="btn btn-primary">Submit Application</button>
+                            @else
+                                <p class="text-danger">You cannot submit your application until both your CV and endorsement letter are uploaded.</p>
                             @endif
                         </form>
                     @else
                         <!-- If priority is 2 but the first priority hasn't been submitted or rejected -->
-                        <p class="text-danger">First Priority Application Still In Progress</p>
+                        <p class="text-warning">First Priority Application Still In Progress</p>
                     @endif
                 @else
                     <!-- If already submitted -->
                     <p class="text-success">Application Submitted</p>
                 @endif
+
             </div>
         </div>
     </div>

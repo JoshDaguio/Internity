@@ -44,7 +44,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('requirement_statuses');
         Schema::dropIfExists('requirements');
+        Schema::dropIfExists('requirement_statuses');
     }
 };

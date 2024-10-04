@@ -7,6 +7,9 @@ use App\Http\Requests\Auth\LoginRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Http; // Add this line for the Http facade
+use Carbon\Carbon;
+use App\Models\User;
 use Illuminate\View\View;
 
 class AuthenticatedSessionController extends Controller
@@ -34,6 +37,10 @@ class AuthenticatedSessionController extends Controller
             Auth::logout(); // Log out the user if they are waiting for approval
             return redirect()->route('login')->withErrors(['email' => 'This account is waiting for approval.']);
         }
+
+
+        // Check for expired company accounts
+        $this->checkForExpiredCompanies();
 
         $request->session()->regenerate();
 
@@ -68,6 +75,23 @@ class AuthenticatedSessionController extends Controller
         {
             return redirect()->intended(route('dashboard', absolute: false));
         }
+    }
+
+    private function checkForExpiredCompanies()
+    {
+        try {
+            $response = Http::get('http://worldtimeapi.org/api/timezone/Asia/Manila');
+            $currentDateTime = Carbon::parse($response->json('datetime'));
+        } catch (\Exception $e) {
+            $currentDateTime = Carbon::now(new \DateTimeZone('Asia/Manila'));
+        }
+
+        // Find all active companies with expiry dates
+        $expiredCompanies = User::where('role_id', 4) // Only companies
+                                ->where('status_id', 1) // Active
+                                ->whereNotNull('expiry_date') // Has expiry date
+                                ->where('expiry_date', '<', $currentDateTime) // Expired
+                                ->update(['status_id' => 2]); // Set to Inactive
     }
 
     /**

@@ -85,7 +85,9 @@
                                 @csrf
                                 <div class="d-flex align-items-center">
                                     <input type="file" name="waiver_form" class="form-control me-2" required>
-                                    <button type="submit" class="btn btn-primary btn-sm">Re-upload</button>
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="bi bi-upload"></i>
+                                    </button>
                                 </div>
                             </form>
                         @elseif($requirements->waiver_form)
@@ -104,7 +106,7 @@
                             @if($requirements->medical_status_id == 1)
                                 <span class="badge bg-warning">To Review</span>
                             @elseif($requirements->medical_status_id == 2)
-                                <span class="badge bg-success">Accepted</span>
+                                <span class="badge bg-success">Approved</span>
                             @elseif($requirements->medical_status_id == 3)
                                 <span class="badge bg-danger">Rejected</span>
                             @endif
@@ -119,7 +121,9 @@
                                 @csrf
                                 <div class="d-flex align-items-center">
                                     <input type="file" name="medical_certificate" class="form-control me-2" required>
-                                    <button type="submit" class="btn btn-primary btn-sm">Re-upload</button>
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="bi bi-upload"></i>
+                                    </button>
                                 </div>
                             </form>
                         @elseif($requirements->medical_certificate)

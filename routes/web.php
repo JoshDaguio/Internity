@@ -265,7 +265,8 @@ Route::middleware(['auth'])->group(function () {
 // Admin Side
 Route::middleware(['auth', 'administrative'])->group(function () {
     // Admin Requirement Review
-    Route::get('/requirements/review/{studentId}', [RequirementController::class, 'review'])->name('requirements.review');
+    Route::get('/requirements/review/{requirement}', [RequirementController::class, 'review'])->name('requirements.review');
+    // Route::get('/requirements/review/{studentId}', [RequirementController::class, 'review'])->name('requirements.review');
     Route::post('/requirements/accept-waiver/{id}', [RequirementController::class, 'acceptWaiver'])->name('admin.accept.waiver');
     Route::post('/requirements/reject-waiver/{id}', [RequirementController::class, 'rejectWaiver'])->name('admin.reject.waiver');
     Route::post('/requirements/accept-medical/{id}', [RequirementController::class, 'acceptMedical'])->name('admin.accept.medical');
