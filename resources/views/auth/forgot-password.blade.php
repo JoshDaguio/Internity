@@ -96,6 +96,10 @@
                     <div class="col-12 mt-4">
                         <button class="btn btn-primary w-100" type="submit">{{ __('Email Password Reset Link') }}</button>
                     </div>
+
+                    <div class="col-12 mt-4">
+                        <p class="small mb-0">Back to <a href="{{ route('login') }}">Log in</a></p>
+                    </div>
                 </form>
 
               </div>

@@ -12,7 +12,7 @@
             </ol>
         </nav>
     </div><!-- End Page Title -->
-    <a href="{{ route('company.index') }}" class="btn btn-secondary mb-3">Back to List</a>
+    <a href="{{ route('company.index') }}" class="btn btn-secondary mb-3">Back</a>
 
 
     <table class="table table-bordered">
@@ -34,17 +34,19 @@
         </tr>
     </table>
 
-    <a href="{{ route('company.edit', $company->id) }}" class="btn btn-warning {{ $company->status_id != 1 ? 'd-none' : '' }}">Edit</a>
+    <a href="{{ route('company.edit', $company->id) }}" class="btn btn-warning {{ $company->status_id != 1 ? 'd-none' : '' }}"><i class="bi bi-pencil"></i></a>
 
     @if($company->status_id == 1)
         <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deactivateModal">
-            Deactivate
+            <i class="bi bi-trash"></i>
         </button>
     @else
         <form action="{{ route('company.reactivate', $company->id) }}" method="POST" style="display:inline-block;">
             @csrf
             @method('PATCH')
-            <button type="submit" class="btn btn-success">Reactivate</button>
+            <button type="submit" class="btn btn-success">
+                <i class="bi bi-arrow-repeat"></i>
+            </button>
         </form>
     @endif
 

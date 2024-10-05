@@ -126,12 +126,13 @@
 
                       <!-- Email Address -->
                       <div class="col-12 mt-4">
-                          <label for="email" class="form-label">Email</label>
+                          <label for="email" class="form-label">School Email</label>
                           <div class="input-group has-validation">
-                              <input type="email" name="email" class="form-control" id="email" :value="old('email')" required autocomplete="username">
-                              <div class="invalid-feedback">Please enter a valid Email address!</div>
+                              <input type="text" name="email_username" class="form-control" id="email_username" placeholder="lastname.firstname" value="{{ old('email_username') }}" required>
+                              <span class="input-group-text">@auf.edu.ph</span>
+                              <div class="invalid-feedback">Please enter your school email in the format lastname.firstname@auf.edu.ph!</div>
                           </div>
-                          <x-input-error :messages="$errors->get('email')" class="mt-2" />
+                          <x-input-error :messages="$errors->get('email_username')" class="mt-2" />
                       </div>
 
                       <!-- Course -->

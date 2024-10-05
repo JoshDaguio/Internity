@@ -88,6 +88,13 @@
   </li><!-- End Internship Hours Nav -->
 
   <li class="nav-item">
+      <a class="nav-link {{ request()->routeIs('admin.jobs.index', 'admin.jobs.create', 'admin.jobs.edit') ? '' : 'collapsed' }}" href="{{ route('admin.jobs.index') }}">
+          <i class="bi bi-briefcase"></i>
+          <span>Job Listings</span>  
+      </a>
+  </li><!-- End Job Listings Nav -->
+
+  <li class="nav-item">
     <a class="nav-link {{ request()->routeIs('penalties.index', 'penalties.create', 'penalties.edit', 'penalties.show') ? '' : 'collapsed' }}" href="{{ route('penalties.index') }}">
       <i class="bi bi-exclamation-triangle"></i>
       <span>Violations and Penalties</span>  

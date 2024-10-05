@@ -19,8 +19,7 @@ use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\RequirementController;
 use App\Http\Controllers\AcademicYearController;
-
-
+use App\Http\Controllers\AdminJobController;
 
 
 Route::get('/', function () {
@@ -285,4 +284,14 @@ Route::middleware(['auth', 'super_admin'])->group(function () {
     Route::post('/academic-years/{academicYear}/set-current', [AcademicYearController::class, 'setCurrent'])->name('academic-years.set-current');
     Route::post('/academic-years/{academicYear}/deactivate', [AcademicYearController::class, 'deactivate'])->name('academic-years.deactivate');
     Route::get('/academic-years/{id}/show', [AcademicYearController::class, 'show'])->name('academic-years.show');
+});
+
+// Job Listing CRUD for Super Admins and Admins
+Route::middleware(['auth', 'administrative'])->group(function () {
+    Route::get('/admin/jobs', [AdminJobController::class, 'index'])->name('admin.jobs.index');
+    Route::get('/admin/jobs/create', [AdminJobController::class, 'create'])->name('admin.jobs.create');
+    Route::post('/admin/jobs', [AdminJobController::class, 'store'])->name('admin.jobs.store');
+    Route::get('/admin/jobs/{job}/edit', [AdminJobController::class, 'edit'])->name('admin.jobs.edit');
+    Route::patch('/admin/jobs/{job}', [AdminJobController::class, 'update'])->name('admin.jobs.update');
+    Route::delete('/admin/jobs/{job}', [AdminJobController::class, 'destroy'])->name('admin.jobs.destroy');
 });

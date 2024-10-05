@@ -6,9 +6,13 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Requirement;
-use App\Models\RequirementStatus; // Import the status model
+use App\Models\RequirementStatus; 
 use App\Models\User;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\RequirementAccepted;
+use App\Mail\RequirementRejected;
+use App\Mail\EndorsementUploaded;
 
 
 class RequirementController extends Controller
@@ -138,6 +142,9 @@ class RequirementController extends Controller
         $requirements->waiver_status_id = 3; // Rejected
         $requirements->save();
 
+        // Send rejection email
+        Mail::to($requirements->student->email)->send(new RequirementRejected('waiver'));
+
         return redirect()->back()->with('error', 'Waiver form rejected.');
     }
 
@@ -161,6 +168,9 @@ class RequirementController extends Controller
         $requirements->medical_status_id = 3; // Rejected
         $requirements->save();
 
+        // Send rejection email
+        Mail::to($requirements->student->email)->send(new RequirementRejected('medical'));
+
         return redirect()->back()->with('error', 'Medical certificate rejected.');
     }
 
@@ -175,6 +185,9 @@ class RequirementController extends Controller
         $filePath = $request->file('endorsement_letter')->store('endorsement_letters');
         $requirements->endorsement_letter = $filePath;
         $requirements->save();
+
+        // Send email to the student notifying them that the endorsement letter has been uploaded
+        Mail::to($requirements->student->email)->send(new EndorsementUploaded());
     
         // Check if all conditions for completion are met
         $this->checkRequirementCompletion($requirements);    
@@ -190,6 +203,7 @@ class RequirementController extends Controller
             // Set the overall status_id to Accepted
             $requirements->status_id = 2; // Accepted
             $requirements->save();
+            Mail::to($requirements->student->email)->send(new RequirementAccepted());
         }
     }
     

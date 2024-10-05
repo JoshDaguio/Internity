@@ -64,10 +64,10 @@
                             <button class="btn btn-dark" onclick="showPreview('{{ route('preview.requirement', ['type' => 'waiver', 'id' => $requirements->id]) }}')">
                                 <i class="bi bi-folder"></i>
                             </button>
-                            @if($requirements->waiver_status_id != 2) <!-- Hide Accept/Reject buttons if accepted -->
+                            @if($requirements->waiver_status_id == 1) <!-- Hide Accept/Reject buttons if Accepted/Rejected -->
                                 <form action="{{ route('admin.accept.waiver', $requirements->id) }}" method="POST" class="d-inline">
                                     @csrf
-                                    <button type="submit" class="btn btn-success">Accept</button>
+                                    <button type="submit" class="btn btn-success">Approve</button>
                                 </form>
                                 <form action="{{ route('admin.reject.waiver', $requirements->id) }}" method="POST" class="d-inline">
                                     @csrf
@@ -95,7 +95,7 @@
                             <button class="btn btn-dark" onclick="showPreview('{{ route('preview.requirement', ['type' => 'medical', 'id' => $requirements->id]) }}')">
                                 <i class="bi bi-folder"></i>
                             </button>
-                            @if($requirements->medical_status_id != 2) <!-- Hide Accept/Reject buttons if accepted -->
+                            @if($requirements->medical_status_id == 1) <!-- Hide Accept/Reject buttons if Accepted/Rejected -->
                                 <form action="{{ route('admin.accept.medical', $requirements->id) }}" method="POST" class="d-inline">
                                     @csrf
                                     <button type="submit" class="btn btn-success">Approve</button>

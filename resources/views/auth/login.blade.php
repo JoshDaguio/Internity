@@ -144,7 +144,6 @@
                           <p class="small mb-0">Student with no account? <a href="{{ route('register') }}">Register an account</a></p>
                       </div>
                   </form>
-
                 </div>
               </div>
             </div>

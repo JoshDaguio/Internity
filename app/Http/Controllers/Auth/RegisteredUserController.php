@@ -32,10 +32,16 @@ class RegisteredUserController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
+    // Validate the input
         $request->validate([
             'first_name' => ['required', 'string', 'max:255'],
             'last_name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'email_username' => [
+                'required',
+                'string',
+                'max:255',
+                'regex:/^[a-zA-Z]+\.[a-zA-Z]+$/', // Ensure it's in lastname.firstname format
+            ],
             'id_number' => [
                 'required', 
                 'string', 
@@ -45,8 +51,12 @@ class RegisteredUserController extends Controller
             ],
             'course_id' => ['required', 'exists:courses,id'],
         ], [
+            'email_username.regex' => 'Email must be in the format lastname.firstname',
             'id_number.regex' => 'The ID number must follow the format 00-0000-000.', // Custom error message
         ]);
+
+        // Append @auf.edu.ph to the email username
+        $email = $request->email_username . '@auf.edu.ph';
 
         // Generate a unique password with aufCCSInternship + random characters
         $randomPassword = 'aufCCSInternship' . Str::random(5);
@@ -64,7 +74,7 @@ class RegisteredUserController extends Controller
         // Create the user and link the profile
         $user = User::create([
             'name' => $request->first_name,
-            'email' => $request->email,
+            'email' => $email, // Save the generated school email
             'password' => Hash::make($randomPassword), // Store hashed password
             'course_id' => $request->course_id,
             'role_id' => 5, // Student role
