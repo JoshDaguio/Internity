@@ -820,20 +820,68 @@ h6 {
   flex-grow: 0;
 }
 
-.dashboard .sales-card .card-icon {
-  color: #4154f1;
-  background: #f6f6fe;
+/* Info Cards 1st Row */
+.dashboard-info-card {
+  border-left: 4px solid #a90b06; /* Customize the border color as needed */
+  background: #ffffff; /* White background */
+  height: 90px; /* Adjusted height for uniformity */
+  border-radius: 5px; /* Optional: to match overall design */
 }
 
-.dashboard .revenue-card .card-icon {
-  color: #2eca6a;
-  background: #e0f8e9;
+.dashboard-info-card .card-body {
+  padding: 1rem; /* Reduced padding for compact look */
+  font-family: "Poppins", sans-serif; /* Apply Poppins font */
 }
 
-.dashboard .customers-card .card-icon {
-  color: #ff771d;
-  background: #ffecdf;
+.dashboard-info-card  {
+  font-size: 18px; /* Consistent with .card-title */
+  font-weight: 500; /* Match the weight of .card-title */
+  color: #012970; /* Same color as .card-title */
 }
+
+.dashboard-info-card .h5 {
+  font-size: 18px; /* Match font size */
+  font-weight: 500; /* Match the weight */
+  color: #012970; /* Maintain consistency */
+}
+
+.dashboard-info-card i {
+  font-size: 1.5rem; /* Adjusted size for consistency */
+  color: #a90b06; /* Match the icon color with the border */
+}
+
+@media (max-width: 767.98px) {
+  .dashboard-info-card {
+    height: auto; /* Make the height dynamic for small screens */
+  }
+}
+
+
+
+/* Admins Card */
+.dashboard .admins-card .card-icon {
+  color: #0d6efd; /* Blue */
+  background: #e7f0ff; /* Light Blue Background */
+}
+
+/* Faculty Card */
+.dashboard .faculty-card .card-icon {
+  color: #6f42c1; /* Purple */
+  background: #f1e7ff; /* Light Purple Background */
+}
+
+/* Company Card */
+.dashboard .company-card .card-icon {
+  color: #198754; /* Green */
+  background: #e9f7ef; /* Light Green Background */
+}
+
+/* Student Card */
+.dashboard .student-card .card-icon {
+  color: #dc3545; /* Red */
+  background: #fbe7e9; /* Light Red Background */
+}
+
 
 /* Activity */
 .dashboard .activity {

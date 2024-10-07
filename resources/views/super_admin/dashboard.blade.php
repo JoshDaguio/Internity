@@ -1,128 +1,168 @@
 @extends('layouts.app')
 @section('body')
-<div class="pagetitle">
+    <div class="pagetitle">
       <h1>Super Admin Dashboard</h1>
       <nav>
         <ol class="breadcrumb">
-          <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+          <li class="breadcrumb-item">Home</li>
           <li class="breadcrumb-item active">Dashboard</li>
         </ol>
       </nav>
     </div><!-- End Page Title -->
 
     <section class="section dashboard">
-      <div class="row">
 
+    <!-- First Row -->
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card shadow-sm dashboard-info-card">
+                <div class="card-body d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="text mb-1">Current S.Y.</div>
+                        <div class="h5 mb-0">{{ $schoolYear }}</div> <!-- Display current school year -->
+                    </div>
+                    <i class="bi bi-calendar3"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow-sm dashboard-info-card">
+                <div class="card-body d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="text mb-1">Active Users</div>
+                        <div class="h5 mb-0">{{ $totalActiveUsers }}</div> <!-- Display number of active users -->
+                    </div>
+                    <i class="bi bi-people"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow-sm dashboard-info-card">
+                <div class="card-body d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="text mb-1">Active Internships</div>
+                        <div class="h5 mb-0">{{ $totalAcceptedInternships }}</div> <!-- Display number of accepted internships -->
+                    </div>
+                    <i class="bi bi-briefcase"></i>
+                </div>
+            </div>
+        </div> 
+    </div>
+    <!-- End First Row -->
+
+
+    <div class="row">
+        <!-- Admin Card -->
+        <div class="col-xxl-4 col-md-3">
+            <div class="card info-card admins-card">
+                <div class="card-body">
+                    <h5 class="card-title">Admin</h5>
+                    <div class="d-flex align-items-center">
+                        <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                            <i class="bi bi-shield-lock"></i>
+                        </div>
+                        <div class="ps-3">
+                            <h6>{{ $totalAdmins }}</h6>
+                            <span class="text-primary small pt-1 fw-bold">{{ $adminPercentage }}%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- End Admin Card -->
+
+        <!-- Faculty Card -->
+        <div class="col-xxl-4 col-md-3">
+            <div class="card info-card faculty-card">
+                <div class="filter">
+                    <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
+                    <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+                        <li class="dropdown-header text-start">
+                            <h6>Filter</h6>
+                        </li>
+                        <li><a class="dropdown-item filter-faculty-item" data-filter="all">All</a></li>
+                        @foreach($courses as $course)
+                            <li><a class="dropdown-item filter-faculty-item" data-filter="{{ $course->id }}">{{ $course->course_code }}</a></li>
+                        @endforeach
+                    </ul>
+                </div>
+
+                <div class="card-body">
+                    <h5 class="card-title">Faculty <span id="selected-faculty-course">| {{ $selectedFacultyCourse }}</span></h5>
+                    <div class="d-flex align-items-center">
+                        <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                            <i class="bi bi-person-badge"></i>
+                        </div>
+                        <div class="ps-3">
+                            <h6 id="total-faculty">{{ $totalFaculty }}</h6>
+                            <span id="faculty-percentage" class="text-primary small pt-1 fw-bold">{{ $facultyPercentage }}%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- End Faculty Card -->
+
+        <!-- Company Card -->
+        <div class="col-xxl-4 col-md-3">
+            <div class="card info-card company-card">
+                <div class="card-body">
+                    <h5 class="card-title">Company</h5>
+                    <div class="d-flex align-items-center">
+                        <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                            <i class="bi bi-building"></i>
+                        </div>
+                        <div class="ps-3">
+                            <h6>{{ $totalCompanies }}</h6>
+                            <span class="text-primary small pt-1 fw-bold">{{ $companyPercentage }}%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- End Company Card -->
+
+        <!-- Student Card -->
+        <div class="col-xxl-4 col-md-3">
+            <div class="card info-card student-card">
+                <div class="filter">
+                    <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
+                    <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+                        <li class="dropdown-header text-start">
+                            <h6>Filter</h6>
+                        </li>
+                        <li><a class="dropdown-item filter-item" data-filter="all">All</a></li>
+                        @foreach($courses as $course)
+                            <li><a class="dropdown-item filter-item" data-filter="{{ $course->id }}">{{ $course->course_code }}</a></li>
+                        @endforeach
+                    </ul>
+                </div>
+
+                <div class="card-body">
+                    <h5 class="card-title">Student <span id="selected-course">| {{ $selectedStudentCourse }}</span></h5>
+                    <div class="d-flex align-items-center">
+                        <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                            <i class="bi bi-mortarboard"></i>
+                        </div>
+                        <div class="ps-3">
+                            <h6 id="total-students">{{ $totalStudents }}</h6>
+                            <span id="student-percentage" class="text-primary small pt-1 fw-bold">{{ $studentPercentage }}%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- End Student Card -->
+    </div>
+
+    
+<div class="row">
         <!-- Left side columns -->
         <div class="col-lg-8">
-          <div class="row">
 
-            <!-- Sales Card -->
-            <div class="col-xxl-4 col-md-6">
-              <div class="card info-card sales-card">
-
-                <div class="filter">
-                  <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
-                  <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
-                    <li class="dropdown-header text-start">
-                      <h6>Filter</h6>
-                    </li>
-
-                    <li><a class="dropdown-item" href="#">Today</a></li>
-                    <li><a class="dropdown-item" href="#">This Month</a></li>
-                    <li><a class="dropdown-item" href="#">This Year</a></li>
-                  </ul>
-                </div>
-
-                <div class="card-body">
-                  <h5 class="card-title">Sales <span>| Today</span></h5>
-
-                  <div class="d-flex align-items-center">
-                    <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
-                      <i class="bi bi-cart"></i>
-                    </div>
-                    <div class="ps-3">
-                      <h6>145</h6>
-                      <span class="text-success small pt-1 fw-bold">12%</span> <span class="text-muted small pt-2 ps-1">increase</span>
-
-                    </div>
-                  </div>
-                </div>
-
-              </div>
-            </div><!-- End Sales Card -->
-
-            <!-- Revenue Card -->
-            <div class="col-xxl-4 col-md-6">
-              <div class="card info-card revenue-card">
-
-                <div class="filter">
-                  <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
-                  <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
-                    <li class="dropdown-header text-start">
-                      <h6>Filter</h6>
-                    </li>
-
-                    <li><a class="dropdown-item" href="#">Today</a></li>
-                    <li><a class="dropdown-item" href="#">This Month</a></li>
-                    <li><a class="dropdown-item" href="#">This Year</a></li>
-                  </ul>
-                </div>
-
-                <div class="card-body">
-                  <h5 class="card-title">Revenue <span>| This Month</span></h5>
-
-                  <div class="d-flex align-items-center">
-                    <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
-                      <i class="bi bi-currency-dollar"></i>
-                    </div>
-                    <div class="ps-3">
-                      <h6>$3,264</h6>
-                      <span class="text-success small pt-1 fw-bold">8%</span> <span class="text-muted small pt-2 ps-1">increase</span>
-
-                    </div>
-                  </div>
-                </div>
-
-              </div>
-            </div><!-- End Revenue Card -->
-
-            <!-- Customers Card -->
-            <div class="col-xxl-4 col-xl-12">
-
-              <div class="card info-card customers-card">
-
-                <div class="filter">
-                  <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
-                  <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
-                    <li class="dropdown-header text-start">
-                      <h6>Filter</h6>
-                    </li>
-
-                    <li><a class="dropdown-item" href="#">Today</a></li>
-                    <li><a class="dropdown-item" href="#">This Month</a></li>
-                    <li><a class="dropdown-item" href="#">This Year</a></li>
-                  </ul>
-                </div>
-
-                <div class="card-body">
-                  <h5 class="card-title">Customers <span>| This Year</span></h5>
-
-                  <div class="d-flex align-items-center">
-                    <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
-                      <i class="bi bi-people"></i>
-                    </div>
-                    <div class="ps-3">
-                      <h6>1244</h6>
-                      <span class="text-danger small pt-1 fw-bold">12%</span> <span class="text-muted small pt-2 ps-1">decrease</span>
-
-                    </div>
-                  </div>
-
-                </div>
-              </div>
-
-            </div><!-- End Customers Card -->
+        <div class="row">
 
             <!-- Reports -->
             <div class="col-12">
@@ -642,5 +682,61 @@
         </div><!-- End Right side columns -->
 
       </div>
+                
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Add event listeners to the student filter items
+            document.querySelectorAll('.filter-item').forEach(function (item) {
+                item.addEventListener('click', function (event) {
+                    event.preventDefault();
+                    let filter = event.target.getAttribute('data-filter');
+
+                    fetch(`{{ route('super_admin.dashboard') }}?student_filter=${filter}`, {
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        document.getElementById('total-students').textContent = data.totalStudents;
+                        document.getElementById('student-percentage').textContent = `${data.studentPercentage}%`;
+                        document.getElementById('selected-course').textContent = `| ${data.selectedStudentCourse}`;
+                    })
+                    .catch(error => console.error('Error:', error));
+                });
+            });
+
+            // Add event listeners to the faculty filter items
+            document.querySelectorAll('.filter-faculty-item').forEach(function (item) {
+                item.addEventListener('click', function (event) {
+                    event.preventDefault();
+                    let filter = event.target.getAttribute('data-filter');
+
+                    fetch(`{{ route('super_admin.dashboard') }}?faculty_filter=${filter}`, {
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        document.getElementById('total-faculty').textContent = data.totalFaculty;
+                        document.getElementById('faculty-percentage').textContent = `${data.facultyPercentage}%`;
+                        document.getElementById('selected-faculty-course').textContent = `| ${data.selectedFacultyCourse}`;
+                    })
+                    .catch(error => console.error('Error:', error));
+                });
+            });
+        });
+    </script>
     </section>
 @endsection

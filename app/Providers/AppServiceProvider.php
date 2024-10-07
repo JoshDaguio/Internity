@@ -4,6 +4,8 @@ namespace App\Providers;
 
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
+use App\Models\Message;
+use Illuminate\Support\Facades\Auth;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -41,8 +43,25 @@ class AppServiceProvider extends ServiceProvider
                     $sidebar = 'student.partials.sidebar';
                     break;
             }
+            // Fetch unread messages count and latest unread messages if the user is authenticated
+            $unreadMessagesCount = 0;
+            $unreadMessages = [];
 
-            $view->with('sidebar', $sidebar); // Pass the sidebar name to the view
+            if ($user) {
+                $unreadMessagesCount = Message::where('recipient_id', $user->id)
+                    ->where('status', 'unread')
+                    ->count();
+
+                $unreadMessages = Message::where('recipient_id', $user->id)
+                    ->where('status', 'unread')
+                    ->orderBy('created_at', 'desc')
+                    ->take(5) // Get the 5 most recent unread messages
+                    ->get();
+            }
+
+            $view->with('sidebar', $sidebar)
+                 ->with('unreadMessagesCount', $unreadMessagesCount)
+                 ->with('unreadMessages', $unreadMessages);
         });
     }
 }

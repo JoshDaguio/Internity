@@ -20,6 +20,7 @@ use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\RequirementController;
 use App\Http\Controllers\AcademicYearController;
 use App\Http\Controllers\AdminJobController;
+use App\Http\Controllers\MessageController;
 
 
 Route::get('/', function () {
@@ -294,4 +295,16 @@ Route::middleware(['auth', 'administrative'])->group(function () {
     Route::get('/admin/jobs/{job}/edit', [AdminJobController::class, 'edit'])->name('admin.jobs.edit');
     Route::patch('/admin/jobs/{job}', [AdminJobController::class, 'update'])->name('admin.jobs.update');
     Route::delete('/admin/jobs/{job}', [AdminJobController::class, 'destroy'])->name('admin.jobs.destroy');
+});
+
+// Messages
+// Routes for the message/inbox system
+Route::middleware(['auth'])->group(function () {
+    Route::get('/messages', [MessageController::class, 'index'])->name('messages.index');
+    Route::get('/messages/compose', [MessageController::class, 'create'])->name('messages.create');
+    Route::post('/messages', [MessageController::class, 'store'])->name('messages.store');
+    Route::get('/messages/{message}', [MessageController::class, 'show'])->name('messages.show');
+    Route::get('/messages/recipients/{role}', [MessageController::class, 'getRecipients'])->name('messages.recipients');
+    Route::post('/messages/reply/{id}', [MessageController::class, 'reply'])->name('messages.reply');
+    Route::get('/courses', [MessageController::class, 'getCourses'])->name('courses.index'); // Named the route
 });
