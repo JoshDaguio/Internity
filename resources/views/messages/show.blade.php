@@ -2,6 +2,7 @@
 
 @section('content')
 <div class="container">
+    <!-- Display the root message -->
     <div class="card">
         <div class="card-header">
             <h5>{{ $originalMessage->subject }}</h5>
@@ -16,6 +17,7 @@
         </div>
     </div>
 
+    <!-- Display the entire conversation -->
     <div class="card mt-3">
         <div class="card-body">
             <h6>Conversation</h6>

@@ -9,6 +9,8 @@ use App\Models\User;
 use App\Models\Course;
 use App\Models\AcceptedInternship;
 use Auth;
+use App\Mail\MessageNotification;
+use Illuminate\Support\Facades\Mail;
 
 class MessageController extends Controller
 {
@@ -52,13 +54,28 @@ class MessageController extends Controller
             'body' => 'required|string',
         ]);
 
-        Message::create([
+        $message = Message::create([
             'sender_id' => Auth::id(),
             'recipient_id' => $request->recipient_id,
             'subject' => $request->subject,
             'body' => $request->body,
             'status' => 'unread',
         ]);
+
+        // Send email notification
+        $recipient = User::find($request->recipient_id);
+        $sender = Auth::user();
+        $messageDetails = [
+            'title' => 'New Message Received',
+            'recipient_name' => $recipient->name,
+            'sender_name' => $sender->name,
+            'subject' => $message->subject,
+            'body_snippet' => substr($message->body, 0, 100) . '...',
+            'created_at' => $message->created_at->format('M d, Y h:i A'),
+            'action' => 'sent you a message',
+        ];
+
+    Mail::to($recipient->email)->send(new MessageNotification($messageDetails));
 
         return redirect()->route('messages.index')->with('success', 'Message sent successfully!');
     }
@@ -73,17 +90,20 @@ class MessageController extends Controller
                 'replies.sender.profile'
             ])->findOrFail($id);
     
+            // Find the root message of the conversation
+            $rootMessage = $message;
+            while ($rootMessage->parent_id) {
+                $rootMessage = Message::with(['sender.profile', 'recipient.profile'])
+                    ->findOrFail($rootMessage->parent_id);
+            }
+    
+            // Fetch all messages recursively in the conversation from the root message
+            $conversation = $this->fetchFullConversation($rootMessage);
+    
             // Mark as read if the current user is the recipient of the initial message
             if (Auth::id() === $message->recipient_id && $message->status === 'unread') {
                 $message->update(['status' => 'read']);
             }
-    
-            // Fetch all messages in the conversation, including replies, sorted by creation time
-            $conversation = Message::with(['sender.profile', 'recipient.profile'])
-                ->where('id', $message->id)
-                ->orWhere('parent_id', $message->id)
-                ->orderBy('created_at')
-                ->get();
     
             if (request()->ajax()) {
                 return response()->json([
@@ -104,11 +124,38 @@ class MessageController extends Controller
                 ], 200);
             }
     
-            return view('messages.show', ['originalMessage' => $message, 'conversation' => $conversation]);
+            return view('messages.show', [
+                'originalMessage' => $rootMessage,
+                'conversation' => $conversation
+            ]);
         } catch (\Exception $e) {
             \Log::error("Error in message show: " . $e->getMessage());
             return response()->json(['error' => 'Failed to load message details. Please try again.'], 500);
         }
+    }
+    
+    /**
+     * Recursively fetch all messages in the conversation starting from the root message.
+     *
+     * @param \App\Models\Message $rootMessage
+     * @return \Illuminate\Support\Collection
+     */
+    private function fetchFullConversation($rootMessage)
+    {
+        $messages = collect([$rootMessage]);
+        
+        // Get all replies for the current message
+        $replies = Message::with(['sender.profile', 'recipient.profile'])
+            ->where('parent_id', $rootMessage->id)
+            ->orderBy('created_at')
+            ->get();
+    
+        // Recursively fetch replies
+        foreach ($replies as $reply) {
+            $messages = $messages->merge($this->fetchFullConversation($reply));
+        }
+    
+        return $messages;
     }
     
     
@@ -275,7 +322,7 @@ class MessageController extends Controller
         $originalMessage = Message::findOrFail($id);
     
         // Reply to the sender of the original message
-        Message::create([
+        $reply = Message::create([
             'sender_id' => Auth::id(),
             'recipient_id' => $originalMessage->sender_id,
             'subject' => 'Re: ' . $originalMessage->subject,
@@ -283,6 +330,21 @@ class MessageController extends Controller
             'status' => 'unread',
             'parent_id' => $originalMessage->id, // Set the parent ID
         ]);
+
+        // Send email notification
+        $recipient = User::find($originalMessage->sender_id);
+        $sender = Auth::user();
+        $messageDetails = [
+            'title' => 'Reply Received',
+            'recipient_name' => $recipient->name,
+            'sender_name' => $sender->name,
+            'subject' => $reply->subject,
+            'body_snippet' => substr($reply->body, 0, 100) . '...',
+            'created_at' => $reply->created_at->format('M d, Y h:i A'),
+            'action' => 'replied to your message',
+        ];
+
+        Mail::to($recipient->email)->send(new MessageNotification($messageDetails));
     
         return redirect()->route('messages.index', $id)->with('success', 'Reply sent successfully!');
     }
