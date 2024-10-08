@@ -3,15 +3,16 @@
 @section('content')
 <div class="container">
     <div class="card">
-        <div class="card-header d-flex align-items-center">
-            <img src="{{ $message->sender->profile && $message->sender->profile->profile_picture ? Storage::url($message->sender->profile->profile_picture) : asset('assets/img/profile-img.jpg') }}" class="rounded-circle me-2" style="width: 50px; height: 50px;">
-            <div>
-                <h5>{{ $message->subject }}</h5>
-                <small>From: {{ $message->sender->name }} | {{ $message->created_at->format('M d, Y h:i A') }}</small>
-            </div>
+        <div class="card-header">
+            <h5>{{ $originalMessage->subject }}</h5>
+            <small>From: {{ $originalMessage->sender->name }}
+            @if($originalMessage->recipient)
+                | To: {{ $originalMessage->recipient->name }}
+            @endif
+            | {{ $originalMessage->created_at->format('M d, Y h:i A') }}</small>
         </div>
         <div class="card-body">
-            <p>{{ $message->body }}</p>
+            <p>{{ $originalMessage->body }}</p>
         </div>
     </div>
 
@@ -20,27 +21,17 @@
             <h6>Conversation</h6>
             <hr>
             <div id="conversation-thread">
-                <p><strong>Original Message:</strong></p>
-                <div class="mb-3 d-flex align-items-start">
-                    <img src="{{ $message->sender->profile && $message->sender->profile->profile_picture ? Storage::url($message->sender->profile->profile_picture) : asset('assets/img/profile-img.jpg') }}" class="rounded-circle me-2" style="width: 30px; height: 30px;">
-                    <div>
-                        <small>From: {{ $message->sender->name }} | {{ $message->created_at->format('M d, Y h:i A') }}</small>
-                        <p>{{ $message->body }}</p>
-                    </div>
-                </div>
-
-                @foreach($message->replies as $reply)
-                    <div class="mb-3 ms-4 d-flex align-items-start">
-                        <img src="{{ $reply->sender->profile && $reply->sender->profile->profile_picture ? Storage::url($reply->sender->profile->profile_picture) : asset('assets/img/profile-img.jpg') }}" class="rounded-circle me-2" style="width: 30px; height: 30px;">
+                @foreach($conversation as $msg)
+                    <div class="mb-3 d-flex align-items-start">
                         <div>
-                            <small>From: {{ $reply->sender->name }} | {{ $reply->created_at->format('M d, Y h:i A') }}</small>
-                            <p>{{ $reply->body }}</p>
+                            <small>From: {{ $msg->sender->name }} | {{ $msg->created_at->format('M d, Y h:i A') }}</small>
+                            <p>{{ $msg->body }}</p>
                         </div>
                     </div>
                 @endforeach
             </div>
 
-            <form action="{{ route('messages.reply', $message->id) }}" method="POST" class="mt-3">
+            <form action="{{ route('messages.reply', $originalMessage->id) }}" method="POST" class="mt-3">
                 @csrf
                 <div class="mb-3">
                     <label for="reply-body" class="form-label">Reply</label>

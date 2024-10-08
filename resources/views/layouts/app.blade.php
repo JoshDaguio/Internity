@@ -83,14 +83,14 @@
                 </li>
                 @foreach($unreadMessages as $unreadMessage)
                     <li class="message-item">
-                        <!-- <a href="{{ route('messages.show', $unreadMessage->id) }}"> -->
+                        <a href="{{ route('messages.show', $unreadMessage->id) }}">
                         <img src="{{ $unreadMessage->sender->profile && $unreadMessage->sender->profile->profile_picture ? Storage::url($unreadMessage->sender->profile->profile_picture) : asset('assets/img/profile-img.jpg') }}" class="rounded-circle">
                             <div>
                                 <h4>{{ $unreadMessage->sender->name }}</h4>
                                 <p>{{ Str::limit($unreadMessage->subject, 20) }}</p>
                                 <p>{{ $unreadMessage->created_at->format('M d, Y h:i A') }}</p>
                             </div>
-                        <!-- </a> -->
+                        </a>
                     </li>
                     <li>
                         <hr class="dropdown-divider">

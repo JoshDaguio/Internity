@@ -857,6 +857,151 @@ h6 {
 }
 
 
+/* Sidebar Styling for Messages */
+#sidebar-card, #message-detail {
+  height: calc(100vh - 160px); /* Fixed height based on viewport */
+  overflow-y: auto; /* Enable scrolling when content exceeds */
+  background: #ffffff;
+  padding: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+}
+
+#message-list .list-group-item {
+  padding: 15px;
+  border: none;
+  margin-bottom: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+  transition: box-shadow 0.3s;
+}
+
+#message-list .list-group-item:hover {
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+}
+
+#message-list .list-group-item a {
+  text-decoration: none;
+  color: #012970;
+  font-family: "Poppins", sans-serif;
+  display: flex;
+  align-items: center;
+}
+
+#message-list .list-group-item h6 {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0;
+}
+
+#message-list .list-group-item p {
+  font-size: 12px;
+  color: #717ff5;
+  margin-bottom: 0;
+}
+
+#message-list .list-group-item small {
+  font-size: 10px;
+  color: #899bbd;
+}
+
+/* No Messages Card */
+#no-messages-card {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: calc(100vh - 160px); /* Match the height of the message list */
+  /* background: #f8f9fa; */
+  text-align: center;
+  font-family: "Poppins", sans-serif;
+  color: #012970;
+  padding: 40px;
+}
+
+#no-messages-card .no-messages-icon {
+  font-size: 3rem;
+  color: #a90b06;
+  margin-bottom: 10px;
+}
+
+#no-messages-card .no-messages-text {
+  font-size: 1.2rem;
+  margin-top: 10px;
+}
+
+/* Message Detail Card */
+#message-detail .card-body {
+  display: flex;
+  align-items: center; /* Align items vertically */
+}
+
+#message-detail .card-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #012970;
+  margin-bottom: 15px;
+}
+
+.sender-name {
+  font-weight: bold;
+  color: #a90b06; /* Highlight color for sender's name */
+}
+
+#message-detail p {
+  font-size: 14px;
+  color: #444444;
+  margin-bottom: 10px;
+}
+
+#message-detail .message-content {
+  font-size: 16px;
+  color: #012970;
+  margin-bottom: 20px;
+}
+
+/* No Conversation Selected Styling */
+.no-conversation-icon {
+  font-size: 3rem;
+  color: #a90b06;
+  margin-bottom: 10px;
+}
+
+#message-detail .card-body.d-flex.flex-column {
+  text-align: center;
+  font-family: "Poppins", sans-serif;
+  color: #012970;
+}
+
+
+/* Scroll button styles */
+.scroll-button {
+  display: none;
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  background: #B30600;
+  color: #ffffff;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
+
+.scroll-button:hover {
+  background: #a90b06;
+}
+
+/* Responsive adjustments */
+@media (max-width: 767.98px) {
+  #sidebar-card, #message-detail {
+    height: calc(100vh - 120px); /* Adjust height for mobile */
+  }
+  
+  .no-messages-card {
+    padding: 20px;
+  }
+}
 
 /* Admins Card */
 .dashboard .admins-card .card-icon {

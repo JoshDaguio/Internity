@@ -65,48 +65,75 @@ class MessageController extends Controller
 
     public function show($id)
     {
-        $message = Message::with(['sender', 'replies.sender'])->findOrFail($id);
+        try {
+            // Fetch the message with sender, recipient, and their profiles
+            $message = Message::with([
+                'sender.profile',
+                'recipient.profile',
+                'replies.sender.profile'
+            ])->findOrFail($id);
     
-        // Only mark as read if the current user is the recipient
-        if (Auth::id() === $message->recipient_id && $message->status === 'unread') {
-            $message->update(['status' => 'read']);
+            // Mark as read if the current user is the recipient of the initial message
+            if (Auth::id() === $message->recipient_id && $message->status === 'unread') {
+                $message->update(['status' => 'read']);
+            }
+    
+            // Fetch all messages in the conversation, including replies, sorted by creation time
+            $conversation = Message::with(['sender.profile', 'recipient.profile'])
+                ->where('id', $message->id)
+                ->orWhere('parent_id', $message->id)
+                ->orderBy('created_at')
+                ->get();
+    
+            if (request()->ajax()) {
+                return response()->json([
+                    'id' => $message->id,
+                    'subject' => $message->subject,
+                    'body' => $message->body,
+                    'sender_name' => $message->sender->name,
+                    'recipient_name' => $message->recipient ? $message->recipient->name : null,
+                    'created_at' => $message->created_at->format('M d, Y h:i A'),
+                    'replies' => $conversation->map(function ($msg) {
+                        return [
+                            'id' => $msg->id,
+                            'body' => $msg->body,
+                            'sender_name' => $msg->sender->name,
+                            'created_at' => $msg->created_at->format('M d, Y h:i A')
+                        ];
+                    })
+                ], 200);
+            }
+    
+            return view('messages.show', ['originalMessage' => $message, 'conversation' => $conversation]);
+        } catch (\Exception $e) {
+            \Log::error("Error in message show: " . $e->getMessage());
+            return response()->json(['error' => 'Failed to load message details. Please try again.'], 500);
         }
-    
-        // Find the original message in the conversation
-        $originalMessage = $message;
-        if ($message->parent_id) {
-            $originalMessage = Message::with(['sender', 'replies.sender'])
-                                      ->where('id', $message->parent_id)
-                                      ->first();
-        }
-    
-        if (request()->ajax()) {
-            return response()->json([
-                'id' => $originalMessage->id,
-                'subject' => $originalMessage->subject,
-                'body' => $originalMessage->body,
-                'sender_name' => $originalMessage->sender->name,
-                'sender_picture' => $originalMessage->sender->profile && $originalMessage->sender->profile->profile_picture 
-                                    ? Storage::url($originalMessage->sender->profile->profile_picture) 
-                                    : asset('assets/img/profile-img.jpg'),
-                'created_at' => $originalMessage->created_at->format('M d, Y h:i A'),
-                'replies' => $originalMessage->replies->map(function ($reply) {
-                    return [
-                        'id' => $reply->id,
-                        'body' => $reply->body,
-                        'sender_name' => $reply->sender->name,
-                        'sender_picture' => $reply->sender->profile && $reply->sender->profile->profile_picture 
-                                            ? Storage::url($reply->sender->profile->profile_picture) 
-                                            : asset('assets/img/profile-img.jpg'),
-                        'created_at' => $reply->created_at->format('M d, Y h:i A')
-                    ];
-                })
-            ]);
-        }
-    
-        return view('messages.show', compact('originalMessage'));
     }
     
+    
+    private function getProfilePicture($user)
+    {
+        if ($user->profile && $user->profile->profile_picture) {
+            $path = 'public/' . $user->profile->profile_picture;
+            \Log::info("Profile picture path: " . $path);
+    
+            if (Storage::disk('public')->exists($user->profile->profile_picture)) {
+                $url = Storage::url($user->profile->profile_picture);
+                \Log::info("Profile picture URL: " . $url);
+                return $url;
+            } else {
+                \Log::error("Profile picture not found or inaccessible: " . $path);
+            }
+        }
+    
+        return asset('assets/img/profile-img.jpg');
+    }
+    
+    
+    
+    
+
 
     // Fetch recipients based on user role
     private function getRecipientsBasedOnRole($user)
@@ -170,7 +197,7 @@ class MessageController extends Controller
         $user = Auth::user();
         $courseId = $request->input('course');
         $recipients = collect();
-    
+
         if ($user->role_id == 1 || $user->role_id == 2) {
             // Super Admins/Admins can message any role
             $query = User::where('status_id', 1);
@@ -181,6 +208,8 @@ class MessageController extends Controller
                 if ($courseId) {
                     $query->where('course_id', $courseId);
                 }
+            } elseif ($role == '4') { // Company role
+                $query->where('role_id', 4);
             }
             $recipients = $query->get(['id', 'name']);
         } elseif ($user->role_id == 3) {
@@ -226,17 +255,17 @@ class MessageController extends Controller
                     ->with('company')
                     ->first()
                     ->company;
-    
+
                 if ($company) {
                     $recipients = collect([$company]);
                 }
             }
         }
-    
+
         return response()->json($recipients);
     }
+
     
-     
     public function reply(Request $request, $id)
     {
         $request->validate([
@@ -255,9 +284,7 @@ class MessageController extends Controller
             'parent_id' => $originalMessage->id, // Set the parent ID
         ]);
     
-        return redirect()->route('messages.show', $id)->with('success', 'Reply sent successfully!');
+        return redirect()->route('messages.index', $id)->with('success', 'Reply sent successfully!');
     }
-    
-
 
 }
