@@ -307,5 +307,4 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/messages/{message}', [MessageController::class, 'show'])->name('messages.show');
     Route::get('/messages/recipients/{role}', [MessageController::class, 'getRecipients'])->name('messages.recipients');
     Route::post('/messages/reply/{id}', [MessageController::class, 'reply'])->name('messages.reply');
-    Route::get('/courses', [MessageController::class, 'getCourses'])->name('courses.index'); // Named the route
 });

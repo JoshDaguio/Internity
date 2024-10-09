@@ -173,7 +173,7 @@
 
     $(document).ready(function() {
         $('#skill_tags').select2({
-            placeholder: "Select preferred skills",
+            placeholder: "Select preferred skills (Optional)",
             allowClear: true
         });
     });

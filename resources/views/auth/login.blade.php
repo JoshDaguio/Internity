@@ -120,13 +120,6 @@
                           </div>
                           <x-input-error :messages="$errors->get('password')" class="mt-2" />
                       </div>
-                      <!-- Remember Me -->
-                      <!-- <div class="col-12 mt-4">
-                          <div class="form-check">
-                              <input class="form-check-input" type="checkbox" name="remember" id="remember_me">
-                              <label class="form-check-label" for="remember_me">{{ __('Remember me') }}</label>
-                          </div>
-                      </div> -->
 
                       <div class="col-12 mt-4">
                           @if (Route::has('password.request'))

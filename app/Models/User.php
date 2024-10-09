@@ -27,7 +27,8 @@ class User extends Authenticatable
         'status_id',
         'profile_id',
         'academic_year_id', 
-        'expiry_date', // Ensure this is included
+        'expiry_date',
+        'is_irregular',
     ];
 
     /**
@@ -101,6 +102,11 @@ class User extends Authenticatable
     public function academicYear()
     {
         return $this->belongsTo(AcademicYear::class);
+    }
+
+    public function acceptedInternship()
+    {
+        return $this->hasOne(AcceptedInternship::class, 'student_id');
     }
 
 }

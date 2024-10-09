@@ -16,7 +16,8 @@ class AcceptedInternship extends Model
         'start_date', 
         'work_type', 
         'start_time', 
-        'end_time'
+        'end_time',
+        'detailed_schedule'
     ];
 
     public function student()

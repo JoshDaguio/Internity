@@ -104,6 +104,14 @@
         </div>
     </div>
 
+    @if(session('success'))
+        <div class="alert alert-success">{{ session('success') }}</div>
+    @endif
+
+    @if(session('error'))
+        <div class="alert alert-danger">{{ session('error') }}</div>
+    @endif
+
 
     <!-- Applicants for Interview Section -->
     <div class="card mt-4">
@@ -199,7 +207,7 @@
                                             @method('PATCH')
                                             <div class="form-group">
                                                 <label for="start_date">Start Date:</label>
-                                                <input type="date" name="start_date" id="start_date" class="form-control" required>
+                                                <input type="date" name="start_date" id="start_date" class="form-control" required min="{{ date('Y-m-d') }}">
                                             </div>
                                             <button type="submit" class="btn btn-success mt-3">Accept</button>
                                         </form>
@@ -326,7 +334,7 @@
                                             </div>
                                             <div class="mb-3">
                                                 <label for="interviewDate{{ $application->id }}" class="form-label">Interview Date</label>
-                                                <input type="datetime-local" class="form-control" id="interviewDate{{ $application->id }}" name="interview_datetime" required>
+                                                <input type="datetime-local" class="form-control" id="interviewDate{{ $application->id }}" name="interview_datetime" required min="{{ \Carbon\Carbon::now()->format('Y-m-d\TH:i') }}">
                                             </div>
                                             <div class="mb-3">
                                                 <label for="message{{ $application->id }}" class="form-label">Message</label>
@@ -463,7 +471,7 @@
                                             </div>
                                             <div class="mb-3">
                                                 <label for="interviewDate{{ $application->id }}" class="form-label">Interview Date</label>
-                                                <input type="datetime-local" class="form-control" id="interviewDate{{ $application->id }}" name="interview_datetime" required>
+                                                <input type="datetime-local" class="form-control" id="interviewDate{{ $application->id }}" name="interview_datetime" required min="{{ \Carbon\Carbon::now()->format('Y-m-d\TH:i') }}">
                                             </div>
                                             <div class="mb-3">
                                                 <label for="message{{ $application->id }}" class="form-label">Message</label>

@@ -73,7 +73,7 @@
 
             // Show course dropdown if role is Faculty (3) or Student (5) and the current user is Admin (2) or Super Admin (1)
             if ((selectedRole === '3' || selectedRole === '5') && ['1', '2'].includes(userRole)) {
-                fetch(`{{ route('courses.index') }}`, {
+                fetch(`{{ route('api.courses.index') }}`, {
                     headers: { 'X-Requested-With': 'XMLHttpRequest' }
                 })
                 .then(response => response.json())
@@ -126,3 +126,4 @@
         }
     });
 </script>
+

@@ -7,7 +7,7 @@
     <nav>
         <ol class="breadcrumb">
             <li class="breadcrumb-item">Home</li>
-            <li class="breadcrumb-item"><a href="{{ route('academic-years.index') }}">Academic Years</a></li>
+            <li class="breadcrumb-item"><a href="{{ route('academic-years.index') }}">S.Y. Configuration</a></li>
             <li class="breadcrumb-item active">Details</li>
         </ol>
     </nav>

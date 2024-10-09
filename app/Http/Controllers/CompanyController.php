@@ -263,6 +263,9 @@ class CompanyController extends Controller
         return redirect()->route('company.index')->with('success', 'Company account reactivated successfully.');
     }
 
+
+
+
     // Internship Listing Applicants
         // Intern Applications Page
     public function internApplications()
@@ -381,7 +384,7 @@ class CompanyController extends Controller
     {
         $request->validate([
             'interview_type' => 'required',
-            'interview_datetime' => 'required|date',
+            'interview_datetime' => 'required|date|after_or_equal:now',
             'interview_link' => 'nullable|string',
             'message' => 'nullable|string',
         ]);

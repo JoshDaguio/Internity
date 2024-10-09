@@ -177,10 +177,6 @@ class MessageController extends Controller
         return asset('assets/img/profile-img.jpg');
     }
     
-    
-    
-    
-
 
     // Fetch recipients based on user role
     private function getRecipientsBasedOnRole($user)

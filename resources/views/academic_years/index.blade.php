@@ -7,7 +7,7 @@
     <nav>
         <ol class="breadcrumb">
             <li class="breadcrumb-item">Home</li>
-            <li class="breadcrumb-item active">Academic Years</li>
+            <li class="breadcrumb-item active">S.Y. Configuration</li>
         </ol>
     </nav>
 </div><!-- End Page Title -->
