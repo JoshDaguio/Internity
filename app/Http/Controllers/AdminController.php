@@ -14,6 +14,9 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Imports\StudentsImport;
+use Illuminate\Support\Facades\Storage;
 
 
 class AdminController extends Controller
@@ -199,8 +202,21 @@ class AdminController extends Controller
         $request->validate([
             'first_name' => ['required', 'string', 'max:255'],
             'last_name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-            'id_number' => ['required', 'string', 'max:255', 'unique:profiles,id_number'],
+            'email' => [
+                'required', 
+                'string', 
+                'email', 
+                'max:255', 
+                'unique:users',
+                'regex:/^[a-zA-Z0-9._%+-]+@[auf]+\.(edu\.ph)$/'
+            ],
+            'id_number' => [
+                'required', 
+                'string', 
+                'max:255', 
+                'unique:profiles,id_number',
+                'regex:/^\d{2}-\d{4}-\d{3}$/'
+            ],
             'course_id' => ['required', 'exists:courses,id'],
         ]);
 
@@ -371,4 +387,40 @@ class AdminController extends Controller
     }
 
 
+    // Uploading CSV/Excel for Creating students
+
+    // Method to show the upload form
+    public function showImportForm()
+    {
+        return view('administrative.import-students');
+    }
+
+    // Method to handle file upload and import students
+    public function uploadStudents(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|mimes:csv,xlsx,xls',
+        ]);
+
+        try {
+            Excel::import(new StudentsImport, $request->file('file'));
+
+            return redirect()->route('students.list')->with('success', 'Students imported successfully.');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Error importing students: ' . $e->getMessage());
+        }
+    }
+
+    public function downloadTemplate()
+    {
+        $filePath = 'public/templates/student_template.xlsx';
+        $fileName = 'student_template.xlsx';
+    
+        if (!Storage::exists($filePath)) {
+            abort(404, 'Template file not found.');
+        }
+    
+        return Storage::download($filePath, $fileName);
+    }
+    
 }

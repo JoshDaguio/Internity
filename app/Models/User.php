@@ -28,7 +28,6 @@ class User extends Authenticatable
         'profile_id',
         'academic_year_id', 
         'expiry_date',
-        'is_irregular',
     ];
 
     /**

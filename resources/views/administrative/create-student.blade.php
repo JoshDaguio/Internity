@@ -49,7 +49,7 @@
                 <div class="col-md-12">
                     <div class="form-floating">
                         <input type="email" name="email" class="form-control" id="email" value="{{ old('email') }}" placeholder="Email" required>
-                        <label for="email">Email</label>
+                        <label for="email">Email (AUF Email)</label>
                         <div class="invalid-feedback">Please enter a valid email address.</div>
                     </div>
                     <x-input-error :messages="$errors->get('email')" class="mt-2" />
@@ -58,7 +58,7 @@
                 <div class="col-md-12">
                     <div class="form-floating">
                         <input type="text" name="id_number" class="form-control" id="id_number" value="{{ old('id_number') }}" placeholder="ID Number" required>
-                        <label for="id_number">ID Number</label>
+                        <label for="id_number">ID Number (00-0000-000)</label>
                         <div class="invalid-feedback">Please enter a valid ID number.</div>
                     </div>
                     <x-input-error :messages="$errors->get('id_number')" class="mt-2" />

@@ -90,6 +90,7 @@ class EndOfDayReportController extends Controller
         ));
     }
 
+    
     private function getMissingSubmissionDates($studentId, $selectedMonth, $currentDateTime, $scheduleDays, $startDate)
     {
         $startOfMonth = Carbon::create($currentDateTime->year, $selectedMonth, 1)->startOfMonth();

@@ -12,12 +12,11 @@ class AcceptedInternship extends Model
         'student_id', 
         'company_id', 
         'job_id', 
-        'schedule', 
+        'schedule',  
         'start_date', 
         'work_type', 
         'start_time', 
         'end_time',
-        'detailed_schedule'
     ];
 
     public function student()

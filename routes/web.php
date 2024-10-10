@@ -59,12 +59,12 @@ Route::middleware('auth')->group(function () {
 
 require __DIR__.'/auth.php';
 
-route::get('super_admin/dashboard',[SuperAdminController::class,'index'])->
-    middleware(['auth','super_admin']);
-route::get('admin/dashboard',[AdminController::class,'index'])->
-    middleware(['auth','admin']);
-route::get('student/dashboard',[StudentController::class,'index'])->
-    middleware(['auth','student']);
+// route::get('super_admin/dashboard',[SuperAdminController::class,'index'])->
+//     middleware(['auth','super_admin']);
+// route::get('admin/dashboard',[AdminController::class,'index'])->
+//     middleware(['auth','admin']);
+// route::get('student/dashboard',[StudentController::class,'index'])->
+//     middleware(['auth','student']);
 
 //Dashboard
 route::get('/super_admin/dashboard', [SuperAdminController::class, 'index'])->middleware(['auth','super_admin'])->name('super_admin.dashboard');
@@ -172,6 +172,15 @@ Route::middleware(['auth', 'facultyaccess'])->group(function () {
     Route::patch('/students/{student}', [AdminController::class, 'updateStudent'])->name('students.update');
     Route::delete('/students/{student}/deactivate', [AdminController::class, 'deactivateStudent'])->name('students.deactivate');
     Route::patch('/students/{student}/reactivate', [AdminController::class, 'reactivateStudent'])->name('students.reactivate');
+
+    // Route to download the template file
+    Route::get('/students/template', [AdminController::class, 'downloadTemplate'])->name('students.template');
+
+    // Route to show the upload form
+    Route::get('/students/import', [AdminController::class, 'showImportForm'])->name('students.import');
+
+    // Route to handle the file upload and import process
+    Route::post('/students/upload', [AdminController::class, 'uploadStudents'])->name('students.upload');
 });
 
 

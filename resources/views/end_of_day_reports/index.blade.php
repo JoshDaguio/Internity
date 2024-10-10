@@ -43,16 +43,24 @@
                     <p class="mb-1"><strong>Company:</strong> {{ $acceptedInternship->job->company->name }}</p>
                     <p class="mb-1"><strong>Job:</strong> {{ $acceptedInternship->job->title }}</p>
                     <p class="mb-0"><strong>Work Type and Days:</strong> 
-                        @php
-                            $schedule = json_decode($acceptedInternship->schedule, true);
-                            $workType = $acceptedInternship->work_type;
-                            if ($workType === 'Hybrid') {
-                                echo "Onsite: " . implode(', ', $schedule['onsite_days'] ?? []);
-                                echo " | Remote: " . implode(', ', $schedule['remote_days'] ?? []);
-                            } else {
-                                echo implode(', ', $schedule['days'] ?? []);
-                            }
-                        @endphp
+                    @php
+                        $schedule = json_decode($acceptedInternship->schedule, true);
+                        $workType = $acceptedInternship->work_type;
+
+                        if ($workType === 'Hybrid') {
+                            $onsiteDays = implode(', ', $schedule['onsite_days'] ?? []);
+                            $remoteDays = implode(', ', $schedule['remote_days'] ?? []);
+                            echo "Hybrid | Onsite: {$onsiteDays} | Remote: {$remoteDays}";
+                        } elseif ($workType === 'On-site') {
+                            $onsiteDays = implode(', ', $schedule['days'] ?? []);
+                            echo "On-site | Days: {$onsiteDays}";
+                        } elseif ($workType === 'Remote') {
+                            $remoteDays = implode(', ', $schedule['days'] ?? []);
+                            echo "Remote | Days: {$remoteDays}";
+                        } else {
+                            echo "Work type information is not available.";
+                        }
+                    @endphp
                     </p>
                 </div>
             </div>
