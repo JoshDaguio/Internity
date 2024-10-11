@@ -48,7 +48,7 @@
   </li><!-- End Student Nav -->
 
   <li class="nav-item">
-    <a class="nav-link {{ request()->routeIs('company.index', 'company.create', 'company.show', 'company.edit') ? '' : 'collapsed' }}" href="{{ route('company.index') }}">
+    <a class="nav-link {{ request()->routeIs('company.index', 'company.create', 'company.show', 'company.edit', 'company.import') ? '' : 'collapsed' }}" href="{{ route('company.index') }}">
       <i class="bi bi-building"></i>
       <span>Company</span>  
     </a>

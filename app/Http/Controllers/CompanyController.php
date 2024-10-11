@@ -18,7 +18,9 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Carbon\Carbon;
-
+use Maatwebsite\Excel\Facades\Excel; 
+use Illuminate\Support\Facades\Storage; 
+use App\Imports\CompanyImport; 
 
 
 use Illuminate\Http\Request;
@@ -419,6 +421,45 @@ class CompanyController extends Controller
 
         return view('company.interns', compact('acceptedInterns'));
     }
+
+
+    // Creating Accounts Via Excel Import
+    // Method to show the upload form
+    public function showImportForm()
+    {
+        return view('company.import-companies');
+    }
+
+    // Method to handle file upload and import companies
+    public function uploadCompanies(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|mimes:csv,xlsx,xls',
+        ]);
+
+        try {
+            Excel::import(new CompanyImport, $request->file('file'));
+
+            return redirect()->route('company.index')->with('success', 'Companies imported successfully.');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Error importing companies: ' . $e->getMessage());
+        }
+    }
+
+    // Method to download the company template
+    public function downloadTemplate()
+    {
+        $filePath = 'public/templates/company_template.xlsx';
+        $fileName = 'company_template.xlsx';
+
+        if (!Storage::exists($filePath)) {
+            abort(404, 'Template file not found.');
+        }
+
+        return Storage::download($filePath, $fileName);
+    }
+
+
 
 
 }

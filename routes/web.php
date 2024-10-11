@@ -149,13 +149,15 @@ Route::middleware(['auth', 'administrative'])->group(function () {
 Route::middleware(['auth', 'administrative'])->group(function () {
     Route::get('/company', [CompanyController::class, 'index'])->name('company.index');
     Route::get('/company/create', [CompanyController::class, 'create'])->name('company.create');
+    Route::get('/company/import', [CompanyController::class, 'showImportForm'])->name('company.import');
+    Route::post('/company/upload', [CompanyController::class, 'uploadCompanies'])->name('company.upload');
+    Route::get('/company/template', [CompanyController::class, 'downloadTemplate'])->name('company.template');
     Route::post('/company', [CompanyController::class, 'store'])->name('company.store');
     Route::get('/company/{company}', [CompanyController::class, 'show'])->name('company.show');
     Route::get('/company/{company}/edit', [CompanyController::class, 'edit'])->name('company.edit');
     Route::patch('/company/{company}', [CompanyController::class, 'update'])->name('company.update');
     Route::delete('/company/{company}', [CompanyController::class, 'destroy'])->name('company.destroy');
     Route::patch('/company/{company}/reactivate', [CompanyController::class, 'reactivate'])->name('company.reactivate');
-
 });
 
 //Student Registration Process
