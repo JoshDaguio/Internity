@@ -240,73 +240,128 @@ class MessageController extends Controller
         $user = Auth::user();
         $courseId = $request->input('course');
         $recipients = collect();
-
+    
         if ($user->role_id == 1 || $user->role_id == 2) {
             // Super Admins/Admins can message any role
-            $query = User::where('status_id', 1);
+            $query = User::with('profile')->where('status_id', 1);
             if ($role == 'admins') {
                 $query->whereIn('role_id', [1, 2]);
-            } elseif ($role == '3' || $role == '5') {
+            } elseif (in_array($role, ['3', '5'])) {
                 $query->where('role_id', $role);
                 if ($courseId) {
                     $query->where('course_id', $courseId);
                 }
             } elseif ($role == '4') { // Company role
-                $query->where('role_id', 4);
+                $query->where('role_id', 4); // Get companies from User table
             }
-            $recipients = $query->get(['id', 'name']);
+    
+            // Combine first and last name from the profile, or use company name directly
+            $recipients = $query->get()->map(function ($recipient) {
+                return [
+                    'id' => $recipient->id,
+                    'name' => $recipient->role_id == 4
+                        ? $recipient->name // Company name from User table
+                        : $recipient->profile->first_name . ' ' . $recipient->profile->last_name, // For others, use profile
+                ];
+            });
         } elseif ($user->role_id == 3) {
             // Faculty can message students in the same course
             if ($role == '5') {
-                $recipients = User::where('role_id', 5)
+                $recipients = User::with('profile')
+                    ->where('role_id', 5)
                     ->where('course_id', $user->course_id)
                     ->where('status_id', 1)
-                    ->get(['id', 'name']);
-            } else if ($role == 'admins') {
-                $recipients = User::whereIn('role_id', [1, 2])
+                    ->get()
+                    ->map(function ($recipient) {
+                        return [
+                            'id' => $recipient->id,
+                            'name' => $recipient->profile->first_name . ' ' . $recipient->profile->last_name,
+                        ];
+                    });
+            } elseif ($role == 'admins') {
+                $recipients = User::with('profile')
+                    ->whereIn('role_id', [1, 2])
                     ->where('status_id', 1)
-                    ->get(['id', 'name']);
+                    ->get()
+                    ->map(function ($recipient) {
+                        return [
+                            'id' => $recipient->id,
+                            'name' => $recipient->profile->first_name . ' ' . $recipient->profile->last_name,
+                        ];
+                    });
             }
         } elseif ($user->role_id == 4) {
             // Company can message admins and their accepted interns
             if ($role == 'admins') {
-                $recipients = User::whereIn('role_id', [1, 2])
+                $recipients = User::with('profile')
+                    ->whereIn('role_id', [1, 2])
                     ->where('status_id', 1)
-                    ->get(['id', 'name']);
+                    ->get()
+                    ->map(function ($recipient) {
+                        return [
+                            'id' => $recipient->id,
+                            'name' => $recipient->profile->first_name . ' ' . $recipient->profile->last_name,
+                        ];
+                    });
             } elseif ($role == '5') {
                 $recipients = AcceptedInternship::where('company_id', $user->id)
                     ->whereHas('student', function ($query) {
                         $query->where('status_id', 1);
                     })
-                    ->with('student')
+                    ->with('student.profile')
                     ->get()
-                    ->pluck('student');
+                    ->pluck('student')
+                    ->map(function ($student) {
+                        return [
+                            'id' => $student->id,
+                            'name' => $student->profile->first_name . ' ' . $student->profile->last_name,
+                        ];
+                    });
             }
         } elseif ($user->role_id == 5) {
             // Students can message admins, faculty in their course, and their company
             if ($role == 'admins') {
-                $recipients = User::whereIn('role_id', [1, 2])
+                $recipients = User::with('profile')
+                    ->whereIn('role_id', [1, 2])
                     ->where('status_id', 1)
-                    ->get(['id', 'name']);
+                    ->get()
+                    ->map(function ($recipient) {
+                        return [
+                            'id' => $recipient->id,
+                            'name' => $recipient->profile->first_name . ' ' . $recipient->profile->last_name,
+                        ];
+                    });
             } elseif ($role == '3') {
-                $recipients = User::where('role_id', 3)
+                $recipients = User::with('profile')
+                    ->where('role_id', 3)
                     ->where('course_id', $user->course_id)
                     ->where('status_id', 1)
-                    ->get(['id', 'name']);
+                    ->get()
+                    ->map(function ($recipient) {
+                        return [
+                            'id' => $recipient->id,
+                            'name' => $recipient->profile->first_name . ' ' . $recipient->profile->last_name,
+                        ];
+                    });
             } elseif ($role == '4') {
                 $company = AcceptedInternship::where('student_id', $user->id)
                     ->with('company')
                     ->first()
                     ->company;
-
+    
                 if ($company) {
-                    $recipients = collect([$company]);
+                    $recipients = collect([[
+                        'id' => $company->id,
+                        'name' => $company->name, // Get company name from users table
+                    ]]);
                 }
             }
         }
-
+    
         return response()->json($recipients);
     }
+    
+    
 
     
     public function reply(Request $request, $id)

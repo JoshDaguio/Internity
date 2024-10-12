@@ -95,19 +95,54 @@
                         
 <!-- Job Modal -->
 <div class="modal fade" id="jobModal{{ $priority->job->id }}" tabindex="-1" aria-labelledby="jobModalLabel{{ $priority->job->id }}" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog" style="max-width: 700px;">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="jobModalLabel{{ $priority->job->id }}">Job Information</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <p><strong>Company:</strong> {{ $priority->job->company->name }}</p>
-                <p><strong>Job Title:</strong> {{ $priority->job->title }}</p>
-                <p><strong>Location:</strong> {{ $priority->job->location }}</p>
-                <p><strong>Work Type:</strong> {{ $priority->job->work_type }}</p>
-                <p><strong>Description:</strong> {{ $priority->job->description }}</p>
-                <p><strong>Qualifications:</strong> {{ $priority->job->qualification }}</p>
+                <!-- Company Details Section -->
+                <h5 class="card-title text-center">{{ $priority->job->company->name }}</h5>
+                <div class="card-body d-flex align-items-center">
+                    <img src="{{ $priority->job->company->profile->profile_picture ? asset('storage/' . $priority->job->company->profile->profile_picture) : asset('assets/img/profile-img.jpg') }}" alt="Company Profile" class="rounded-circle img-thumbnail" width="150">
+                    <div class="ms-5">
+                        <p><strong><i class="bi bi-person-circle me-2"></i> Contact Person:</strong> {{ $priority->job->company->profile->first_name }} {{ $priority->job->company->profile->last_name }}</p>
+                        <p><strong><i class="bi bi-telephone me-2"></i> Contact Number:</strong> {{ $priority->job->company->profile->contact_number ?? 'N/A' }}</p>
+                        <p><strong><i class="bi bi-geo-alt me-2"></i> Address:</strong> {{ $priority->job->company->profile->address ?? 'N/A' }}</p>
+                        <p><strong><i class="bi bi-info-circle me-2"></i> About:</strong> {{ $priority->job->company->profile->about ?? 'No details provided.' }}</p>
+                    </div>
+                </div>
+
+                <hr class="my-4">
+
+                <!-- Links Section -->
+                <div class="row">
+                    <div class="col-md-3">
+                        <strong><i class="bi bi-link-45deg me-2"></i> Links:</strong>
+                    </div>
+                    <div class="col-md-9">
+                        @if($priority->job->company->profile->links->isNotEmpty())
+                            <ul class="list-unstyled">
+                                @foreach($priority->job->company->profile->links as $link)
+                                    <li><a href="{{ $link->link_url }}" target="_blank">{{ $link->link_name }}</a></li>
+                                @endforeach
+                            </ul>
+                        @else
+                            <p>No links available.</p>
+                        @endif
+                    </div>
+                </div>
+
+                <hr class="my-4">
+
+                <!-- Job Details Section -->
+                <h5 class="card-title">Job Details</h5>
+                <p><strong><i class="bi bi-briefcase-fill me-2"></i> Job Title:</strong> {{ $priority->job->title }}</p>
+                <p><strong><i class="bi bi-geo-alt-fill me-2"></i> Location:</strong> {{ $priority->job->location }}</p>
+                <p><strong><i class="bi bi-building me-2"></i> Work Type:</strong> {{ $priority->job->work_type }}</p>
+                <p><strong><i class="bi bi-card-text me-2"></i> Description:</strong> {{ $priority->job->description }}</p>
+                <p><strong><i class="bi bi-award me-2"></i> Qualifications:</strong> {{ $priority->job->qualification }}</p>
 
                 <!-- Schedule Details -->
                 @php
@@ -115,7 +150,7 @@
                     $startTime = \Carbon\Carbon::createFromFormat('H:i', $schedule['start_time'])->format('g:i A');
                     $endTime = \Carbon\Carbon::createFromFormat('H:i', $schedule['end_time'])->format('g:i A');
                 @endphp
-                <p><strong>Schedule:</strong></p>
+                <p><strong><i class="bi bi-clock me-2"></i> Schedule:</strong></p>
                 <ul>
                     <li>Days: {{ implode(', ', $schedule['days'] ?? []) }}</li>
                     @if ($priority->job->work_type === 'Hybrid')
@@ -125,28 +160,25 @@
                     <li>Time: {{ $startTime }} - {{ $endTime }}</li>
                 </ul>
 
-                <!-- Show submit button only for 1st priority or if 1st is rejected or submitted, then 2nd -->
+                <hr class="my-4">
+
+                <!-- Application Submission -->
                 @if(!$submitted)
                     @if($priority->priority == 1)
-                        <!-- First priority application -->
                         <form method="POST" action="{{ route('internship.submit', $priority->job->id) }}">
                             @csrf
-
-                            <!-- Check if endorsement letter exists -->
                             @if($student->requirements && $student->requirements->endorsement_letter)
                                 <p class="text-success">Your endorsement letter will be automatically included in this application.</p>
                             @else
                                 <p class="text-danger">Please wait for your endorsement letter to be uploaded in the requirements.</p>
                             @endif
 
-                            <!-- Check if CV exists -->
                             @if($student->profile->cv_file_path)
                                 <p class="text-success">Your CV will be automatically included in this application.</p>
                             @else
                                 <p class="text-danger">Please upload your CV in your profile before submitting.</p>
                             @endif
 
-                            <!-- Only show the submit button if both CV and endorsement letter exist -->
                             @if($student->profile->cv_file_path && $student->requirements && $student->requirements->endorsement_letter)
                                 <button type="submit" class="btn btn-primary">Submit Application</button>
                             @else
@@ -154,25 +186,20 @@
                             @endif
                         </form>
                     @elseif($priority->priority == 2 && $firstPrioritySubmittedOrRejected)
-                        <!-- Second priority application -->
                         <form method="POST" action="{{ route('internship.submit', $priority->job->id) }}">
                             @csrf
-
-                            <!-- Check if endorsement letter exists -->
                             @if($student->requirements && $student->requirements->endorsement_letter)
                                 <p class="text-success">Your endorsement letter will be automatically included in this application.</p>
                             @else
                                 <p class="text-danger">Please wait for your endorsement letter to be uploaded in the requirements.</p>
                             @endif
 
-                            <!-- Check if CV exists -->
                             @if($student->profile->cv_file_path)
                                 <p class="text-success">Your CV will be automatically included in this application.</p>
                             @else
                                 <p class="text-danger">Please upload your CV in your profile before submitting.</p>
                             @endif
 
-                            <!-- Only show the submit button if both CV and endorsement letter exist -->
                             @if($student->profile->cv_file_path && $student->requirements && $student->requirements->endorsement_letter)
                                 <button type="submit" class="btn btn-primary">Submit Application</button>
                             @else
@@ -180,11 +207,9 @@
                             @endif
                         </form>
                     @else
-                        <!-- If priority is 2 but the first priority hasn't been submitted or rejected -->
                         <p class="text-warning">First Priority Application Still In Progress</p>
                     @endif
                 @else
-                    <!-- If already submitted -->
                     <p class="text-success">Application Submitted</p>
                 @endif
 
@@ -192,8 +217,6 @@
         </div>
     </div>
 </div>
-
-
                         @endforeach
                     </tbody>
                 </table>
@@ -234,55 +257,92 @@
                             </td>
                         </tr>
 
-                        <!-- Submitted Job Modal -->
                         <div class="modal fade" id="submittedJobModal{{ $application->job->id }}" tabindex="-1" aria-labelledby="submittedJobModalLabel{{ $application->job->id }}" aria-hidden="true">
-                            <div class="modal-dialog">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title" id="submittedJobModalLabel{{ $application->job->id }}">Job Information</h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <p><strong>Company:</strong> {{ $application->job->company->name }}</p>
-                                        <p><strong>Job Title:</strong> {{ $application->job->title }}</p>
-                                        <p><strong>Location:</strong> {{ $application->job->location }}</p>
-                                        <p><strong>Work Type:</strong> {{ $application->job->work_type }}</p>
-                                        <p><strong>Description:</strong> {{ $application->job->description }}</p>
-                                        <p><strong>Qualifications:</strong> {{ $application->job->qualification }}</p>
+    <div class="modal-dialog" style="max-width: 700px;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="submittedJobModalLabel{{ $application->job->id }}">Application Information</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Company Details Section -->
+                <h5 class="card-title text-center">{{ $application->job->company->name }}</h5>
+                <div class="card-body d-flex align-items-center">
+                        <img src="{{ $application->job->company->profile->profile_picture ? asset('storage/' . $application->job->company->profile->profile_picture) : asset('assets/img/profile-img.jpg') }}" alt="Company Profile" class="rounded-circle img-thumbnail" width="150">
+                    <div class="ms-5">
+                        <p><strong><i class="bi bi-person-circle me-2"></i> Contact Person:</strong> {{ $application->job->company->profile->first_name }} {{ $application->job->company->profile->last_name }}</p>
+                        <p><strong><i class="bi bi-telephone me-2"></i> Contact Number:</strong> {{ $application->job->company->profile->contact_number ?? 'N/A' }}</p>
+                        <p><strong><i class="bi bi-geo-alt me-2"></i> Address:</strong> {{ $application->job->company->profile->address ?? 'N/A' }}</p>
+                        <p><strong><i class="bi bi-info-circle me-2"></i> About:</strong> {{ $application->job->company->profile->about ?? 'No details provided.' }}</p>
+                    </div>
+                </div>
 
-                                        <!-- Schedule Details -->
-                                        @php
-                                            $schedule = json_decode($application->job->schedule, true);
-                                            $startTime = \Carbon\Carbon::createFromFormat('H:i', $schedule['start_time'])->format('g:i A');
-                                            $endTime = \Carbon\Carbon::createFromFormat('H:i', $schedule['end_time'])->format('g:i A');
-                                        @endphp
-                                        <p><strong>Schedule:</strong></p>
-                                        <ul>
-                                            <li>Days: {{ implode(', ', $schedule['days'] ?? []) }}</li>
-                                            @if ($application->job->work_type === 'Hybrid')
-                                                <li>On-site Days: {{ implode(', ', $schedule['onsite_days'] ?? []) }}</li>
-                                                <li>Remote Days: {{ implode(', ', $schedule['remote_days'] ?? []) }}</li>
-                                            @endif
-                                            <li>Time: {{ $startTime }} - {{ $endTime }}</li>
-                                        </ul>
+                <hr class="my-4">
 
-                                        <!-- Display Uploaded Endorsement Letter -->
-                                        @if($application->endorsement_letter_path)
-                                        <p><strong>Endorsement Letter:</strong> <button class="btn btn-dark" onclick="showPreview('{{ route('application.preview', ['type' => 'endorsement_letter', 'id' => $application->id]) }}')"><i class="bi bi-folder"></i></button></p>
-                                        @else
-                                        <p><strong>Endorsement Letter:</strong> Not uploaded</p>
-                                        @endif
+                <!-- Links Section -->
+                <div class="row">
+                    <div class="col-md-3">
+                        <strong><i class="bi bi-link-45deg me-2"></i> Links:</strong>
+                    </div>
+                    <div class="col-md-9">
+                        @if($application->job->company->profile->links->isNotEmpty())
+                            <ul class="list-unstyled">
+                                @foreach($application->job->company->profile->links as $link)
+                                    <li><a href="{{ $link->link_url }}" target="_blank">{{ $link->link_name }}</a></li>
+                                @endforeach
+                            </ul>
+                        @else
+                            <p>No links available.</p>
+                        @endif
+                    </div>
+                </div>
 
-                                        <!-- Display Uploaded CV -->
-                                        @if($application->cv_path)
-                                        <p><strong>CV:</strong> <button class="btn btn-dark" onclick="showPreview('{{ route('application.preview', ['type' => 'cv', 'id' => $application->id]) }}')"><i class="bi bi-folder"></i></button></p>
-                                        @else
-                                        <p><strong>CV:</strong> Not uploaded</p>
-                                        @endif
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                <hr class="my-4">
+
+                <!-- Job Details Section -->
+                <h5 class="card-title">Job Details</h5>
+                <p><strong><i class="bi bi-briefcase-fill me-2"></i> Job Title:</strong> {{ $application->job->title }}</p>
+                <p><strong><i class="bi bi-geo-alt-fill me-2"></i> Location:</strong> {{ $application->job->location }}</p>
+                <p><strong><i class="bi bi-building me-2"></i> Work Type:</strong> {{ $application->job->work_type }}</p>
+                <p><strong><i class="bi bi-card-text me-2"></i> Description:</strong> {{ $application->job->description }}</p>
+                <p><strong><i class="bi bi-award me-2"></i> Qualifications:</strong> {{ $application->job->qualification }}</p>
+
+                <!-- Schedule Details -->
+                @php
+                    $schedule = json_decode($application->job->schedule, true);
+                    $startTime = \Carbon\Carbon::createFromFormat('H:i', $schedule['start_time'])->format('g:i A');
+                    $endTime = \Carbon\Carbon::createFromFormat('H:i', $schedule['end_time'])->format('g:i A');
+                @endphp
+                <p><strong><i class="bi bi-clock me-2"></i> Schedule:</strong></p>
+                <ul>
+                    <li>Days: {{ implode(', ', $schedule['days'] ?? []) }}</li>
+                    @if ($application->job->work_type === 'Hybrid')
+                        <li>On-site Days: {{ implode(', ', $schedule['onsite_days'] ?? []) }}</li>
+                        <li>Remote Days: {{ implode(', ', $schedule['remote_days'] ?? []) }}</li>
+                    @endif
+                    <li>Time: {{ $startTime }} - {{ $endTime }}</li>
+                </ul>
+
+                <hr class="my-4">
+
+                <!-- Display Uploaded Endorsement Letter -->
+                @if($application->endorsement_letter_path)
+                    <p><strong><i class="bi bi-file-earmark-text me-2"></i> Endorsement Letter:</strong> <button class="btn btn-dark" onclick="showPreview('{{ route('application.preview', ['type' => 'endorsement_letter', 'id' => $application->id]) }}')"><i class="bi bi-folder"></i></button></p>
+                @else
+                    <p><strong><i class="bi bi-file-earmark-text me-2"></i> Endorsement Letter:</strong> Not uploaded</p>
+                @endif
+
+                <!-- Display Uploaded CV -->
+                @if($application->cv_path)
+                    <p><strong><i class="bi bi-file-person me-2"></i> CV:</strong> <button class="btn btn-dark" onclick="showPreview('{{ route('application.preview', ['type' => 'cv', 'id' => $application->id]) }}')"><i class="bi bi-folder"></i></button></p>
+                @else
+                    <p><strong><i class="bi bi-file-person me-2"></i> CV:</strong> Not uploaded</p>
+                @endif
+            </div>
+        </div>
+    </div>
+</div>
+
                         @endforeach
                     </tbody>
                 </table>

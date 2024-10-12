@@ -124,40 +124,77 @@
                         </tr>
 
                         <!-- Job Modal -->
-                        <div class="modal fade" id="jobModal{{ $job->id }}" tabindex="-1" aria-labelledby="jobModalLabel{{ $job->id }}" aria-hidden="true">
-                            <div class="modal-dialog">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title" id="jobModalLabel{{ $job->id }}">Job Information</h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <p><strong>Company:</strong> {{ $job->company->name }}</p>
-                                        <p><strong>Job Title:</strong> {{ $job->title }}</p>
-                                        <p><strong>Location:</strong> {{ $job->location }}</p>
-                                        <p><strong>Work Type:</strong> {{ $job->work_type }}</p>
-                                        <p><strong>Description:</strong> {{ $job->description }}</p>
-                                        <p><strong>Qualifications:</strong> {{ $job->qualification }}</p>
+<div class="modal fade" id="jobModal{{ $job->id }}" tabindex="-1" aria-labelledby="jobModalLabel{{ $job->id }}" aria-hidden="true">
+    <div class="modal-dialog" style="max-width: 700px;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="jobModalLabel{{ $job->id }}">Job Information</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Company Details Section -->
+                <h5 class="card-title  text-center">{{ $job->company->name }}</h5>
+                <div class="card-body d-flex align-items-center">
+                    <img id="profilePicturePreview" src="{{ $job->company->profile->profile_picture ? asset('storage/' . $job->company->profile->profile_picture) : asset('assets/img/profile-img.jpg') }}" 
+                         alt="Company Profile" class="rounded-circle" width="150">
+                    <div class="ms-5">
+                        <p><strong><i class="bi bi-person-circle me-2"></i> Contact Person:</strong> {{ $job->company->profile->first_name }} {{ $job->company->profile->last_name }}</p>
+                        <p><strong><i class="bi bi-telephone me-2"></i> Contact Number:</strong> {{ $job->company->profile->contact_number ?? 'N/A' }}</p>
+                        <p><strong><i class="bi bi-geo-alt me-2"></i> Address:</strong> {{ $job->company->profile->address ?? 'N/A' }}</p>
+                        <p><strong><i class="bi bi-info-circle me-2"></i> About:</strong> {{ $job->company->profile->about ?? 'No details provided.' }}</p>
+                    </div>
+                </div>
 
-                                        <!-- Schedule Details -->
-                                        @php
-                                            $schedule = json_decode($job->schedule, true);
-                                            $startTime = \Carbon\Carbon::createFromFormat('H:i', $schedule['start_time'])->format('g:i A');
-                                            $endTime = \Carbon\Carbon::createFromFormat('H:i', $schedule['end_time'])->format('g:i A');
-                                        @endphp
-                                        <p><strong>Schedule:</strong></p>
-                                        <ul>
-                                            <li>Days: {{ implode(', ', $schedule['days'] ?? []) }}</li>
-                                            @if ($job->work_type === 'Hybrid')
-                                                <li>On-site Days: {{ implode(', ', $schedule['onsite_days'] ?? []) }}</li>
-                                                <li>Remote Days: {{ implode(', ', $schedule['remote_days'] ?? []) }}</li>
-                                            @endif
-                                            <li>Time: {{ $startTime }} - {{ $endTime }}</li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                <hr class="my-4">
+
+                <!-- Links Section -->
+                <div class="row">
+                    <div class="col-md-3">
+                        <strong><i class="bi bi-link-45deg me-2"></i> Links:</strong>
+                    </div>
+                    <div class="col-md-9">
+                        @if($job->company->profile->links->isNotEmpty())
+                            <ul class="list-unstyled">
+                                @foreach($job->company->profile->links as $link)
+                                    <li><a href="{{ $link->link_url }}" target="_blank">{{ $link->link_name }}</a></li>
+                                @endforeach
+                            </ul>
+                        @else
+                            <p>No links available.</p>
+                        @endif
+                    </div>
+                </div>
+
+                <hr class="my-4">
+
+                <!-- Job Details Section -->
+                <h5 class="card-title">Job Details</h5>
+                <p><strong><i class="bi bi-briefcase-fill me-2"></i> Job Title:</strong> {{ $job->title }}</p>
+                <p><strong><i class="bi bi-geo-alt-fill me-2"></i> Location:</strong> {{ $job->location }}</p>
+                <p><strong><i class="bi bi-building me-2"></i> Work Type:</strong> {{ $job->work_type }}</p>
+                <p><strong><i class="bi bi-card-text me-2"></i> Description:</strong> {{ $job->description }}</p>
+                <p><strong><i class="bi bi-award me-2"></i> Qualifications:</strong> {{ $job->qualification }}</p>
+
+                <!-- Schedule Details -->
+                @php
+                    $schedule = json_decode($job->schedule, true);
+                    $startTime = \Carbon\Carbon::createFromFormat('H:i', $schedule['start_time'])->format('g:i A');
+                    $endTime = \Carbon\Carbon::createFromFormat('H:i', $schedule['end_time'])->format('g:i A');
+                @endphp
+                <p><strong><i class="bi bi-clock me-2"></i> Schedule:</strong></p>
+                <ul class="list-unstyled">
+                    <li>Days: {{ implode(', ', $schedule['days'] ?? []) }}</li>
+                    @if ($job->work_type === 'Hybrid')
+                        <li>On-site Days: {{ implode(', ', $schedule['onsite_days'] ?? []) }}</li>
+                        <li>Remote Days: {{ implode(', ', $schedule['remote_days'] ?? []) }}</li>
+                    @endif
+                    <li>Time: {{ $startTime }} - {{ $endTime }}</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
                         @endforeach
                     </tbody>
                 </table>
@@ -221,40 +258,77 @@
                         </tr>
 
                         <!-- Job Modal -->
-                        <div class="modal fade" id="jobModal{{ $job->id }}" tabindex="-1" aria-labelledby="jobModalLabel{{ $job->id }}" aria-hidden="true">
-                            <div class="modal-dialog">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title" id="jobModalLabel{{ $job->id }}">Job Information</h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <p><strong>Company:</strong> {{ $job->company->name }}</p>
-                                        <p><strong>Job Title:</strong> {{ $job->title }}</p>
-                                        <p><strong>Location:</strong> {{ $job->location }}</p>
-                                        <p><strong>Work Type:</strong> {{ $job->work_type }}</p>
-                                        <p><strong>Description:</strong> {{ $job->description }}</p>
-                                        <p><strong>Qualifications:</strong> {{ $job->qualification }}</p>
+<div class="modal fade" id="jobModal{{ $job->id }}" tabindex="-1" aria-labelledby="jobModalLabel{{ $job->id }}" aria-hidden="true">
+    <div class="modal-dialog" style="max-width: 700px;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="jobModalLabel{{ $job->id }}">Job Information</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Company Details Section -->
+                <h5 class="card-title text-center">{{ $job->company->name }}</h5>
+                <div class="card-body d-flex align-items-center">
+                    <img id="profilePicturePreview" src="{{ $job->company->profile->profile_picture ? asset('storage/' . $job->company->profile->profile_picture) : asset('assets/img/profile-img.jpg') }}" 
+                         alt="Company Profile" class="rounded-circle" width="150">
+                    <div class="ms-5">
+                        <p><strong><i class="bi bi-person-circle me-2"></i> Contact Person:</strong> {{ $job->company->profile->first_name }} {{ $job->company->profile->last_name }}</p>
+                        <p><strong><i class="bi bi-telephone me-2"></i> Contact Number:</strong> {{ $job->company->profile->contact_number ?? 'N/A' }}</p>
+                        <p><strong><i class="bi bi-geo-alt me-2"></i> Address:</strong> {{ $job->company->profile->address ?? 'N/A' }}</p>
+                        <p><strong><i class="bi bi-info-circle me-2"></i> About:</strong> {{ $job->company->profile->about ?? 'No details provided.' }}</p>
+                    </div>
+                </div>
 
-                                        <!-- Schedule Details -->
-                                        @php
-                                            $schedule = json_decode($job->schedule, true);
-                                            $startTime = \Carbon\Carbon::createFromFormat('H:i', $schedule['start_time'])->format('g:i A');
-                                            $endTime = \Carbon\Carbon::createFromFormat('H:i', $schedule['end_time'])->format('g:i A');
-                                        @endphp
-                                        <p><strong>Schedule:</strong></p>
-                                        <ul>
-                                            <li>Days: {{ implode(', ', $schedule['days'] ?? []) }}</li>
-                                            @if ($job->work_type === 'Hybrid')
-                                                <li>On-site Days: {{ implode(', ', $schedule['onsite_days'] ?? []) }}</li>
-                                                <li>Remote Days: {{ implode(', ', $schedule['remote_days'] ?? []) }}</li>
-                                            @endif
-                                            <li>Time: {{ $startTime }} - {{ $endTime }}</li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                <hr class="my-4">
+
+                <!-- Links Section -->
+                <div class="row">
+                    <div class="col-md-3">
+                        <strong><i class="bi bi-link-45deg me-2"></i> Links:</strong>
+                    </div>
+                    <div class="col-md-9">
+                        @if($job->company->profile->links->isNotEmpty())
+                            <ul class="list-unstyled">
+                                @foreach($job->company->profile->links as $link)
+                                    <li><a href="{{ $link->link_url }}" target="_blank">{{ $link->link_name }}</a></li>
+                                @endforeach
+                            </ul>
+                        @else
+                            <p>No links available.</p>
+                        @endif
+                    </div>
+                </div>
+
+                <hr class="my-4">
+
+                <!-- Job Details Section -->
+                <h5 class="card-title">Job Details</h5>
+                <p><strong><i class="bi bi-briefcase-fill me-2"></i> Job Title:</strong> {{ $job->title }}</p>
+                <p><strong><i class="bi bi-geo-alt-fill me-2"></i> Location:</strong> {{ $job->location }}</p>
+                <p><strong><i class="bi bi-building me-2"></i> Work Type:</strong> {{ $job->work_type }}</p>
+                <p><strong><i class="bi bi-card-text me-2"></i> Description:</strong> {{ $job->description }}</p>
+                <p><strong><i class="bi bi-award me-2"></i> Qualifications:</strong> {{ $job->qualification }}</p>
+
+                <!-- Schedule Details -->
+                @php
+                    $schedule = json_decode($job->schedule, true);
+                    $startTime = \Carbon\Carbon::createFromFormat('H:i', $schedule['start_time'])->format('g:i A');
+                    $endTime = \Carbon\Carbon::createFromFormat('H:i', $schedule['end_time'])->format('g:i A');
+                @endphp
+                <p><strong><i class="bi bi-clock me-2"></i> Schedule:</strong></p>
+                <ul class="list-unstyled">
+                    <li>Days: {{ implode(', ', $schedule['days'] ?? []) }}</li>
+                    @if ($job->work_type === 'Hybrid')
+                        <li>On-site Days: {{ implode(', ', $schedule['onsite_days'] ?? []) }}</li>
+                        <li>Remote Days: {{ implode(', ', $schedule['remote_days'] ?? []) }}</li>
+                    @endif
+                    <li>Time: {{ $startTime }} - {{ $endTime }}</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
                         @endforeach
                     </tbody>
                 </table>

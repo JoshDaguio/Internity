@@ -119,11 +119,12 @@
                 data.forEach(function (recipient) {
                     const option = document.createElement('option');
                     option.value = recipient.id;
-                    option.text = recipient.name;
+                    option.text = recipient.name; // Use the full name
                     toSelect.appendChild(option);
                 });
             }
         }
+
+
     });
 </script>
-

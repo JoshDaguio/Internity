@@ -37,6 +37,13 @@ class CourseController extends Controller
         return view('courses.index', compact('courses', 'coursePopulationData'));
     }
 
+    public function getAllCourses()
+    {
+        // Fetch only the course id and course_code for populating the dropdown
+        $courses = Course::all(['id', 'course_code']);
+        return response()->json($courses);
+    }
+
     /**
      * Show the form for creating a new resource.
      */

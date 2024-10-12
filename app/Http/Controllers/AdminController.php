@@ -8,6 +8,7 @@ use App\Models\Profile;
 use App\Models\Requirement;
 use App\Models\ActivityLog;
 use App\Models\AcademicYear;
+use App\Models\Priority;
 use App\Mail\StudentApprovalMail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -186,7 +187,14 @@ class AdminController extends Controller
     // Method to show student details
     public function showStudent(User $student)
     {
-        return view('administrative.show-student', compact('student'));
+        // Fetch the student's priority listings
+        $priorityListings = Priority::where('student_id', $student->id)
+            ->with('job.company') // Ensure to load the related job and company
+            ->orderBy('priority') // Order by the priority level (1st, 2nd, etc.)
+            ->get();
+    
+        // Pass the student and priorityListings data to the view
+        return view('administrative.show-student', compact('student', 'priorityListings'));
     }
 
     // Method to show the form for creating a new student

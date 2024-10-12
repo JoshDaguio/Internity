@@ -311,6 +311,7 @@ Route::middleware(['auth', 'administrative'])->group(function () {
 // Messages
 // Routes for the message/inbox system
 Route::middleware(['auth'])->group(function () {
+    Route::get('/api/courses', [CourseController::class, 'getAllCourses'])->name('api.courses.index');
     Route::get('/messages', [MessageController::class, 'index'])->name('messages.index');
     Route::get('/messages/{id}', [MessageController::class, 'show'])->name('messages.show');
     Route::get('/messages/compose', [MessageController::class, 'create'])->name('messages.create');

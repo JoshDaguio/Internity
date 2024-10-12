@@ -150,7 +150,7 @@ class ProfileController extends Controller
         $skillTags = $request->input('skill_tags', []); // Get selected skill tags or an empty array
         $profile->skillTags()->sync($skillTags); // Sync the skill tags (removes unselected ones)
         
-        return redirect()->route('profile.profile')->with('status', 'Profile updated successfully.');
+        return redirect()->route('profile.profile')->with('success', 'Profile updated successfully.');
     }
 
     public function previewCV($id)

@@ -28,7 +28,7 @@
             @csrf
 
             <div class="mb-3">
-                <label for="file" class="form-label">Select CSV or Excel file:</label>
+                <label for="file" class="form-label">Select Excel file:</label>
                 <input class="form-control" type="file" id="file" name="file" required>
                 <div class="form-text">
                     Please use the format provided in the template. You can <a href="{{ route('company.template') }}">download the template here</a>.
@@ -44,7 +44,10 @@
                 </div>
             </div>
 
-            <button type="submit" class="btn btn-primary">Upload</button>
+            <div class="text mt-3">
+                <button type="submit" class="btn btn-primary">Upload</button>
+                <a href="{{ route('company.index') }}" class="btn btn-secondary">Cancel</a>
+            </div>
         </form>
     </div>
 </div>

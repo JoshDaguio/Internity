@@ -11,6 +11,15 @@
     </nav>
 </div><!-- End Page Title -->
 
+   <!-- Success and Error Messages -->
+   @if(session('success'))
+        <div class="alert alert-success">{{ session('success') }}</div>
+    @endif
+
+    @if(session('error'))
+        <div class="alert alert-danger">{{ session('error') }}</div>
+    @endif
+
 <section class="section profile">
     <div class="row">
         <div class="col-xl-4">

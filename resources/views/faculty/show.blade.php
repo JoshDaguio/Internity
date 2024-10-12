@@ -7,43 +7,74 @@
         <ol class="breadcrumb">
             <li class="breadcrumb-item">Home</li>
             <li class="breadcrumb-item"><a href="{{ route('faculty.index') }}">Faculty</a></li>
-            <li class="breadcrumb-item active">Faculty Details</li>
+            <li class="breadcrumb-item active">{{$faculty->profile->first_name . ' ' . $faculty->profile->last_name}}</li>
         </ol>
     </nav>
 </div>
 
-<div class="card">
+<a href="javascript:history.back()" class="btn btn-secondary mb-3">Back</a>
+
+<div class="card mb-4">
     <div class="card-body">
-        <h5 class="card-title">Faculty Details</h5>
+        <h5 class="card-title">{{ $faculty->profile ? $faculty->profile->first_name . ' ' . $faculty->profile->last_name : 'N/A' }}</h5>
 
-        <div class="row">
-            <div class="col-md-4"><strong>Full Name:</strong></div>
-            <div class="col-md-8">{{ $faculty->profile->first_name }} {{ $faculty->profile->last_name }}</div>
+        <div class="card-body d-flex align-items-center">
+            <img id="profilePicturePreview" src="{{ $faculty->profile->profile_picture ? asset('storage/' . $faculty->profile->profile_picture) : asset('assets/img/profile-img.jpg') }}" alt="Profile" class="rounded-circle" width="150">
+            <div class="ms-4">
+                <p><strong><i class="bi bi-card-text me-2"></i> ID Number:</strong> {{ $faculty->profile->id_number ?? 'N/A' }}</p>
+                <p><strong><i class="bi bi-envelope me-2"></i> Email:</strong> {{ $faculty->email }}</p>
+                <p><strong><i class="bi bi-book me-2"></i> Course:</strong> {{ $faculty->course->course_code ?? 'N/A' }}</p>
+                <p><strong><i class="bi bi-person-check-fill me-2"></i> Status:</strong> 
+                    <span class="badge {{ $faculty->status_id == 1 ? 'bg-success' : 'bg-danger' }}">
+                        {{ $faculty->status_id == 1 ? 'Active' : 'Inactive' }}
+                    </span>
+                </p>
+            </div>
         </div>
+
+        <hr class="my-4">
+
+        <!-- About Section -->
         <div class="row">
-            <div class="col-md-4"><strong>Email:</strong></div>
-            <div class="col-md-8">{{ $faculty->email }}</div>
+            <div class="col-md-3">
+                <strong><i class="bi bi-info-circle me-2"></i> About:</strong>
+            </div>
+            <div class="col-md-9">{{ $faculty->profile->about ?? 'N/A' }}</div>
         </div>
+
+        <hr class="my-4">
+
+        <!-- Links Section -->
         <div class="row">
-            <div class="col-md-4"><strong>ID Number:</strong></div>
-            <div class="col-md-8">{{ $faculty->profile->id_number ?? 'N/A' }}</div>
+            <div class="col-md-3">
+                <strong><i class="bi bi-link-45deg me-2"></i> Links:</strong>
+            </div>
+            <div class="col-md-9">
+                @if($faculty->profile->links->isEmpty())
+                    <p>No links available.</p>
+                @else
+                    <ul class="list-unstyled">
+                        @foreach($faculty->profile->links as $link)
+                            <li><a href="{{ $link->link_url }}" target="_blank">{{ $link->link_name }}</a></li>
+                        @endforeach
+                    </ul>
+                @endif
+            </div>
         </div>
-        <div class="row">
-            <div class="col-md-4"><strong>Course:</strong></div>
-            <div class="col-md-8">{{ $faculty->course->course_name ?? 'N/A' }}</div>
-        </div>
-        <div class="row">
-            <div class="col-md-4"><strong>Status:</strong></div>
-            <div class="col-md-8">{{ $faculty->status_id == 1 ? 'Active' : 'Inactive' }}</div>
-        </div>
-        <div class="row mt-4">
+
+        <hr class="my-4">
+
+        <!-- Action Buttons Section -->
+        <div class="row mt-4 text">
             <div class="col-md-12">
-                <a href="{{ route('faculty.edit', $faculty) }}" class="btn btn-warning"><i class="bi bi-pencil"></i></a>
+                <a href="{{ route('faculty.edit', $faculty) }}" class="btn btn-warning me-2 {{ $faculty->status_id != 1 ? 'd-none' : '' }}">
+                    <i class="bi bi-pencil me-1"></i> Edit
+                </a>
 
-                <!-- Show the Deactivate button only if the account is active -->
                 @if($faculty->status_id == 1)
-                    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deactivateModal-{{ $faculty->id }}">
-                        Deactivate
+                    <!-- Deactivate button -->
+                    <button type="button" class="btn btn-danger me-2" data-bs-toggle="modal" data-bs-target="#deactivateModal-{{ $faculty->id }}">
+                        <i class="bi bi-trash me-1"></i> Deactivate
                     </button>
 
                     <!-- Deactivate Modal -->
@@ -70,20 +101,23 @@
                     </div>
                 @endif
 
-                <!-- Show the Reactivate button only if the account is inactive -->
                 @if($faculty->status_id == 2)
+                    <!-- Reactivate button -->
                     <form action="{{ route('faculty.reactivate', $faculty) }}" method="POST" style="display:inline;">
                         @csrf
                         @method('PATCH')
-                        <button type="submit" class="btn btn-success">Reactivate</button>
+                        <button type="submit" class="btn btn-success">
+                            <i class="bi bi-arrow-repeat me-1"></i> Reactivate
+                        </button>
                     </form>
                 @endif
-
-                <a href="{{ route('faculty.index') }}" class="btn btn-secondary">Back</a>
             </div>
         </div>
     </div>
 </div>
+
+
+<hr>
 
 <div class="card">
     <div class="card-body">

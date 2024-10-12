@@ -60,7 +60,10 @@
                     </div>
                 </div>
 
-                <button type="submit" class="btn btn-primary">Upload</button>
+                <div class="text mt-3">
+                    <button type="submit" class="btn btn-primary">Upload</button>
+                    <a href="{{ route('students.list') }}" class="btn btn-secondary">Cancel</a>
+                </div>
             </form>
         </div>
     </div>
