@@ -133,11 +133,12 @@
             </div>
             <div class="modal-body">
                 <!-- Company Details Section -->
-                <h5 class="card-title  text-center">{{ $job->company->name }}</h5>
                 <div class="card-body d-flex align-items-center">
                     <img id="profilePicturePreview" src="{{ $job->company->profile->profile_picture ? asset('storage/' . $job->company->profile->profile_picture) : asset('assets/img/profile-img.jpg') }}" 
                          alt="Company Profile" class="rounded-circle" width="150">
                     <div class="ms-5">
+                        <h5 class="card-title">{{ $job->company->name }}</h5>
+                        <p><strong><i class="bi bi-envelope me-2"></i> Email:</strong> {{ $job->company->email }}</p>
                         <p><strong><i class="bi bi-person-circle me-2"></i> Contact Person:</strong> {{ $job->company->profile->first_name }} {{ $job->company->profile->last_name }}</p>
                         <p><strong><i class="bi bi-telephone me-2"></i> Contact Number:</strong> {{ $job->company->profile->contact_number ?? 'N/A' }}</p>
                         <p><strong><i class="bi bi-geo-alt me-2"></i> Address:</strong> {{ $job->company->profile->address ?? 'N/A' }}</p>
@@ -267,11 +268,12 @@
             </div>
             <div class="modal-body">
                 <!-- Company Details Section -->
-                <h5 class="card-title text-center">{{ $job->company->name }}</h5>
                 <div class="card-body d-flex align-items-center">
                     <img id="profilePicturePreview" src="{{ $job->company->profile->profile_picture ? asset('storage/' . $job->company->profile->profile_picture) : asset('assets/img/profile-img.jpg') }}" 
                          alt="Company Profile" class="rounded-circle" width="150">
                     <div class="ms-5">
+                        <h5 class="card-title">{{ $job->company->name }}</h5>
+                        <p><strong><i class="bi bi-envelope me-2"></i> Email:</strong> {{ $job->company->email }}</p>
                         <p><strong><i class="bi bi-person-circle me-2"></i> Contact Person:</strong> {{ $job->company->profile->first_name }} {{ $job->company->profile->last_name }}</p>
                         <p><strong><i class="bi bi-telephone me-2"></i> Contact Number:</strong> {{ $job->company->profile->contact_number ?? 'N/A' }}</p>
                         <p><strong><i class="bi bi-geo-alt me-2"></i> Address:</strong> {{ $job->company->profile->address ?? 'N/A' }}</p>

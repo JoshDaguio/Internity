@@ -107,9 +107,8 @@
                             <thead>
                                 <tr>
                                     <th>Full Name</th>
-                                    <th>ID Number</th>
-                                    <!-- <th>Email</th> -->
                                     <th>Course</th>
+                                    <th>Student Type</th>
                                     <th>Requirements</th>
                                     <th>Status</th>
                                     <th>Actions</th>
@@ -123,9 +122,12 @@
                                                 {{ $student->profile->last_name }}, {{ $student->profile->first_name }}
                                             </a>
                                         </td>
-                                        <td>{{ $student->profile ? $student->profile->id_number : 'N/A' }}</td>
+                                        <td>
+                                            <!-- {{ $student->profile ? $student->profile->id_number : 'N/A' }} -->
+                                            {{ $student->course ? $student->course->course_code : 'N/A' }}
+                                        </td>
                                         <!-- <td>{{ $student->email }}</td> -->
-                                        <td>{{ $student->course ? $student->course->course_code : 'N/A' }}</td>
+                                        <td>{{ $student->profile->is_irregular == 1 ? 'Irregular' : 'Regular' }}</td>
                                         <td>
                                             @if($student->requirements)
                                                 <a href="{{ route('requirements.review', $student->requirements->id) }}">

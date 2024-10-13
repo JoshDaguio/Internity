@@ -19,6 +19,7 @@ class Profile extends Model
         'contact_number',
         'cv_file_path',
         'profile_picture',
+        'is_irregular',
     ];
 
     public function user()

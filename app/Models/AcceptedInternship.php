@@ -12,11 +12,17 @@ class AcceptedInternship extends Model
         'student_id', 
         'company_id', 
         'job_id', 
-        'schedule',  
+        'schedule', 
+        'custom_schedule',  // Add this 
         'start_date', 
         'work_type', 
         'start_time', 
         'end_time',
+    ];
+
+    protected $casts = [
+        'schedule' => 'array',
+        'custom_schedule' => 'array',  // Automatically cast to array
     ];
 
     public function student()

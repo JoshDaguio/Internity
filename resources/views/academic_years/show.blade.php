@@ -44,7 +44,7 @@
                                 <option value="">All Courses</option>
                                 @foreach($courses as $course)
                                     <option value="{{ $course->id }}" {{ request('course_id') == $course->id ? 'selected' : '' }}>
-                                        {{ $course->course_name }}
+                                        {{ $course->course_code }}
                                     </option>
                                 @endforeach
                             </select>
@@ -89,7 +89,11 @@
                 <tbody>
                     @foreach ($students as $student)
                         <tr>
-                            <td>{{ $student->profile->id_number ?? 'N/A' }}</td>
+                            <td>
+                                <a href="{{ route('students.show', $student->id) }}" class="btn btn-light btn-sm">
+                                    {{ $student->profile->id_number ?? 'N/A' }}
+                                </a>
+                            </td>
                             <td>{{ $student->profile->first_name }} {{ $student->profile->last_name }}</td>
                             <td>{{ $student->email }}</td>
                             <td>{{ $student->course->course_code ?? 'N/A' }}</td>

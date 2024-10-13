@@ -430,5 +430,43 @@ class AdminController extends Controller
     
         return Storage::download($filePath, $fileName);
     }
+
+    //For Irregular Students and Schedule
+    public function markIrregular(Request $request, User $student)
+    {
+        $student->profile->update([
+            'is_irregular' => $request->has('is_irregular'),
+        ]);
+
+        return redirect()->back()->with('success', 'Student irregular status updated.');
+    }
+
+    public function updateSchedule(Request $request, User $student)
+    {
+        // Validate the submitted schedule contains valid time entries
+        $request->validate([
+            'schedule.*.start' => 'required|date_format:H:i',
+            'schedule.*.end' => 'required|date_format:H:i|after:schedule.*.start',
+        ]);
+    
+        // Retrieve the student's accepted internship
+        $acceptedInternship = $student->acceptedInternship;
+    
+        if ($acceptedInternship) {
+            // Save the custom schedule to the accepted internship
+            $customSchedule = $request->input('schedule');
+    
+            // Update the accepted internship with the new custom schedule
+            $acceptedInternship->update([
+                'custom_schedule' => $customSchedule, // No need to use json_encode, Laravel will handle it
+            ]);
+    
+            return redirect()->back()->with('success', 'Custom schedule updated.');
+        }
+    
+        return redirect()->back()->with('error', 'No accepted internship found.');
+    }
+    
+
     
 }

@@ -185,6 +185,11 @@ Route::middleware(['auth', 'facultyaccess'])->group(function () {
     Route::post('/students/upload', [AdminController::class, 'uploadStudents'])->name('students.upload');
 });
 
+//For Irregular Students
+Route::middleware(['auth', 'administrative'])->group(function () {
+    Route::patch('/students/{student}/irregular', [AdminController::class, 'markIrregular'])->name('students.markIrregular');
+    Route::patch('/students/{student}/schedule', [AdminController::class, 'updateSchedule'])->name('students.updateSchedule');
+});
 
 //Registration Success - Currently not working
 Route::get('/register/success', function () {

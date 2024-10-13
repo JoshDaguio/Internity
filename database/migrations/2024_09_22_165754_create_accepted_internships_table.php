@@ -21,6 +21,7 @@ return new class extends Migration
             $table->time('start_time'); // Stores the internship start time
             $table->time('end_time'); // Stores the internship end time
             $table->date('start_date'); // The start date of the internship
+            $table->json('custom_schedule')->nullable(); // Allowing custom schedules for irregular students
             $table->timestamps();
         });
     }
