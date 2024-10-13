@@ -42,6 +42,16 @@
                     <h5 class="card-title">Internship Details</h5>
                     <p class="mb-1"><strong>Company:</strong> {{ $acceptedInternship->job->company->name }}</p>
                     <p class="mb-1"><strong>Job:</strong> {{ $acceptedInternship->job->title }}</p>
+                    <p class="mb-1"><strong>Start Date:</strong> {{ $startDate->format('F d, Y') }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Schedule Card -->
+        <div class="col-md-4">
+            <div class="card h-100">
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title">Schedule</h5>
                     <p class="mb-0"><strong>Work Type and Days:</strong> 
                     @php
                         $schedule = json_decode($acceptedInternship->schedule, true);
@@ -66,33 +76,19 @@
             </div>
         </div>
 
-        <!-- Schedule Card -->
-        <div class="col-md-4">
-            <div class="card h-100">
-                <div class="card-body d-flex flex-column">
-                    <h5 class="card-title">Schedule</h5>
-                    <p class="mb-1"><strong>Start Date:</strong> {{ $startDate->format('F d, Y') }}</p>
-                    <p class="mb-1"><strong>Schedule Time:</strong> 
-                        {{ \Carbon\Carbon::parse($schedule['start_time'])->format('g:i A') }} - 
-                        {{ \Carbon\Carbon::parse($schedule['end_time'])->format('g:i A') }}
-                    </p>
-                    <p class="mb-0"><strong>Current Date:</strong> {{ $currentDateTime->format('F d, Y h:i A') }}</p> <!-- Using API time -->
-                </div>
-            </div>
-        </div>
-
         <!-- Submissions Card -->
         <div class="col-md-4">
             <div class="card h-100">
                 <div class="card-body d-flex flex-column">
                     <h5 class="card-title">Submissions</h5>
+                    <p class="mb-1"><strong>Current Date:</strong> {{ $currentDateTime->format('F d, Y') }}</p> <!-- Using API time -->
                     <p class="mb-1">
                         <strong>
                             <span class="badge bg-danger"><i class="bi bi-exclamation-octagon me-1"></i> Missing Reports:</span>
                         </strong> 
                         {{ $missingDates->count() }}
                     </p>
-                    <p class="mb-0">
+                    <p class="mb-1">
                         <strong>              
                             <span class="badge bg-success"><i class="bi bi-check-circle"></i> Created Reports:</span>
                         </strong> 
