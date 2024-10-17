@@ -52,22 +52,11 @@
 
 @if($step1Completed)
   <li class="nav-item">
-    <a class="nav-link {{ request()->routeIs('dtr.logging', 'dtr.reports') ? '' : 'collapsed' }}" data-bs-target="#dtr-nav" data-bs-toggle="collapse" href="#">
-      <i class="bi bi-clock"></i><span>Daily Time Record</span><i class="bi bi-chevron-down ms-auto"></i>
+    <a class="nav-link {{ request()->routeIs('dtr.index') ? '' : 'collapsed' }}" href="{{ route('dtr.index') }}">
+      <i class="bi bi-clock"></i>
+      <span>Daily Time Record</span>  
     </a>
-    <ul id="dtr-nav" class="nav-content {{ request()->routeIs('dtr.logging', 'dtr.reports') ? '' : 'collapse' }}" data-bs-parent="#sidebar-nav">
-      <li>
-        <a href="#" class="{{ Request::routeIs('dtr.logging') ? 'active' : '' }}">
-          <i class="bi bi-circle"></i><span>Logging</span>
-        </a>
-      </li>
-      <li>
-        <a href="#" class="{{ Request::routeIs('dtr.reports') ? 'active' : '' }}">
-          <i class="bi bi-circle"></i><span>Reports</span>
-        </a>
-      </li>
-    </ul>
-  </li><!-- End Daily Time Record Nav -->
+  </li><!-- End Dail Time Record Nav -->
 
   <li class="nav-item">
     <a class="nav-link {{ request()->routeIs('end_of_day_reports.create', 'end_of_day_reports.index', 'end_of_day_reports.compile.monthly', 'end_of_day_reports.show') ? '' : 'collapsed' }}" href="{{ route('end_of_day_reports.index') }}">

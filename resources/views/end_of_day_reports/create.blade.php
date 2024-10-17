@@ -30,8 +30,9 @@
             <strong>
                 <h5>
                     <span class="badge bg-info text-dark"><i class="bi bi-calendar"></i> Current Date:</span>
-                    </strong> {{ $currentDateTime->format('F d, Y h:i A') }}
+                    </strong> 
                 </h5>
+                <iframe src="https://free.timeanddate.com/clock/i9lf5ga0/n2280/fn14/fs24/ftb/tt0/tw0/tm1/th2/tb2" frameborder="0" width="326" height="31"></iframe>
         </p>
 
         <form action="{{ route('end_of_day_reports.store') }}" method="POST" class="row g-3">

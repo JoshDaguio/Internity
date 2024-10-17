@@ -21,6 +21,7 @@ use App\Http\Controllers\RequirementController;
 use App\Http\Controllers\AcademicYearController;
 use App\Http\Controllers\AdminJobController;
 use App\Http\Controllers\MessageController;
+use App\Http\Controllers\DailyTimeRecordController;
 
 
 Route::get('/', function () {
@@ -324,4 +325,11 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/messages/{message}', [MessageController::class, 'show'])->name('messages.show');
     Route::get('/messages/recipients/{role}', [MessageController::class, 'getRecipients'])->name('messages.recipients');
     Route::post('/messages/reply/{id}', [MessageController::class, 'reply'])->name('messages.reply');
+});
+
+// Daily Time Record
+Route::middleware(['auth'])->group(function () {
+    Route::get('/daily-time-records', [DailyTimeRecordController::class, 'index'])->name('dtr.index');
+    Route::post('/daily-time-records/log/{type}', [DailyTimeRecordController::class, 'logTime'])->name('dtr.logTime');
+    Route::get('/get-server-time', [DailyTimeRecordController::class, 'getServerTime']);
 });

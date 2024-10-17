@@ -13,85 +13,108 @@
     </nav>
 </div>
 
-<div class="card mb-4">
-    <div class="card-body">
-        <h5 class="card-title">Job Information</h5>
-        <table class="table">
-            <tbody>
-                <tr>
-                    <td><strong>Title:</strong></td>
-                    <td>{{ $job->title }}</td>
-                </tr>
-                <tr>
-                    <td><strong>Industry:</strong></td>
-                    <td>{{ $job->industry }}</td>
-                </tr>
-                <tr>
-                    <td><strong>Positions Available:</strong></td>
-                    <td>
-                        @if($job->positions_available > 0)
-                            {{ $job->positions_available }}
-                        @else
-                            <span class="text-danger">No more available positions</span>
-                        @endif
-                    </td>
-                </tr>
-                <tr>
-                    <td><strong>Location:</strong></td>
-                    <td>{{ $job->location }}</td>
-                </tr>
-                <tr>
-                    <td><strong>Work Type:</strong></td>
-                    <td>{{ $job->work_type }}</td>
-                </tr>
-                <tr>
-                    <td><strong>Schedule:</strong></td>
-                    <td>
-                        @php
-                            $schedule = json_decode($job->schedule, true);
-                            $startTime = \Carbon\Carbon::createFromFormat('H:i', $schedule['start_time'])->format('g:i A');
-                            $endTime = \Carbon\Carbon::createFromFormat('H:i', $schedule['end_time'])->format('g:i A');
-                        @endphp
-                        Days: {{ implode(', ', $schedule['days'] ?? []) }} <br>
-                        @if ($job->work_type === 'Hybrid')
-                            On-site Days: {{ implode(', ', $schedule['onsite_days'] ?? []) }} <br>
-                            Remote Days: {{ implode(', ', $schedule['remote_days'] ?? []) }} <br>
-                        @endif
-                        Time: {{ $startTime }} - {{ $endTime }}
-                    </td>
-                </tr>
-                <tr>
-                    <td><strong>Description:</strong></td>
-                    <td>{{ $job->description }}</td>
-                </tr>
-                <tr>
-                    <td><strong>Qualification:</strong></td>
-                    <td>{{ $job->qualification }}</td>
-                </tr>
-                <tr>
-                    <td><strong>Preferred Skills:</strong></td>
-                    <td>{{ $job->skillTags->pluck('name')->implode(', ') }}</td>
-                </tr>
-            </tbody>
-        </table>
-
-        @if(Auth::id() === $job->company_id)
-            <a href="{{ route('jobs.edit', $job) }}" class="btn btn-warning"><i class="bi bi-pencil"></i></a>
-<!-- 
-            <form action="{{ route('jobs.destroy', $job) }}" method="POST" style="display:inline;">
-                @csrf
-                @method('DELETE')
-                <button type="submit" class="btn btn-danger"><i class="bi bi-trash"></i> Delete</button>
-            </form> -->
-        @endif
 
         @if(Auth::user()->role_id === 4)
-            <a href="{{ route('jobs.index') }}" class="btn btn-secondary">Back</a>
+            <a href="{{ route('jobs.index') }}" class="btn btn-secondary mb-3">Back</a>
         @else
-            <a href="{{ route('company.show', $job->company_id) }}" class="btn btn-secondary">Back</a>
+            <a href="{{ route('company.show', $job->company_id) }}" class="btn btn-secondary mb-3">Back</a>
         @endif
+
+    @if(Auth::user()->role_id == 1 || Auth::user()->role_id == 2)
+        <div class="card mb-4 shadow-sm">
+            <div class="card-body">
+                <!-- Company Details Section -->
+                <div class="row align-items-center">
+                    <!-- Profile Picture -->
+                    <div class="col-sm-12 col-md-3 d-flex justify-content-center mb-3 mb-md-0">
+                        <img id="profilePicturePreview" src="{{ $company->profile->profile_picture ? asset('storage/' . $company->profile->profile_picture) : asset('assets/img/profile-img.jpg') }}" alt="Profile" class="rounded-circle" width="120">
+                    </div>
+
+                    <!-- Company Info -->
+                    <div class="col-sm-12 col-md-9">
+                        <h5 class="card-title">{{ $company->name }}</h5>
+                        <p><strong><i class="bi bi-envelope me-2"></i> Email:</strong> {{ $company->email }}</p>
+                        <p><strong><i class="bi bi-person-circle me-2"></i> Contact Person:</strong> {{ $company->profile->first_name }} {{ $company->profile->last_name }}</p>
+                        <p><strong><i class="bi bi-telephone me-2"></i> Contact Number:</strong> {{ $company->profile->contact_number ?? 'N/A' }}</p>
+                    </div>
+                </div>
+            </div>
+        </div> 
+    @endif
+
+
+<div class="card mb-4 shadow-sm">
+    <div class="card-body">
+        <h5 class="card-title">{{ $job->title }}</h5>
+        
+        <div class="table-responsive">
+            <table class="table table-borderless">
+                <tbody>
+                    <tr>
+                        <td class="fw-bold">Industry:</td>
+                        <td>{{ $job->industry }}</td>
+                    </tr>
+                    <tr>
+                        <td class="fw-bold">Positions Available:</td>
+                        <td>
+                            @if($job->positions_available > 0)
+                                {{ $job->positions_available }}
+                            @else
+                                <span class="text-danger">No more available positions</span>
+                            @endif
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="fw-bold">Location:</td>
+                        <td>{{ $job->location }}</td>
+                    </tr>
+                    <tr>
+                        <td class="fw-bold">Work Type:</td>
+                        <td>{{ $job->work_type }}</td>
+                    </tr>
+                    <tr>
+                        <td class="fw-bold">Schedule:</td>
+                        <td>
+                            @php
+                                $schedule = json_decode($job->schedule, true);
+                                $startTime = \Carbon\Carbon::createFromFormat('H:i', $schedule['start_time'])->format('g:i A');
+                                $endTime = \Carbon\Carbon::createFromFormat('H:i', $schedule['end_time'])->format('g:i A');
+                            @endphp
+                            <strong>Days:</strong> {{ implode(', ', $schedule['days'] ?? []) }} <br>
+                            @if ($job->work_type === 'Hybrid')
+                                <strong>On-site Days:</strong> {{ implode(', ', $schedule['onsite_days'] ?? []) }} <br>
+                                <strong>Remote Days:</strong> {{ implode(', ', $schedule['remote_days'] ?? []) }} <br>
+                            @endif
+                            <strong>Time:</strong> {{ $startTime }} - {{ $endTime }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="fw-bold">Description:</td>
+                        <td>{{ $job->description }}</td>
+                    </tr>
+                    <tr>
+                        <td class="fw-bold">Qualification:</td>
+                        <td>{{ $job->qualification }}</td>
+                    </tr>
+                    <tr>
+                        <td class="fw-bold">Preferred Skills:</td>
+                        <td>{{ $job->skillTags->pluck('name')->implode(', ') }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="d-flex">
+            @if(Auth::id() === $job->company_id)
+                <a href="{{ route('jobs.edit', $job) }}" class="btn btn-warning me-2">
+                    <i class="bi bi-pencil"></i> 
+                </a>
+            @endif
+        </div>
     </div>
 </div>
+
+
 
 <!-- Accepted Interns Section -->
 <div class="card">

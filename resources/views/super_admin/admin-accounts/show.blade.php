@@ -19,12 +19,18 @@
     <div class="card-body">
         <h5 class="card-title">{{ $admin->profile ? $admin->profile->first_name . ' ' . $admin->profile->last_name : 'N/A' }}</h5>
 
-        <div class="card-body d-flex align-items-center">
-            <img id="profilePicturePreview" src="{{ $admin->profile->profile_picture ? asset('storage/' . $admin->profile->profile_picture) : asset('assets/img/profile-img.jpg') }}" alt="Profile" class="rounded-circle" width="150">
-            <div class="ms-4">
+        <!-- Admin Details Section -->
+        <div class="row align-items-center mb-4">
+            <!-- Profile Picture -->
+            <div class="col-sm-12 col-md-3 d-flex justify-content-center mb-3 mb-md-0">
+                <img id="profilePicturePreview" src="{{ $admin->profile->profile_picture ? asset('storage/' . $admin->profile->profile_picture) : asset('assets/img/profile-img.jpg') }}" alt="Profile" class="rounded-circle" width="150">
+            </div>
+
+            <!-- Admin Info -->
+            <div class="col-sm-12 col-md-9">
                 <p><strong><i class="bi bi-card-text me-2"></i> ID Number:</strong> {{ $admin->profile->id_number ?? 'N/A' }}</p>
                 <p><strong><i class="bi bi-envelope me-2"></i> Email:</strong> {{ $admin->email }}</p>
-                <p><strong><i class="bi bi-person-check-fill me-2"></i> Status:</strong> 
+                <p><strong><i class="bi bi-person-check-fill me-2"></i> Status:</strong>
                     <span class="badge {{ $admin->status_id == 1 ? 'bg-success' : 'bg-danger' }}">
                         {{ $admin->status_id == 1 ? 'Active' : 'Inactive' }}
                     </span>
@@ -115,6 +121,7 @@
         </div>
     </div>
 </div>
+
 
 <hr> 
 

@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Requirement;
 use App\Models\RequirementStatus; 
 use App\Models\User;
+use App\Models\Priority; 
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\RequirementAccepted;
@@ -92,11 +93,17 @@ class RequirementController extends Controller
     {
         // Find requirements by student_id instead of requirement id
         $requirements = Requirement::with('student')->findOrFail($requirementId);
-        
+
+        // Fetch the priority listings for the student
+        $priorityListings = Priority::where('student_id', $requirements->student->id)
+            ->with('job.company') // Eager load the company related to the job
+            ->orderBy('priority')  // Sort by priority (1st, 2nd)
+            ->get();
+            
         // Check if Step 1 is completed
         $step1Completed = $requirements->waiver_form && $requirements->medical_certificate && $requirements->status_id == 2;
     
-        return view('requirements.review', compact('requirements', 'step1Completed'));
+        return view('requirements.review', compact('requirements', 'step1Completed', 'priorityListings'));
     }
 
     // File Preview Method

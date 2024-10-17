@@ -82,12 +82,15 @@ class JobController extends Controller
 
     public function show(Job $job)
     {
+        // Fetch the company details related to the job
+        $company = $job->company;
+
         // Fetch accepted interns related to the job
         $acceptedInterns = AcceptedInternship::with('student.profile', 'student.course')
             ->where('job_id', $job->id)
             ->get();
 
-        return view('jobs.show', compact('job', 'acceptedInterns'));
+        return view('jobs.show', compact('job', 'acceptedInterns', 'company'));
     }
 
     public function edit(Job $job)

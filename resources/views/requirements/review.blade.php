@@ -28,11 +28,51 @@
 <div class="card mb-4">
     <div class="card-body">
         <h5 class="card-title">Student Details</h5>
-        <p><strong>Name:</strong> {{ $requirements->student->profile->first_name }} {{ $requirements->student->profile->last_name }}</p>
-        <p><strong>ID Number:</strong> {{ $requirements->student->profile->id_number }}</p>
-        <p><strong>Course:</strong> {{ $requirements->student->course->course_code }}</p>
+
+        <div class="card-body">
+            <div class="row align-items-center">
+                <!-- Profile Picture Section -->
+                <div class="col-sm-12 col-md-3 d-flex justify-content-center mb-3 mb-md-0">
+                    <img id="profilePicturePreview" src="{{ $requirements->student->profile->profile_picture ? asset('storage/' . $requirements->student->profile->profile_picture) : asset('assets/img/profile-img.jpg') }}" 
+                        alt="Profile" class="rounded-circle" width="150">
+                </div>
+                
+                <!-- Student Details Section -->
+                <div class="col-sm-12 col-md-9">
+                    <h5 class="card-title">{{ $requirements->student->profile->first_name }} {{ $requirements->student->profile->last_name }}</h5>
+                    <p><strong><i class="bi bi-card-text me-2"></i> ID Number:</strong> {{ $requirements->student->profile->id_number }}</p>
+                    <p><strong><i class="bi bi-envelope me-2"></i> Email:</strong> {{ $requirements->student->email }}</p>
+                    <p><strong><i class="bi bi-book me-2"></i> Course:</strong> {{ $requirements->student->course->course_code }}</p>
+                </div>
+            </div>
+        </div>
+
     </div>
 </div>
+
+<!-- Priority Companies -->
+<div class="card mb-4">
+    <div class="card-body">
+        <h5 class="card-title">Priority Companies</h5>
+        @if($priorityListings->isEmpty())
+            <p class="fst-italic">No priority companies selected.</p>
+        @else
+            <ul class="list-unstyled">
+                @foreach($priorityListings as $priority)
+                    <li>
+                        @if($priority->priority == 1)
+                            <strong>First Priority:</strong> 
+                        @elseif($priority->priority == 2)
+                            <strong>Second Priority:</strong>
+                        @endif
+                        {{ $priority->job->company->name }} - {{ $priority->job->title }} 
+                    </li>
+                @endforeach
+            </ul>
+        @endif
+    </div>
+</div>
+
 
 <!-- Step 1: Waiver Form and Medical Certificate -->
 <div class="card mb-4">

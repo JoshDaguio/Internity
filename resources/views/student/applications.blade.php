@@ -103,17 +103,22 @@
             </div>
             <div class="modal-body">
                 <!-- Company Details Section -->
-                <div class="card-body d-flex align-items-center">
-                    <img src="{{ $priority->job->company->profile->profile_picture ? asset('storage/' . $priority->job->company->profile->profile_picture) : asset('assets/img/profile-img.jpg') }}" alt="Company Profile" class="rounded-circle img-thumbnail" width="150">
-                    <div class="ms-5">
-                        <h5 class="card-title">{{ $priority->job->company->name }}</h5>
-                        <p><strong><i class="bi bi-envelope me-2"></i> Email:</strong> {{ $priority->job->company->email }}</p>
-                        <p><strong><i class="bi bi-person-circle me-2"></i> Contact Person:</strong> {{ $priority->job->company->profile->first_name }} {{ $priority->job->company->profile->last_name }}</p>
-                        <p><strong><i class="bi bi-telephone me-2"></i> Contact Number:</strong> {{ $priority->job->company->profile->contact_number ?? 'N/A' }}</p>
-                        <p><strong><i class="bi bi-geo-alt me-2"></i> Address:</strong> {{ $priority->job->company->profile->address ?? 'N/A' }}</p>
-                        <p><strong><i class="bi bi-info-circle me-2"></i> About:</strong> {{ $priority->job->company->profile->about ?? 'No details provided.' }}</p>
+                    <div class="row align-items-center">
+                        <!-- Profile Picture Section -->
+                        <div class="col-sm-12 col-md-4 d-flex justify-content-center mb-3 mb-md-0">
+                            <img src="{{ $priority->job->company->profile->profile_picture ? asset('storage/' . $priority->job->company->profile->profile_picture) : asset('assets/img/profile-img.jpg') }}" alt="Company Profile" class="rounded-circle img-thumbnail" width="150">
+                        </div>
+                        
+                        <!-- Company Info Section -->
+                        <div class="col-sm-12 col-md-8">
+                            <h5 class="card-title">{{ $priority->job->company->name }}</h5>
+                            <p><strong><i class="bi bi-envelope me-2"></i> Email:</strong> {{ $priority->job->company->email }}</p>
+                            <p><strong><i class="bi bi-person-circle me-2"></i> Contact Person:</strong> {{ $priority->job->company->profile->first_name }} {{ $priority->job->company->profile->last_name }}</p>
+                            <p><strong><i class="bi bi-telephone me-2"></i> Contact Number:</strong> {{ $priority->job->company->profile->contact_number ?? 'N/A' }}</p>
+                            <p><strong><i class="bi bi-geo-alt me-2"></i> Address:</strong> {{ $priority->job->company->profile->address ?? 'N/A' }}</p>
+                            <p><strong><i class="bi bi-info-circle me-2"></i> About:</strong> {{ $priority->job->company->profile->about ?? 'No details provided.' }}</p>
+                        </div>
                     </div>
-                </div>
 
                 <hr class="my-4">
 
@@ -267,9 +272,14 @@
             </div>
             <div class="modal-body">
                 <!-- Company Details Section -->
-                <div class="card-body d-flex align-items-center">
+                <div class="row align-items-center">
+                    <!-- Profile Picture Section -->
+                    <div class="col-sm-12 col-md-4 d-flex justify-content-center mb-3 mb-md-0">
                         <img src="{{ $application->job->company->profile->profile_picture ? asset('storage/' . $application->job->company->profile->profile_picture) : asset('assets/img/profile-img.jpg') }}" alt="Company Profile" class="rounded-circle img-thumbnail" width="150">
-                    <div class="ms-5">
+                    </div>
+                    
+                    <!-- Company Info Section -->
+                    <div class="col-sm-12 col-md-8">
                         <h5 class="card-title">{{ $application->job->company->name }}</h5>
                         <p><strong><i class="bi bi-envelope me-2"></i> Email:</strong> {{ $application->job->company->email }}</p>
                         <p><strong><i class="bi bi-person-circle me-2"></i> Contact Person:</strong> {{ $application->job->company->profile->first_name }} {{ $application->job->company->profile->last_name }}</p>

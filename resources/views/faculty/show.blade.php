@@ -15,12 +15,19 @@
 <a href="javascript:history.back()" class="btn btn-secondary mb-3">Back</a>
 
 <div class="card mb-4">
+
     <div class="card-body">
         <h5 class="card-title">{{ $faculty->profile ? $faculty->profile->first_name . ' ' . $faculty->profile->last_name : 'N/A' }}</h5>
 
-        <div class="card-body d-flex align-items-center">
-            <img id="profilePicturePreview" src="{{ $faculty->profile->profile_picture ? asset('storage/' . $faculty->profile->profile_picture) : asset('assets/img/profile-img.jpg') }}" alt="Profile" class="rounded-circle" width="150">
-            <div class="ms-4">
+        <!-- Faculty Details Section -->
+        <div class="row align-items-center mb-4">
+            <!-- Profile Picture -->
+            <div class="col-sm-12 col-md-3 d-flex justify-content-center mb-3 mb-md-0">
+                <img id="profilePicturePreview" src="{{ $faculty->profile->profile_picture ? asset('storage/' . $faculty->profile->profile_picture) : asset('assets/img/profile-img.jpg') }}" alt="Profile" class="rounded-circle" width="150">
+            </div>
+
+            <!-- Faculty Info -->
+            <div class="col-sm-12 col-md-9">
                 <p><strong><i class="bi bi-card-text me-2"></i> ID Number:</strong> {{ $faculty->profile->id_number ?? 'N/A' }}</p>
                 <p><strong><i class="bi bi-envelope me-2"></i> Email:</strong> {{ $faculty->email }}</p>
                 <p><strong><i class="bi bi-book me-2"></i> Course:</strong> {{ $faculty->course->course_code ?? 'N/A' }}</p>
@@ -114,6 +121,8 @@
             </div>
         </div>
     </div>
+
+
 </div>
 
 

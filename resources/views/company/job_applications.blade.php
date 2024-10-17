@@ -16,6 +16,14 @@
 
     <!-- Back Button -->
     <a href="{{ route('company.internApplications') }}" class="btn btn-secondary mb-3">Back</a>
+
+    @if(session('success'))
+        <div class="alert alert-success">{{ session('success') }}</div>
+    @endif
+
+    @if(session('error'))
+        <div class="alert alert-danger">{{ session('error') }}</div>
+    @endif
     
     <!-- Job Information Section -->
     <div class="row mb-0">
@@ -33,10 +41,10 @@
                         $endTime = \Carbon\Carbon::createFromFormat('H:i', $schedule['end_time'])->format('g:i A');
                     @endphp
                     
-                    <p><strong>Work Type & Schedule:</strong></p>
+                    <p><strong>Work Type:</strong> {{ $job->work_type }}</p>
+
                     <ul class="list-unstyled">
-                        <li><strong>Work Type:</strong> {{ $job->work_type }}</li>
-                        <p><strong>Schedule:</strong></p>
+                        <li><strong>Schedule:</strong></li>
                         <li><strong>Days:</strong> {{ implode(', ', $schedule['days'] ?? []) }}</li>
                         @if ($job->work_type === 'Hybrid')
                             <li><strong>On-site Days:</strong> {{ implode(', ', $schedule['onsite_days'] ?? []) }}</li>
@@ -103,15 +111,6 @@
             </div>
         </div>
     </div>
-
-    @if(session('success'))
-        <div class="alert alert-success">{{ session('success') }}</div>
-    @endif
-
-    @if(session('error'))
-        <div class="alert alert-danger">{{ session('error') }}</div>
-    @endif
-
 
     <!-- Applicants for Interview Section -->
     <div class="card mt-4">

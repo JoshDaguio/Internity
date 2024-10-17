@@ -36,7 +36,7 @@
 
     <div class="row mb-4">
         <!-- Internship Details Card -->
-        <div class="col-md-4">
+        <div class="col-sm-12 col-md-4 mb-3 mb-md-0">
             <div class="card h-100">
                 <div class="card-body d-flex flex-column">
                     <h5 class="card-title">Internship Details</h5>
@@ -48,56 +48,57 @@
         </div>
 
         <!-- Schedule Card -->
-        <div class="col-md-4">
+        <div class="col-sm-12 col-md-4 mb-3 mb-md-0">
             <div class="card h-100">
                 <div class="card-body d-flex flex-column">
                     <h5 class="card-title">Schedule</h5>
-                    <p class="mb-0"><strong>Work Type and Days:</strong> 
-                    @php
-                        $schedule = json_decode($acceptedInternship->schedule, true);
-                        $workType = $acceptedInternship->work_type;
+                    <p class="mb-0"><strong>Work Type and Days:</strong>
+                        @php
+                            $schedule = json_decode($acceptedInternship->schedule, true);
+                            $workType = $acceptedInternship->work_type;
 
-                        if ($workType === 'Hybrid') {
-                            $onsiteDays = implode(', ', $schedule['onsite_days'] ?? []);
-                            $remoteDays = implode(', ', $schedule['remote_days'] ?? []);
-                            echo "Hybrid | Onsite: {$onsiteDays} | Remote: {$remoteDays}";
-                        } elseif ($workType === 'On-site') {
-                            $onsiteDays = implode(', ', $schedule['days'] ?? []);
-                            echo "On-site | Days: {$onsiteDays}";
-                        } elseif ($workType === 'Remote') {
-                            $remoteDays = implode(', ', $schedule['days'] ?? []);
-                            echo "Remote | Days: {$remoteDays}";
-                        } else {
-                            echo "Work type information is not available.";
-                        }
-                    @endphp
+                            if ($workType === 'Hybrid') {
+                                $onsiteDays = implode(', ', $schedule['onsite_days'] ?? []);
+                                $remoteDays = implode(', ', $schedule['remote_days'] ?? []);
+                                echo "Hybrid | Onsite: {$onsiteDays} | Remote: {$remoteDays}";
+                            } elseif ($workType === 'On-site') {
+                                $onsiteDays = implode(', ', $schedule['days'] ?? []);
+                                echo "On-site | Days: {$onsiteDays}";
+                            } elseif ($workType === 'Remote') {
+                                $remoteDays = implode(', ', $schedule['days'] ?? []);
+                                echo "Remote | Days: {$remoteDays}";
+                            } else {
+                                echo "Work type information is not available.";
+                            }
+                        @endphp
                     </p>
                 </div>
             </div>
         </div>
 
         <!-- Submissions Card -->
-        <div class="col-md-4">
+        <div class="col-sm-12 col-md-4">
             <div class="card h-100">
                 <div class="card-body d-flex flex-column">
                     <h5 class="card-title">Submissions</h5>
-                    <p class="mb-1"><strong>Current Date:</strong> {{ $currentDateTime->format('F d, Y') }}</p> <!-- Using API time -->
+                    <p class="mb-1"><strong>Current Date:</strong> {{ $currentDateTime->format('F d, Y') }}</p>
                     <p class="mb-1">
                         <strong>
                             <span class="badge bg-danger"><i class="bi bi-exclamation-octagon me-1"></i> Missing Reports:</span>
-                        </strong> 
+                        </strong>
                         {{ $missingDates->count() }}
                     </p>
                     <p class="mb-1">
-                        <strong>              
+                        <strong>
                             <span class="badge bg-success"><i class="bi bi-check-circle"></i> Created Reports:</span>
-                        </strong> 
+                        </strong>
                         {{ $reports->count() }}
                     </p>
                 </div>
             </div>
         </div>
     </div>
+
 
     <!-- Calendar Card -->
     <div class="card">

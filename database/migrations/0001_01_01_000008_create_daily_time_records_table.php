@@ -13,14 +13,11 @@ return new class extends Migration
     {
         Schema::create('daily_time_records', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('student_id')->constrained('users');
-            $table->timestamp('morning_in')->nullable();
-            $table->timestamp('morning_out')->nullable();
-            $table->timestamp('afternoon_in')->nullable();
-            $table->timestamp('afternoon_out')->nullable();
-            $table->integer('total_absences')->default(0);
-            $table->integer('total_tardiness')->default(0);
-            $table->integer('total_make_up_hours')->default(0);
+            $table->foreignId('student_id')->constrained('users'); // Refers to the student user
+            $table->date('log_date');  // Date for the log
+            $table->json('log_times')->nullable();  // Store morning in/out, afternoon in/out as JSON
+            $table->integer('total_hours_worked')->default(0);
+            $table->integer('remaining_hours');
             $table->timestamps();
         });
     }

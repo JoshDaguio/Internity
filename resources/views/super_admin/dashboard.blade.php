@@ -55,7 +55,7 @@
 
     <div class="row">
         <!-- Admin Card -->
-        <div class="col-xxl-4 col-md-3">
+        <div class="col-md-3">
             <div class="card info-card admins-card">
                 <div class="card-body">
                     <h5 class="card-title">Admin</h5>
@@ -74,7 +74,7 @@
         <!-- End Admin Card -->
 
         <!-- Faculty Card -->
-        <div class="col-xxl-4 col-md-3">
+        <div class="col-md-3">
             <div class="card info-card faculty-card">
                 <div class="filter">
                     <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
@@ -106,7 +106,7 @@
         <!-- End Faculty Card -->
 
         <!-- Company Card -->
-        <div class="col-xxl-4 col-md-3">
+        <div class="col-md-3">
             <div class="card info-card company-card">
                 <div class="card-body">
                     <h5 class="card-title">Company</h5>
@@ -125,7 +125,7 @@
         <!-- End Company Card -->
 
         <!-- Student Card -->
-        <div class="col-xxl-4 col-md-3">
+        <div class="col-md-3">
             <div class="card info-card student-card">
                 <div class="filter">
                     <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>

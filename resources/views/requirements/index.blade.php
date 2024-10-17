@@ -30,9 +30,9 @@
             <div class="col-md-6">
                 <h6 class="card-title">Step 1</h6>
                 <ul>
-                    <li>Submit Waiver Form (See Files Section)</li>
-                    <li>Submit Medical Certificate</li>
-                    <li>Consent (If Required by PhilHealth)</li>
+                    <li>Submit <strong>Waiver Form</strong> (See <strong>Files</strong> Section)</li>
+                    <li>Submit <strong>Medical Certificate</strong></li>
+                    <!-- <li>Consent (If Required by PhilHealth)</li> -->
                 </ul>
             </div>
 
@@ -40,7 +40,7 @@
             <div class="col-md-6">
                 <h6 class="card-title">Step 2</h6>
                 <ul>
-                    <li>Pre-requisite: Accomplish Step 1 Requirements</li>
+                    <li><strong>Pre-requisite:</strong> Accomplish Step 1 Requirements</li>
                     <li>Endorsement Letter/s</li>
                 </ul>
             </div>
