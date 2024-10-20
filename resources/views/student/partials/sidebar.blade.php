@@ -52,14 +52,14 @@
 
 @if($step1Completed)
   <li class="nav-item">
-    <a class="nav-link {{ request()->routeIs('dtr.index') ? '' : 'collapsed' }}" href="{{ route('dtr.index') }}">
+    <a class="nav-link {{ request()->routeIs('dtr.index', 'dtr.reports') ? '' : 'collapsed' }}" href="{{ route('dtr.index') }}">
       <i class="bi bi-clock"></i>
       <span>Daily Time Record</span>  
     </a>
   </li><!-- End Dail Time Record Nav -->
 
   <li class="nav-item">
-    <a class="nav-link {{ request()->routeIs('end_of_day_reports.create', 'end_of_day_reports.index', 'end_of_day_reports.compile.monthly', 'end_of_day_reports.show') ? '' : 'collapsed' }}" href="{{ route('end_of_day_reports.index') }}">
+    <a class="nav-link {{ request()->routeIs('end_of_day_reports.create', 'end_of_day_reports.index','end_of_day_reports.compile.weekly', 'end_of_day_reports.compile.monthly', 'end_of_day_reports.show') ? '' : 'collapsed' }}" href="{{ route('end_of_day_reports.index') }}">
       <i class="bi bi-file-earmark-text"></i>
       <span>Reports</span>  
     </a>

@@ -43,9 +43,9 @@ return new class extends Migration
             ],
             [
                 'violation' => 'Tardiness (More than 1 hour but less than 4 hours)',
-                'penalty_hours' => 8, // 1 day
-                'conditions' => null,
-                'penalty_type' => 'fixed',
+                'penalty_hours' => null, 
+                'conditions' => '8 hours',
+                'penalty_type' => 'conditional',
             ],
             [
                 'violation' => 'AWOL and Out of Post',

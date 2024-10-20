@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $studentName }} - {{ \Carbon\Carbon::create()->month($currentMonth)->format('F') }} {{ $currentYear }} - Monthly Report</title>
+    <title>{{ $studentName }} - {{ \Carbon\Carbon::create()->month($selectedMonth)->format('F') }} {{ $currentYear }} - Monthly Report</title>
     <style>
         body {
             font-family: 'Poppins', sans-serif;
@@ -11,7 +11,7 @@
         h1 {
             text-align: center;
             color: #B30600;
-            font-size: 24px; /* Adjusted font size */
+            font-size: 24px;
         }
         h2 {
             text-align: left;
@@ -38,36 +38,54 @@
 </head>
 <body>
 
-    <h2>{{ $studentName }}</h2> <!-- Left-aligned, black color -->
-    <h1>{{ \Carbon\Carbon::create()->month($currentMonth)->format('F') }} {{ $currentYear }} - Monthly Report</h1>
+    <h2>{{ $studentName }}</h2>
+    <h1>{{ \Carbon\Carbon::create()->month($selectedMonth)->format('F') }} {{ $currentYear }} - Monthly Report</h1>
 
-    @foreach($reports as $report)
-        <h4>Date Submitted: {{ \Carbon\Carbon::parse($report->date_submitted)->format('F d, Y') }}</h4>
-        <table class="report-table">
-            <thead>
-                <tr>
-                    <th>Task Description</th>
-                    <th>Time Spent</th>
-                    <th>Key Successes</th>
-                    <th>Main Challenges</th>
-                    <th>Plans for Tomorrow</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach($report->tasks as $index => $task)
+    <!-- If reports exist, display them -->
+    @if(!$reports->isEmpty())
+        @foreach($reports as $report)
+            <h4>Date Submitted: {{ \Carbon\Carbon::parse($report->date_submitted)->format('F d, Y') }}</h4>
+            <table class="report-table">
+                <thead>
                     <tr>
-                        <td>{{ $task->task_description }}</td>
-                        <td>{{ $task->time_spent }} {{ $task->time_unit }}</td>
-                        @if($index === 0) <!-- Only display these columns for the first task in the report -->
-                            <td rowspan="{{ count($report->tasks) }}">{{ $report->key_successes }}</td>
-                            <td rowspan="{{ count($report->tasks) }}">{{ $report->main_challenges }}</td>
-                            <td rowspan="{{ count($report->tasks) }}">{{ $report->plans_for_tomorrow }}</td>
-                        @endif
+                        <th>Task Description</th>
+                        <th>Time Spent</th>
+                        <th>Key Successes</th>
+                        <th>Main Challenges</th>
+                        <th>Plans for Tomorrow</th>
                     </tr>
-                @endforeach
-            </tbody>
-        </table>
-    @endforeach
+                </thead>
+                <tbody>
+                    @foreach($report->tasks as $index => $task)
+                        <tr>
+                            <td>{{ $task->task_description }}</td>
+                            <td>{{ $task->time_spent }} {{ $task->time_unit }}</td>
+                            @if($index === 0)
+                                <td rowspan="{{ count($report->tasks) }}">{{ $report->key_successes }}</td>
+                                <td rowspan="{{ count($report->tasks) }}">{{ $report->main_challenges }}</td>
+                                <td rowspan="{{ count($report->tasks) }}">{{ $report->plans_for_tomorrow }}</td>
+                            @endif
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        @endforeach
+    @else
+        <!-- If no reports, just show missing dates -->
+        <p>No reports submitted for this month.</p>
+    @endif
+
+    <!-- Display Missing Submissions -->
+    @if(!$missingDates->isEmpty())
+        <h3>Missing Submissions for this month:</h3>
+        <ul>
+            @foreach($missingDates as $missingDate)
+                <li>{{ \Carbon\Carbon::parse($missingDate)->format('F d, Y') }}</li>
+            @endforeach
+        </ul>
+    @else
+        <p>All submissions are up-to-date for this month.</p>
+    @endif
 
 </body>
 </html>

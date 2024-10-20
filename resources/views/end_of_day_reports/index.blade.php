@@ -53,10 +53,20 @@
                 <div class="card-body d-flex flex-column">
                     <h5 class="card-title">Schedule</h5>
                     <p class="mb-0"><strong>Work Type and Days:</strong>
-                        @php
-                            $schedule = json_decode($acceptedInternship->schedule, true);
-                            $workType = $acceptedInternship->work_type;
+                    @php
+                        $workType = $acceptedInternship->work_type;
+                        // Ensure schedule is always an array
+                        $schedule = is_array($acceptedInternship->schedule) ? $acceptedInternship->schedule : json_decode($acceptedInternship->schedule, true);
 
+                        // Check if the student is irregular and has a custom schedule
+                        if ($user->profile->is_irregular && $acceptedInternship->custom_schedule) {
+                            $customSchedule = is_array($acceptedInternship->custom_schedule) 
+                                ? $acceptedInternship->custom_schedule 
+                                : json_decode($acceptedInternship->custom_schedule, true);
+                            $customDays = implode(', ', array_keys($customSchedule)); // Display custom schedule days
+                            echo "Irregular Schedule | Days: {$customDays}";
+                        } else {
+                            // Regular schedule logic for On-site, Remote, and Hybrid students
                             if ($workType === 'Hybrid') {
                                 $onsiteDays = implode(', ', $schedule['onsite_days'] ?? []);
                                 $remoteDays = implode(', ', $schedule['remote_days'] ?? []);
@@ -70,7 +80,9 @@
                             } else {
                                 echo "Work type information is not available.";
                             }
-                        @endphp
+                        }
+                    @endphp
+
                     </p>
                 </div>
             </div>

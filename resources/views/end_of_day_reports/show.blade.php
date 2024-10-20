@@ -15,7 +15,6 @@
 
     <a href="{{ route('end_of_day_reports.index') }}" class="btn btn-secondary mb-3">Back to Calendar</a>
 
-
 <div class="card">
     <div class="card-body">
         <h5 class="card-title">End of Day Report</h5>
@@ -31,9 +30,15 @@
                 </thead>
                 <tbody>
                     @foreach($report->tasks as $task)
+                        @php
+                            // Convert time to hours and minutes for display
+                            $hours = floor($task->time_spent / 60);
+                            $minutes = $task->time_spent % 60;
+                            $displayTime = ($hours > 0 ? $hours . ' hour(s) ' : '') . ($minutes > 0 ? $minutes . ' minute(s)' : '');
+                        @endphp
                         <tr>
                             <td>{{ $task->task_description }}</td>
-                            <td>{{ $task->time_spent }} {{ ucfirst($task->time_unit) }}</td>
+                            <td>{{ $displayTime }}</td>
                         </tr>
                     @endforeach
                 </tbody>

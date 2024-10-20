@@ -51,17 +51,14 @@
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-floating mb-3">
-                                <input type="number" name="tasks[0][time_spent]" id="time_spent_0" class="form-control" placeholder="Time Spent" required min="1">
-                                <label for="time_spent_0">Time Spent</label>
+                                <input type="number" name="tasks[0][time_hours]" id="time_hours_0" class="form-control" placeholder="Hours" min="0">
+                                <label for="time_hours_0">Hours</label>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-floating mb-3">
-                                <select name="tasks[0][time_unit]" id="time_unit_0" class="form-select" required>
-                                    <option value="minutes">Minutes</option>
-                                    <option value="hours">Hours</option>
-                                </select>
-                                <label for="time_unit_0">Time Unit</label>
+                                <input type="number" name="tasks[0][time_minutes]" id="time_minutes_0" class="form-control" placeholder="Minutes" min="0" max="59">
+                                <label for="time_minutes_0">Minutes</label>
                             </div>
                         </div>
                     </div>
@@ -112,17 +109,14 @@
             <div class="row">
                 <div class="col-md-6">
                     <div class="form-floating mb-3">
-                        <input type="number" name="tasks[${taskCount}][time_spent]" id="time_spent_${taskCount}" class="form-control" placeholder="Time Spent" required min="1">
-                        <label for="time_spent_${taskCount}">Time Spent</label>
+                        <input type="number" name="tasks[${taskCount}][time_hours]" id="time_hours_${taskCount}" class="form-control" placeholder="Hours" min="0">
+                        <label for="time_hours_${taskCount}">Hours</label>
                     </div>
                 </div>
                 <div class="col-md-6">
                     <div class="form-floating mb-3">
-                        <select name="tasks[${taskCount}][time_unit]" id="time_unit_${taskCount}" class="form-select" required>
-                            <option value="minutes">Minutes</option>
-                            <option value="hours">Hours</option>
-                        </select>
-                        <label for="time_unit_${taskCount}">Time Unit</label>
+                        <input type="number" name="tasks[${taskCount}][time_minutes]" id="time_minutes_${taskCount}" class="form-control" placeholder="Minutes" min="0" max="59">
+                        <label for="time_minutes_${taskCount}">Minutes</label>
                     </div>
                 </div>
             </div>

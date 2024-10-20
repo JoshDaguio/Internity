@@ -41,7 +41,7 @@
 <body>
 
     <h2>{{ $studentName }}</h2>
-    <h1>Weekly Report: {{ $startOfWeek->format('F d, Y') }} - {{ $endOfWeek->format('F d, Y') }}</h1>
+    <h1>Weekly Report: {{ \Carbon\Carbon::parse($startOfWeek)->format('F d, Y') }} - {{ \Carbon\Carbon::parse($endOfWeek)->format('F d, Y') }}</h1>
 
     @foreach($reports as $report)
         <h4>Date Submitted: {{ \Carbon\Carbon::parse($report->date_submitted)->format('F d, Y') }}</h4>
@@ -70,6 +70,18 @@
             </tbody>
         </table>
     @endforeach
+
+    <!-- Display missing submissions -->
+    @if(!$missingDates->isEmpty())
+        <h3>Missing Submissions for this week:</h3>
+        <ul>
+            @foreach($missingDates as $missingDate)
+                <li>{{ \Carbon\Carbon::parse($missingDate)->format('F d, Y') }}</li>
+            @endforeach
+        </ul>
+    @else
+        <p>All submissions are up-to-date for this week.</p>
+    @endif
 
 </body>
 </html>

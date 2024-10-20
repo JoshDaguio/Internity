@@ -303,69 +303,79 @@
             </div>
 
             <div class="row mt-3">
-            <div class="col-md-3">
-                <strong><i class="bi bi-calendar-week me-2"></i> Schedule:</strong>
-            </div>
-            <div class="col-md-9">
-                @php
-                    // Helper function to format time to 12-hour format
-                    function formatTimeTo12Hour($time) {
-                        return \Carbon\Carbon::createFromFormat('H:i', $time)->format('g:i A');
-                    }
+                <div class="col-md-3">
+                    <strong><i class="bi bi-calendar-week me-2"></i> Schedule:</strong>
+                </div>
+                <div class="col-md-9">
+                    @php
+                        // Helper function to format time to 12-hour format
+                        function formatTimeTo12Hour($time) {
+                            return \Carbon\Carbon::createFromFormat('H:i', $time)->format('g:i A');
+                        }
 
-                    $savedSchedule = is_array($student->acceptedInternship->schedule) 
-                        ? $student->acceptedInternship->schedule 
-                        : json_decode($student->acceptedInternship->schedule, true);
+                        $savedSchedule = is_array($student->acceptedInternship->schedule) 
+                            ? $student->acceptedInternship->schedule 
+                            : json_decode($student->acceptedInternship->schedule, true);
 
-                    $customSchedule = isset($student->acceptedInternship->custom_schedule) && is_array($student->acceptedInternship->custom_schedule)
-                        ? $student->acceptedInternship->custom_schedule
-                        : json_decode($student->acceptedInternship->custom_schedule ?? '[]', true);
-                @endphp
+                        $customSchedule = isset($student->acceptedInternship->custom_schedule) && is_array($student->acceptedInternship->custom_schedule)
+                            ? $student->acceptedInternship->custom_schedule
+                            : json_decode($student->acceptedInternship->custom_schedule ?? '[]', true);
+                    @endphp
 
-                <!-- Loop through regular days -->
-                @foreach($savedSchedule['days'] as $day)
-                    <p><strong>{{ ucfirst($day) }}:</strong>
-                        @if(isset($customSchedule[$day]))
-                            {{ formatTimeTo12Hour($customSchedule[$day]['start']) }} - {{ formatTimeTo12Hour($customSchedule[$day]['end']) }} 
-                        @else
-                            {{ formatTimeTo12Hour($savedSchedule['start_time']) }} - {{ formatTimeTo12Hour($savedSchedule['end_time']) }} 
+                    <!-- Loop through regular days -->
+                    @foreach($savedSchedule['days'] as $day)
+                        <p><strong>{{ ucfirst($day) }}:</strong>
+                            @if(isset($customSchedule[$day]))
+                                {{ formatTimeTo12Hour($customSchedule[$day]['start']) }} - {{ formatTimeTo12Hour($customSchedule[$day]['end']) }} 
+                            @else
+                                {{ formatTimeTo12Hour($savedSchedule['start_time']) }} - {{ formatTimeTo12Hour($savedSchedule['end_time']) }} 
+                            @endif
+                        </p>
+                    @endforeach
+
+                    <!-- Handle Hybrid schedules -->
+                    @if($student->acceptedInternship->work_type === 'Hybrid')
+                        <!-- On-site days -->
+                        @if(!empty($savedSchedule['onsite_days']))
+                            <p><strong>On-site Days:</strong></p>
+                            @foreach($savedSchedule['onsite_days'] as $onsiteDay)
+                                <p>{{ ucfirst($onsiteDay) }}: 
+                                    @if(isset($customSchedule[$onsiteDay]))
+                                        {{ formatTimeTo12Hour($customSchedule[$onsiteDay]['start']) }} - {{ formatTimeTo12Hour($customSchedule[$onsiteDay]['end']) }} 
+                                    @else
+                                        {{ formatTimeTo12Hour($savedSchedule['start_time']) }} - {{ formatTimeTo12Hour($savedSchedule['end_time']) }} 
+                                    @endif
+                                </p>
+                            @endforeach
                         @endif
-                    </p>
-                @endforeach
 
-                <!-- Handle Hybrid schedules -->
-                @if($student->acceptedInternship->work_type === 'Hybrid')
-                    <!-- On-site days -->
-                    @if(!empty($savedSchedule['onsite_days']))
-                        <p><strong>On-site Days:</strong></p>
-                        @foreach($savedSchedule['onsite_days'] as $onsiteDay)
-                            <p>{{ ucfirst($onsiteDay) }}: 
-                                @if(isset($customSchedule[$onsiteDay]))
-                                    {{ formatTimeTo12Hour($customSchedule[$onsiteDay]['start']) }} - {{ formatTimeTo12Hour($customSchedule[$onsiteDay]['end']) }} 
-                                @else
-                                    {{ formatTimeTo12Hour($savedSchedule['start_time']) }} - {{ formatTimeTo12Hour($savedSchedule['end_time']) }} 
-                                @endif
-                            </p>
-                        @endforeach
+                        <!-- Remote days -->
+                        @if(!empty($savedSchedule['remote_days']))
+                            <p><strong>Remote Days:</strong></p>
+                            @foreach($savedSchedule['remote_days'] as $remoteDay)
+                                <p>{{ ucfirst($remoteDay) }}: 
+                                    @if(isset($customSchedule[$remoteDay]))
+                                        {{ formatTimeTo12Hour($customSchedule[$remoteDay]['start']) }} - {{ formatTimeTo12Hour($customSchedule[$remoteDay]['end']) }} 
+                                    @else
+                                        {{ formatTimeTo12Hour($savedSchedule['start_time']) }} - {{ formatTimeTo12Hour($savedSchedule['end_time']) }} 
+                                    @endif
+                                </p>
+                            @endforeach
+                        @endif
                     @endif
-
-                    <!-- Remote days -->
-                    @if(!empty($savedSchedule['remote_days']))
-                        <p><strong>Remote Days:</strong></p>
-                        @foreach($savedSchedule['remote_days'] as $remoteDay)
-                            <p>{{ ucfirst($remoteDay) }}: 
-                                @if(isset($customSchedule[$remoteDay]))
-                                    {{ formatTimeTo12Hour($customSchedule[$remoteDay]['start']) }} - {{ formatTimeTo12Hour($customSchedule[$remoteDay]['end']) }} 
-                                @else
-                                    {{ formatTimeTo12Hour($savedSchedule['start_time']) }} - {{ formatTimeTo12Hour($savedSchedule['end_time']) }} 
-                                @endif
-                            </p>
-                        @endforeach
-                    @endif
-                @endif
+                </div>
             </div>
-        </div>
+            <div class="row mt-3">
+                <div class="col-md-12">
+                    <a href="{{ route('students.edit', $student) }}" class="btn btn-primary me-2 {{ $student->status_id != 1 ? 'd-none' : '' }}">
+                        <i class="bi bi bi-journal-text"></i> End of Day Reports
+                    </a>
 
+                    <a href="{{ route('students.dtr', $student->id) }}" class="btn btn-success me-2 {{ $student->status_id != 1 ? 'd-none' : '' }}">
+                        <i class="bi bi bi-clock"></i> Daily Time Record
+                    </a>
+                </div>
+            </div>            
         @else
             <p class="fst-italic">No Internship Yet.</p>
         @endif

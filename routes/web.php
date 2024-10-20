@@ -106,6 +106,7 @@ Route::middleware(['auth', 'administrative'])->group(function () {
     Route::get('/penalties/{penalty}/edit', [PenaltyController::class, 'edit'])->name('penalties.edit');
     Route::patch('/penalties/{penalty}', [PenaltyController::class, 'update'])->name('penalties.update');
     Route::delete('/penalties/{penalty}', [PenaltyController::class, 'destroy'])->name('penalties.destroy');
+    Route::post('/students/{studentId}/penalties', [PenaltyController::class, 'awardPenalty'])->name('penalties.award');
 });
 
 //Jobs CRUD. Only Super Admin/Admin and Company
@@ -331,5 +332,10 @@ Route::middleware(['auth'])->group(function () {
 Route::middleware(['auth'])->group(function () {
     Route::get('/daily-time-records', [DailyTimeRecordController::class, 'index'])->name('dtr.index');
     Route::post('/daily-time-records/log/{type}', [DailyTimeRecordController::class, 'logTime'])->name('dtr.logTime');
-    Route::get('/get-server-time', [DailyTimeRecordController::class, 'getServerTime']);
+    Route::get('/reports', [DailyTimeRecordController::class, 'reports'])->name('dtr.reports');
+    Route::post('/reports/generate-pdf', [DailyTimeRecordController::class, 'generateReportPDF'])->name('reports.generate_pdf');
+});
+
+Route::middleware(['auth', 'job_access'])->group(function () {
+    Route::get('/students/{student}/dtr', [DailyTimeRecordController::class, 'studentDTR'])->name('students.dtr');
 });

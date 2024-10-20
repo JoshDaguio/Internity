@@ -3,7 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\Penalty;
+use App\Models\PenaltiesAwarded;
+use App\Models\User;
+use App\Models\DailyTimeRecord;
+use App\Models\AcceptedInternship;
+use App\Models\InternshipHours;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 
 class PenaltyController extends Controller
 {
@@ -87,4 +93,51 @@ class PenaltyController extends Controller
 
         return redirect()->route('penalties.index')->with('success', 'Penalty deleted successfully.');
     }
+
+    // Awarding of Penalty
+    public function awardPenalty(Request $request, $studentId)
+    {
+        $student = User::findOrFail($studentId);
+        $penalty = Penalty::findOrFail($request->penalty_id);
+
+        // Fetch the latest DTR for today
+        $dailyRecord = DailyTimeRecord::where('student_id', $student->id)
+            ->latest('log_date')
+            ->first();
+
+        
+        if (!$dailyRecord) {
+            return redirect()->back()->with('error', 'No DTR record found for the student.');
+        }
+        
+
+        // Calculate penalty hours
+        $penaltyHours = $penalty->penalty_hours;
+        if ($penalty->penalty_type === 'conditional' && $penalty->conditions) {
+            // Add custom logic here for calculating penalty hours for conditional penalties
+            // For example, for tardiness, calculate based on the condition
+        }
+
+        // Add penalty to the student's remaining hours
+        $totalWorkedHours = DailyTimeRecord::where('student_id', $student->id)->sum('total_hours_worked');
+        $internshipHours = InternshipHours::where('course_id', $student->course_id)->first();
+        $remainingHours = $internshipHours->hours - $totalWorkedHours + $penaltyHours;
+
+        // Award the penalty
+        PenaltiesAwarded::create([
+            'student_id' => $studentId,
+            'penalty_id' => $penalty->id,
+            'dtr_id' => $dailyRecord->id,
+            'penalty_hours' => $penaltyHours,
+            'awarded_date' => Carbon::now(),
+            'remarks' => $request->remarks,
+        ]);
+
+        // Update remaining hours for the student in the latest DTR
+        $dailyRecord->remaining_hours = $remainingHours;
+        $dailyRecord->save();
+
+        return redirect()->back()->with('success', 'Penalty awarded successfully.');
+    }
+
 }

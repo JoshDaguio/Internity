@@ -108,4 +108,9 @@ class User extends Authenticatable
         return $this->hasOne(AcceptedInternship::class, 'student_id');
     }
 
+    public function penaltiesAwarded()
+    {
+        return $this->hasMany(PenaltiesAwarded::class, 'student_id');
+    }
+
 }
