@@ -171,7 +171,6 @@ Route::middleware(['auth', 'facultyaccess'])->group(function () {
     Route::get('/students/create', [AdminController::class, 'createStudent'])->name('students.create');
     Route::post('/students/store', [AdminController::class, 'storeStudent'])->name('students.store');
 
-    Route::get('/students/{student}/show', [AdminController::class, 'showStudent'])->name('students.show');
     Route::get('/students/{student}/edit', [AdminController::class, 'editStudent'])->name('students.edit');
     Route::patch('/students/{student}', [AdminController::class, 'updateStudent'])->name('students.update');
     Route::delete('/students/{student}/deactivate', [AdminController::class, 'deactivateStudent'])->name('students.deactivate');
@@ -336,6 +335,8 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/reports/generate-pdf', [DailyTimeRecordController::class, 'generateReportPDF'])->name('reports.generate_pdf');
 });
 
-Route::middleware(['auth', 'job_access'])->group(function () {
+Route::middleware(['auth', 'studentmonitoring'])->group(function () {
     Route::get('/students/{student}/dtr', [DailyTimeRecordController::class, 'studentDTR'])->name('students.dtr');
+    Route::get('/students/{student}/eod', [EndOfDayReportController::class, 'studentEOD'])->name('students.eod');
+    Route::get('/students/{student}/show', [AdminController::class, 'showStudent'])->name('students.show');
 });

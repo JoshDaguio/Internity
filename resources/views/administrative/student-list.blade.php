@@ -109,9 +109,13 @@
                                     <th>Full Name</th>
                                     <th>Course</th>
                                     <th>Student Type</th>
+                                    @if(Auth::user()->role_id == 1 || Auth::user()->role_id == 2)
                                     <th>Requirements</th>
+                                    @endif
                                     <th>Status</th>
+                                    @if(Auth::user()->role_id == 1 || Auth::user()->role_id == 2)
                                     <th>Actions</th>
+                                    @endif
                                 </tr>
                             </thead>
                             <tbody>
@@ -128,6 +132,7 @@
                                         </td>
                                         <!-- <td>{{ $student->email }}</td> -->
                                         <td>{{ $student->profile->is_irregular == 1 ? 'Irregular' : 'Regular' }}</td>
+                                        @if(Auth::user()->role_id == 1 || Auth::user()->role_id == 2)
                                         <td>
                                             @if($student->requirements)
                                                 <a href="{{ route('requirements.review', $student->requirements->id) }}">
@@ -141,6 +146,7 @@
                                                 <span class="badge bg-secondary">No Submission</span>
                                             @endif
                                         </td>
+                                        @endif
                                         <td>{{ $student->status_id == 1 ? 'Active' : 'Inactive' }}</td>
                                         <td>
                                             @if($student->status_id == 1)

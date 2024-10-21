@@ -20,7 +20,11 @@
         <div class="alert alert-danger">{{ session('error') }}</div>
     @endif
 
-<a href="javascript:history.back()" class="btn btn-secondary mb-3">Back</a>
+    @if(Auth::user()->role_id == 1 || Auth::user()->role_id == 2 || Auth::user()->role_id == 3)
+        <a href="{{ route('students.list') }}" class="btn btn-secondary mb-3">Back</a>
+    @else
+        <a href="{{ route('company.interns') }}" class="btn btn-secondary mb-3">Back</a>
+    @endif
 
 <div class="card mb-3">
     <div class="card-body">
@@ -367,7 +371,7 @@
             </div>
             <div class="row mt-3">
                 <div class="col-md-12">
-                    <a href="{{ route('students.edit', $student) }}" class="btn btn-primary me-2 {{ $student->status_id != 1 ? 'd-none' : '' }}">
+                    <a href="{{ route('students.eod', $student->id) }}" class="btn btn-primary me-2 {{ $student->status_id != 1 ? 'd-none' : '' }}">
                         <i class="bi bi bi-journal-text"></i> End of Day Reports
                     </a>
 

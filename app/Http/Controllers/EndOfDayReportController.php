@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\EndOfDayReport;
 use App\Models\DailyTask;
+use App\Models\User;
 use App\Models\AcceptedInternship;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
@@ -223,6 +224,87 @@ class EndOfDayReportController extends Controller
         }
     
         return view('end_of_day_reports.show', compact('report'));
+    }
+
+    public function studentEOD($studentId, Request $request)
+    {
+        $student = User::findOrFail($studentId);
+        $currentYear = Carbon::now()->year;
+
+        // Fetch the student's accepted internship
+        $acceptedInternship = AcceptedInternship::where('student_id', $student->id)->first();
+        if (!$acceptedInternship) {
+            return view('end_of_day_reports.monthly_compilation', [
+                'noInternship' => true,
+            ]);
+        }
+
+        $startDate = Carbon::parse($acceptedInternship->start_date);
+
+        // Get all available months from internship start date to the current month
+        $availableMonths = [];
+        for ($month = $startDate->month; $month <= Carbon::now()->month; $month++) {
+            $availableMonths[] = $month;
+        }
+
+        // Set selected month from request, defaulting to the current month
+        $selectedMonth = (int) $request->input('month', Carbon::now()->month);
+
+        // Set the start and end dates for the selected month
+        if ($selectedMonth == $startDate->month && $startDate->year == $currentYear) {
+            if (Carbon::now()->month == $startDate->month) {
+                $startOfMonth = $startDate;
+                $endOfMonth = Carbon::now();
+            } else {
+                $startOfMonth = $startDate;
+                $endOfMonth = $startDate->copy()->endOfMonth();  // End at the end of the selected month (September 30)
+            }
+        } elseif ($selectedMonth == Carbon::now()->month) {
+            $startOfMonth = Carbon::now()->startOfMonth();
+            $endOfMonth = Carbon::now();
+        } else {
+            $startOfMonth = Carbon::create($currentYear, $selectedMonth, 1)->startOfMonth();
+            $endOfMonth = Carbon::create($currentYear, $selectedMonth, 1)->endOfMonth();
+        }
+
+        // Decode the schedule and handle student schedule logic
+        $schedule = is_array($acceptedInternship->schedule)
+            ? $acceptedInternship->schedule
+            : json_decode($acceptedInternship->schedule, true);
+
+        if ($student->profile->is_irregular && $acceptedInternship->custom_schedule) {
+            $customSchedule = is_array($acceptedInternship->custom_schedule)
+                ? $acceptedInternship->custom_schedule
+                : json_decode($acceptedInternship->custom_schedule, true);
+            $scheduleDays = array_keys($customSchedule);
+        } else {
+            $scheduleDays = array_merge($schedule['days'] ?? [], $schedule['onsite_days'] ?? [], $schedule['remote_days'] ?? []);
+        }
+
+        // Fetch all reports submitted in the selected month
+        $reports = EndOfDayReport::where('student_id', $student->id)
+            ->whereBetween('date_submitted', [$startOfMonth->format('Y-m-d'), $endOfMonth->format('Y-m-d')])
+            ->orderBy('date_submitted', 'asc')
+            ->get();
+
+        // Get missing submission dates for the selected month
+        $missingDates = $this->getMissingMonthlySubmissionDates($student->id, $startOfMonth, $endOfMonth, $scheduleDays);
+
+        // If no reports exist, we only display the missing dates
+        if ($reports->isEmpty()) {
+            return view('end_of_day_reports.student-eod', [
+                'reports' => collect([]), // Empty collection to avoid errors
+                'missingDates' => $missingDates,
+                'noReports' => true,
+                'selectedMonth' => $selectedMonth,
+                'availableMonths' => $availableMonths,
+                'currentYear' => $currentYear,
+                'student' => $student, 
+            ]);
+        }
+
+        return view('end_of_day_reports.student-eod', compact('reports', 'selectedMonth', 'currentYear', 'missingDates', 'availableMonths','student'));
+
     }
 
 

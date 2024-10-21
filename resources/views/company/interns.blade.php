@@ -31,7 +31,11 @@
                 <tbody>
                     @foreach($acceptedInterns as $intern)
                     <tr>
-                        <td>{{ $intern->student->profile->first_name }} {{ $intern->student->profile->last_name }}</td>
+                        <td>
+                            <a href="{{ route('students.show', $intern->student->id) }}" class="btn btn-light btn-sm">
+                                {{ $intern->student->profile->last_name }}, {{ $intern->student->profile->first_name }}
+                            </a>
+                        </td>
                         <td>{{ $intern->job->title }}</td>
                         <td>{{ $intern->student->email }}</td>
                         <td>{{ \Carbon\Carbon::parse($intern->start_date)->format('F d, Y') }}</td>

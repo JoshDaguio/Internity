@@ -7,12 +7,12 @@
             <ol class="breadcrumb">
                 <li class="breadcrumb-item">Home</li>
                 <li class="breadcrumb-item">Students</li>
-                <li class="breadcrumb-item active">DTR Report</li>
+                <li class="breadcrumb-item active">DTR Reports</li>
             </ol>
         </nav>
     </div>
 
-    <a href="javascript:history.back()" class="btn btn-secondary mb-3">Back</a>
+    <a href="{{ route('students.show', $student->id) }}" class="btn btn-secondary mb-3">Back</a>
 
     <!-- Check if student has an internship -->
     @if(isset($noInternship) && $noInternship)
@@ -43,7 +43,7 @@
 
         <!-- Report Logs Filtered by Month -->
         <div class="row mb-2">
-            <div class="col-md-8">
+            <div class="col-md-7">
                 <div class="card mb-3" style="height: 400px;">
                     <div class="card-body">
                         <h5 class="card-title">Logs for the Month</h5>
@@ -104,10 +104,7 @@
                     </div>
                 </div>
             </div>
-        </div>
-
-        <div class="row mb-2">
-            <div class="col-md-6">
+            <div class="col-md-5">
                 <div class="card mb-3">
                     <div class="card-body">
                         <h5 class="card-title">Penalties Gained</h5>
@@ -136,7 +133,11 @@
                     </div>
                 </div>    
             </div>
-            <div class="col-md-6">
+        </div>
+
+        <div class="row mb-2">
+            @if(Auth::user()->role_id == 1 || Auth::user()->role_id == 2)
+            <div class="col-md-12">
                 <div class="card mb-3">
                     <div class="card-body">
                         <h5 class="card-title">Award Penalty</h5>
@@ -145,10 +146,15 @@
                             <div class="form-group mb-3">
                                 <label for="penalty_id">Violation</label>
                                 <select name="penalty_id" id="penalty_id" class="form-control">
-                                    @foreach($penalties as $penalty)
+                                    @foreach($penalties->where('penalty_type', 'fixed') as $penalty)
                                         <option value="{{ $penalty->id }}">{{ $penalty->violation }}</option>
                                     @endforeach
                                 </select>
+                            </div>
+                            <div class="form-group mb-3">
+                                <label for="awarded_date">Awarded Date</label>
+                                <input type="date" name="awarded_date" id="awarded_date" class="form-control" 
+                                    max="{{ \Carbon\Carbon::now('Asia/Manila')->format('Y-m-d') }}">
                             </div>
                             <div class="form-group mb-3">
                                 <label for="remarks">Remarks (optional)</label>
@@ -159,6 +165,8 @@
                     </div>
                 </div>
             </div>
+            @else
+            @endif
         </div>
 
         <div class="row mb-2">
