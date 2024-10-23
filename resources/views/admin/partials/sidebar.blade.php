@@ -101,6 +101,12 @@
     </a>
   </li><!-- End Skill Tags Nav -->
 
+  <li class="nav-item">
+    <a class="nav-link collapsed" href="#">
+      <i class="bi bi-clipboard-data"></i>
+      <span>Evaluations</span>  
+    </a>
+  </li><!-- End Evaluation Nav -->
 
   <li class="nav-heading">Account Management</li>
 

@@ -22,6 +22,7 @@ use App\Http\Controllers\AcademicYearController;
 use App\Http\Controllers\AdminJobController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\DailyTimeRecordController;
+use App\Http\Controllers\EvaluationController;
 
 
 Route::get('/', function () {
@@ -340,3 +341,22 @@ Route::middleware(['auth', 'studentmonitoring'])->group(function () {
     Route::get('/students/{student}/eod', [EndOfDayReportController::class, 'studentEOD'])->name('students.eod');
     Route::get('/students/{student}/show', [AdminController::class, 'showStudent'])->name('students.show');
 });
+
+Route::middleware(['auth', 'administrative'])->group(function () {
+    Route::get('/evaluations', [EvaluationController::class, 'index'])->name('evaluations.index');
+    Route::get('/evaluations/create', [EvaluationController::class, 'create'])->name('evaluations.create');
+    Route::post('/evaluations/store', [EvaluationController::class, 'store'])->name('evaluations.store');
+    Route::get('/evaluations/{evaluation}/results', [EvaluationController::class, 'viewResults'])->name('evaluations.results');
+    Route::post('/evaluations/{evaluation}/submit', [EvaluationController::class, 'storeResponse'])->name('evaluations.submitResponse');  
+    Route::get('/evaluations/{evaluation}/submit', [EvaluationController::class, 'showResponseForm'])->name('evaluations.showResponseForm');
+    Route::get('/evaluations/{evaluation}/downloadPDF', [EvaluationController::class, 'downloadPDF'])->name('evaluations.downloadPDF');
+});
+
+Route::middleware(['auth'])->group(function () {
+    Route::post('/evaluations/{evaluation}/submit', [EvaluationController::class, 'storeResponse'])->name('evaluations.submitResponse');
+    Route::get('/evaluations/{evaluation}/submit', [EvaluationController::class, 'showResponseForm'])->name('evaluations.showResponseForm');
+    Route::get('/evaluations/{evaluation}/downloadPDF', [EvaluationController::class, 'downloadPDF'])->name('evaluations.downloadPDF');
+});
+
+
+

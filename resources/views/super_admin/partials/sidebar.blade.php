@@ -115,6 +115,14 @@
     </a>
   </li><!-- End Skill Tags Nav -->
 
+  <li class="nav-item">
+    <a class="nav-link {{ request()->routeIs('evaluations.index', 'evaluations.create', 'evaluations.results', 'evaluations.showResponseForm') ? '' : 'collapsed' }}" href="{{ route('evaluations.index') }}">
+        <i class="bi bi-clipboard-data"></i>
+        <span>Evaluations</span>  
+    </a>
+  </li><!-- End Evaluation Nav -->
+
+
   <li class="nav-heading">Account Management</li>
 
   <li class="nav-item">
