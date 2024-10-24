@@ -6,6 +6,10 @@
 
     <title>Registration Successful</title>
 
+    <link href="{{ asset('assets/img/favicon-internity.png') }}" rel="icon">
+    <link href="{{ asset('assets/img/apple-touch-icon-internity.png') }}" rel="apple-touch-icon">
+
+
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&display=swap" rel="stylesheet">
