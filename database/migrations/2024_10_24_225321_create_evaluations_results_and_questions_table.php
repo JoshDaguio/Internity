@@ -16,42 +16,36 @@ return new class extends Migration
             $table->string('title');
             $table->text('description')->nullable();
             $table->enum('evaluation_type', ['program', 'intern_student', 'intern_company']);
-            $table->unsignedBigInteger('created_by'); // Creator (admin or super admin)
+            $table->foreignId('created_by')->constrained('users')->onDelete('cascade'); // This links to the user who created the evaluation
+            $table->foreignId('academic_year_id')->constrained('academic_years')->onDelete('cascade'); // This links to the academic year
+            $table->string('recipient_role')->nullable();
             $table->timestamps();
         });
 
         Schema::create('questions', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('evaluation_id');
+            $table->foreignId('evaluation_id')->constrained('evaluations')->onDelete('cascade'); // FK for evaluations table
             $table->text('question_text');
             $table->enum('question_type', ['radio', 'long_text']);
             $table->timestamps();
-
-            $table->foreign('evaluation_id')->references('id')->on('evaluations')->onDelete('cascade');
         });
 
         Schema::create('responses', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('evaluation_id');
-            $table->unsignedBigInteger('user_id'); // Either student or company
-            $table->unsignedBigInteger('question_id');
+            $table->foreignId('evaluation_id')->constrained('evaluations')->onDelete('cascade'); // FK for evaluations table
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade'); // FK for users table
+            $table->foreignId('question_id')->constrained('questions')->onDelete('cascade'); // FK for questions table
             $table->string('response_text')->nullable(); // For long text answers
             $table->integer('response_value')->nullable(); // For radio button answers (1-4)
             $table->timestamps();
-
-            $table->foreign('evaluation_id')->references('id')->on('evaluations')->onDelete('cascade');
-            $table->foreign('question_id')->references('id')->on('questions')->onDelete('cascade');
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
 
         Schema::create('evaluation_results', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('evaluation_id');
+            $table->foreignId('evaluation_id')->constrained('evaluations')->onDelete('cascade'); // Added FK constraint
             $table->unsignedBigInteger('user_id')->nullable(); // For company/student evaluation results
             $table->decimal('total_score', 5, 2)->nullable(); // For overall score or average
             $table->timestamps();
-
-            $table->foreign('evaluation_id')->references('id')->on('evaluations')->onDelete('cascade');
         });
     }
 

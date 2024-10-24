@@ -16,8 +16,9 @@
 
         @if(Auth::user()->role_id === 4)
             <a href="{{ route('jobs.index') }}" class="btn btn-secondary mb-3">Back</a>
+        @elseif(Auth::user()->role_id == 1 || Auth::user()->role_id == 2)
+            <a href="{{ route('admin.jobs.index') }}" class="btn btn-secondary mb-3">Back</a>
         @else
-            <a href="{{ route('company.show', $job->company_id) }}" class="btn btn-secondary mb-3">Back</a>
         @endif
 
     @if(Auth::user()->role_id == 1 || Auth::user()->role_id == 2)

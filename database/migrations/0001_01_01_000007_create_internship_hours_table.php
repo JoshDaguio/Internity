@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('internship_hours', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('course_id')->constrained('courses');
+            $table->foreignId('course_id')->constrained('courses')->onDelete('cascade');
             $table->integer('hours');
             $table->timestamps();
         });

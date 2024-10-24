@@ -342,6 +342,8 @@ Route::middleware(['auth', 'studentmonitoring'])->group(function () {
     Route::get('/students/{student}/show', [AdminController::class, 'showStudent'])->name('students.show');
 });
 
+
+// Admins access
 Route::middleware(['auth', 'administrative'])->group(function () {
     Route::get('/evaluations', [EvaluationController::class, 'index'])->name('evaluations.index');
     Route::get('/evaluations/create', [EvaluationController::class, 'create'])->name('evaluations.create');
@@ -350,12 +352,14 @@ Route::middleware(['auth', 'administrative'])->group(function () {
     Route::post('/evaluations/{evaluation}/submit', [EvaluationController::class, 'storeResponse'])->name('evaluations.submitResponse');  
     Route::get('/evaluations/{evaluation}/submit', [EvaluationController::class, 'showResponseForm'])->name('evaluations.showResponseForm');
     Route::get('/evaluations/{evaluation}/downloadPDF', [EvaluationController::class, 'downloadPDF'])->name('evaluations.downloadPDF');
+    Route::get('/evaluations/{evaluation}/download-excel', [EvaluationController::class, 'downloadExcel'])->name('evaluations.downloadExcel');
+    Route::post('/evaluations/{evaluation}/send', [EvaluationController::class, 'sendEvaluation'])->name('evaluations.send');
 });
 
 Route::middleware(['auth'])->group(function () {
     Route::post('/evaluations/{evaluation}/submit', [EvaluationController::class, 'storeResponse'])->name('evaluations.submitResponse');
     Route::get('/evaluations/{evaluation}/submit', [EvaluationController::class, 'showResponseForm'])->name('evaluations.showResponseForm');
-    Route::get('/evaluations/{evaluation}/downloadPDF', [EvaluationController::class, 'downloadPDF'])->name('evaluations.downloadPDF');
+    Route::get('/evaluations/available', [EvaluationController::class, 'recipientIndex'])->name('evaluations.recipientIndex');
 });
 
 

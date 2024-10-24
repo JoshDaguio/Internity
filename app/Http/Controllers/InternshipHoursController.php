@@ -32,7 +32,7 @@ class InternshipHoursController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'course_id' => 'required|exists:courses,id',
+            'course_id' => 'required|exists:courses,id|unique:internship_hours,course_id', // Ensure uniqueness
             'hours' => 'required|integer',
         ]);
 
@@ -65,12 +65,13 @@ class InternshipHoursController extends Controller
      */
     public function update(Request $request, string $id)
     {
+        $internshipHour = InternshipHours::findOrFail($id);
+
         $request->validate([
-            'course_id' => 'required|exists:courses,id',
+            'course_id' => 'required|exists:courses,id|unique:internship_hours,course_id,' . $internshipHour->id,
             'hours' => 'required|integer|min:1',
         ]);
 
-        $internshipHour = InternshipHours::findOrFail($id);
         $internshipHour->update($request->all());
 
         return redirect()->route('internship_hours.index')->with('success', 'Internship hour updated successfully.');

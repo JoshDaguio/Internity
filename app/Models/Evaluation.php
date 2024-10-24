@@ -13,7 +13,8 @@ class Evaluation extends Model
         'title', 
         'description', 
         'evaluation_type', 
-        'created_by'
+        'created_by',
+        'academic_year_id'
     ];
 
     public function questions()

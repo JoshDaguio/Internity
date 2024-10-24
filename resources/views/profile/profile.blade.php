@@ -142,12 +142,12 @@
                         </div>
 
                         <div class="tab-pane fade profile-edit pt-3" id="profile-edit">
-                            @include('profile.Partials.update-profile-form')
+                            @include('profile.partials.update-profile-form')
                         </div>
 
                         <!-- Change Password Tab with Success Message -->
                         <div class="tab-pane fade {{ session('status') === 'password-updated' || $errors->has('current_password') || $errors->has('password') || $errors->has('password_confirmation') ? 'show active' : '' }} pt-3" id="profile-change-password">
-                            @include('profile.Partials.update-password-form')
+                            @include('profile.partials.update-password-form')
                         </div>
                     </div><!-- End Bordered Tabs -->
                 </div>

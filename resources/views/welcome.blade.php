@@ -6,6 +6,9 @@
 
     <title>Internity</title>
 
+    <link href="{{ asset('assets/img/favicon.png') }}" rel="icon">
+    <link href="{{ asset('assets/img/apple-touch-icon.png') }}" rel="apple-touch-icon">
+
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&display=swap" rel="stylesheet">
@@ -34,6 +37,12 @@
             font-size: 48px;
             font-weight: 700;
             margin-bottom: 20px;
+        }
+        h1 img {
+            width: 50px;
+            height: 50px;
+            vertical-align: middle;
+            margin-right: 5px;
         }
         p {
             color: #555;
@@ -72,7 +81,10 @@
 <body class="antialiased">
 
     <div class="main-container">
-        <h1>Internity</h1>
+        <h1>
+            <img src="{{ asset('assets/img/logo-red.png') }}" alt="Logo">
+            Internity
+        </h1>
         <p>Internship Made Simple</p>
         @if (Route::has('login'))
             <div>
@@ -98,7 +110,7 @@
     </div>
 
     <footer>
-        AUF CCS
+        AUF CCS | Internity
     </footer>
 
     <!-- Vendor JS Files -->
