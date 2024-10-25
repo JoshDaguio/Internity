@@ -43,33 +43,37 @@
     <h2>{{ $studentName }}</h2>
     <h1>Weekly Report: {{ \Carbon\Carbon::parse($startOfWeek)->format('F d, Y') }} - {{ \Carbon\Carbon::parse($endOfWeek)->format('F d, Y') }}</h1>
 
-    @foreach($reports as $report)
-        <h4>Date Submitted: {{ \Carbon\Carbon::parse($report->date_submitted)->format('F d, Y') }}</h4>
-        <table class="report-table">
-            <thead>
-                <tr>
-                    <th>Task Description</th>
-                    <th>Time Spent</th>
-                    <th>Key Successes</th>
-                    <th>Main Challenges</th>
-                    <th>Plans for Tomorrow</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach($report->tasks as $index => $task)
+    @if($reports->isNotEmpty())
+        @foreach($reports as $report)
+            <h4>Date Submitted: {{ \Carbon\Carbon::parse($report->date_submitted)->format('F d, Y') }}</h4>
+            <table class="report-table">
+                <thead>
                     <tr>
-                        <td>{{ $task->task_description }}</td>
-                        <td>{{ $task->time_spent }} {{ $task->time_unit }}</td>
-                        @if($index === 0)
-                            <td rowspan="{{ count($report->tasks) }}">{{ $report->key_successes }}</td>
-                            <td rowspan="{{ count($report->tasks) }}">{{ $report->main_challenges }}</td>
-                            <td rowspan="{{ count($report->tasks) }}">{{ $report->plans_for_tomorrow }}</td>
-                        @endif
+                        <th>Task Description</th>
+                        <th>Time Spent</th>
+                        <th>Key Successes</th>
+                        <th>Main Challenges</th>
+                        <th>Plans for Tomorrow</th>
                     </tr>
-                @endforeach
-            </tbody>
-        </table>
-    @endforeach
+                </thead>
+                <tbody>
+                    @foreach($report->tasks as $index => $task)
+                        <tr>
+                            <td>{{ $task->task_description }}</td>
+                            <td>{{ $task->time_spent }} {{ $task->time_unit }}</td>
+                            @if($index === 0)
+                                <td rowspan="{{ count($report->tasks) }}">{{ $report->key_successes }}</td>
+                                <td rowspan="{{ count($report->tasks) }}">{{ $report->main_challenges }}</td>
+                                <td rowspan="{{ count($report->tasks) }}">{{ $report->plans_for_tomorrow }}</td>
+                            @endif
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        @endforeach
+    @else
+        <p>No reports submitted for this week.</p>
+    @endif
 
     <!-- Display missing submissions -->
     @if(!$missingDates->isEmpty())

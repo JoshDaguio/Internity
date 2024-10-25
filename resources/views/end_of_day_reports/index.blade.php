@@ -27,10 +27,10 @@
         </div>
     @else
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
         <div>
-            <a href="{{ route('end_of_day_reports.compile.weekly') }}" class="btn btn-success me-2"><i class="bi bi-download"></i> Weekly</a>
-            <a href="{{ route('end_of_day_reports.compile.monthly') }}" class="btn btn-success me-2"><i class="bi bi-download"></i> Monthly</a>
+            <a href="{{ route('end_of_day_reports.compile.weekly') }}" class="btn btn-success btn-sm me-2"><i class="bi bi-graph-up-arrow"></i> Weekly</a>
+            <a href="{{ route('end_of_day_reports.compile.monthly') }}" class="btn btn-success btn-sm me-2"><i class="bi bi-graph-up-arrow"></i> Monthly</a>
         </div>
     </div>
 
@@ -40,9 +40,9 @@
             <div class="card h-100">
                 <div class="card-body d-flex flex-column">
                     <h5 class="card-title">Internship Details</h5>
-                    <p class="mb-1"><strong>Company:</strong> {{ $acceptedInternship->job->company->name }}</p>
-                    <p class="mb-1"><strong>Job:</strong> {{ $acceptedInternship->job->title }}</p>
-                    <p class="mb-1"><strong>Start Date:</strong> {{ $startDate->format('F d, Y') }}</p>
+                    <p class="mb-1"><strong><i class="bi bi-building me-2"></i> Company:</strong> {{ $acceptedInternship->job->company->name }}</p>
+                    <p class="mb-1"><strong><i class="bi bi-person-badge me-2"></i> Job:</strong> {{ $acceptedInternship->job->title }}</p>
+                    <p class="mb-1"><strong><span class="badge bg-success"><i class="bi bi-calendar"></i> Start Date:</strong></span> {{ $startDate->format('F d, Y') }}</p>
                 </div>
             </div>
         </div>
@@ -93,7 +93,7 @@
             <div class="card h-100">
                 <div class="card-body d-flex flex-column">
                     <h5 class="card-title">Submissions</h5>
-                    <p class="mb-1"><strong>Current Date:</strong> {{ $currentDateTime->format('F d, Y') }}</p>
+                    <p class="mb-1"><strong><i class="bi bi-calendar"></i> Current Date:</strong> {{ $currentDateTime->format('F d, Y') }}</p>
                     <p class="mb-1">
                         <strong>
                             <span class="badge bg-danger"><i class="bi bi-exclamation-octagon me-1"></i> Missing Reports:</span>

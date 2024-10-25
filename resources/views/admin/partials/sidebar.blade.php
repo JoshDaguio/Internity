@@ -103,6 +103,13 @@
 
   <li class="nav-item">
     <a class="nav-link collapsed" href="#">
+      <i class="bi bi-envelope"></i>
+      <span>Requests</span>  
+    </a>
+  </li><!-- End Request Nav -->
+
+  <li class="nav-item">
+    <a class="nav-link collapsed" href="#">
       <i class="bi bi-clipboard-data"></i>
       <span>Evaluations</span>  
     </a>

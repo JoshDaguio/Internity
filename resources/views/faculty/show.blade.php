@@ -12,6 +12,15 @@
     </nav>
 </div>
 
+
+    @if(session('success'))
+        <div class="alert alert-success">{{ session('success') }}</div>
+    @endif
+    
+    @if(session('error'))
+        <div class="alert alert-danger">{{ session('error') }}</div>
+    @endif
+
 <a href="javascript:history.back()" class="btn btn-secondary mb-3">Back</a>
 
 <div class="card mb-4">
@@ -117,6 +126,44 @@
                             <i class="bi bi-arrow-repeat me-1"></i> Reactivate
                         </button>
                     </form>
+                @endif
+
+                @if(Auth::user()->role_id == 1)
+                <!-- Promote button -->
+                    <button type="button" class="btn btn-primary me-2" data-bs-toggle="modal" data-bs-target="#promoteModal-{{ $faculty->id }}">
+                        <i class="bi bi-arrow-up-circle me-1"></i> Promote Account
+                    </button>
+
+                    <!-- Promote Modal -->
+                    <div class="modal fade" id="promoteModal-{{ $faculty->id }}" tabindex="-1" aria-labelledby="promoteModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="promoteModalLabel">Promote Faculty to Admin</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <form action="{{ route('admin-accounts.promote', $faculty) }}" method="POST">
+                                    @csrf
+                                    @method('PATCH')
+                                    <div class="modal-body">
+                                        <p>Enter your password to confirm promotion.</p>
+                                        <div class="col-12 mt-4">
+                                            <label for="password" class="form-label">Password</label>
+                                            <div class="input-group has-validation">
+                                                <input type="password" name="password" class="form-control" id="password" required placeholder="Enter your password">
+                                                <div class="invalid-feedback">Please enter your password.</div>
+                                            </div>
+                                            <x-input-error :messages="$errors->get('password')" class="mt-2" />
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="submit" class="btn btn-primary">Confirm Promotion</button>
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
                 @endif
             </div>
         </div>

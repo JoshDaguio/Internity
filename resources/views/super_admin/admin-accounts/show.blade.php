@@ -12,8 +12,17 @@
     </nav>
 </div>
 
+    @if(session('success'))
+        <div class="alert alert-success">{{ session('success') }}</div>
+    @endif
+    
+    @if(session('error'))
+        <div class="alert alert-danger">{{ session('error') }}</div>
+    @endif
+
 <!-- Back to List Button -->
 <a href="{{ route('admin-accounts.index') }}" class="btn btn-secondary mb-3">Back</a>
+
 
 <div class="card mb-4">
     <div class="card-body">
@@ -117,6 +126,52 @@
                         </button>
                     </form>
                 @endif
+
+                <!-- Demote button -->
+                <button type="button" class="btn btn-secondary me-2" data-bs-toggle="modal" data-bs-target="#demoteModal-{{ $admin->id }}">
+                    <i class="bi bi-arrow-down-circle me-1"></i> Demote Account
+                </button>
+
+                <!-- Demote Modal -->
+                <div class="modal fade" id="demoteModal-{{ $admin->id }}" tabindex="-1" aria-labelledby="demoteModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="demoteModalLabel">Demote Admin to Faculty</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <form action="{{ route('admin-accounts.demote', $admin) }}" method="POST">
+                                @csrf
+                                @method('PATCH')
+                                <div class="modal-body">
+                                    <p>Enter your password and select a course for this account.</p>
+                                    <div class="col-12 mt-4">
+                                        <label for="password" class="form-label">Password</label>
+                                        <div class="input-group has-validation">
+                                            <input type="password" name="password" class="form-control" id="password" required placeholder="Enter your password">
+                                            <div class="invalid-feedback">Please enter your password.</div>
+                                        </div>
+                                        <x-input-error :messages="$errors->get('password')" class="mt-2" />
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="course_id" class="form-label">Assign Course</label>
+                                        <select name="course_id" class="form-select" required>
+                                            @foreach($courses as $course)
+                                                <option value="{{ $course->id }}">{{ $course->course_code }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="submit" class="btn btn-primary">Confirm Demotion</button>
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </div>
     </div>

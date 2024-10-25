@@ -502,11 +502,14 @@ class DailyTimeRecordController extends Controller
             $monthStart->addDay();
         }
 
+        // Calculate completion percentage
+        $completionPercentage = ($totalWorkedHours / $remainingHours) * 100;
+
         // Estimate the finish date
         $estimatedFinishDate = $this->calculateFinishDate($remainingHours, $currentDate, $scheduledDays);
 
         return view('daily_time_records.student-dtr', compact(
-            'penaltiesAwarded', 'penalties', 'student', 'acceptedInternship', 'internshipHours', 'filteredRecords', 'schedule', 'currentDate', 'startDate', 'selectedMonth', 'scheduledDays', 'remainingHours', 'estimatedFinishDate', 'filteredDates', 'monthsRange'
+            'totalWorkedHours','completionPercentage', 'penaltiesAwarded', 'penalties', 'student', 'acceptedInternship', 'internshipHours', 'filteredRecords', 'schedule', 'currentDate', 'startDate', 'selectedMonth', 'scheduledDays', 'remainingHours', 'estimatedFinishDate', 'filteredDates', 'monthsRange'
         ));
     }
 

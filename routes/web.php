@@ -198,6 +198,13 @@ Route::get('/register/success', function () {
     return view('auth.register-success');
 })->name('register.success');
 
+// Promotion and Demotion of Account Roles (Admin, Faculty). Only Super Admin
+Route::middleware(['auth', 'super_admin'])->group(function () {
+    Route::patch('/admin-accounts/{admin}/promote', [AdminAccountController::class, 'promote'])->name('admin-accounts.promote');
+    Route::patch('/admin-accounts/{admin}/demote', [AdminAccountController::class, 'demote'])->name('admin-accounts.demote');
+});
+
+
 //Admin Account CRUD. Only Super Admin
 Route::middleware(['auth', 'super_admin'])->group(function () {
     Route::get('/admin-accounts', [AdminAccountController::class, 'index'])->name('admin-accounts.index');

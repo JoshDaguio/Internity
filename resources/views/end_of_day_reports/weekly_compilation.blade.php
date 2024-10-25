@@ -12,13 +12,12 @@
         </nav>
     </div>
 
+    <div class="card">
+            <div class="card-body">
+            <h5 class="card-title">Weekly Report ({{ $startOfWeek->format('M d, Y') }} - {{ $endOfWeek->format('M d, Y') }})</h5>
     @if(isset($noReports) && $noReports)
         <p>No reports available for this week.</p>
     @else
-        <div class="card">
-            <div class="card-body">
-            <h5 class="card-title">Weekly Report ({{ $startOfWeek->format('M d, Y') }} - {{ $endOfWeek->format('M d, Y') }})</h5>
-
                 <!-- Tasks Completed Table -->
                 <div class="table-responsive">
                     <table class="table">
@@ -52,10 +51,10 @@
                         </tbody>
                     </table>
                 </div>
-
+    @endif
                 <!-- Display missing submissions -->
                 @if(!$missingDates->isEmpty())
-                    <h5>Missing Submissions for this week:</h5>
+                    <h6><strong>Missing Submissions for this week:</strong></h6>
                     <ul>
                         @foreach($missingDates as $missingDate)
                             <li>{{ \Carbon\Carbon::parse($missingDate)->format('F d, Y') }}</li>
@@ -66,11 +65,10 @@
                 @endif
 
                 <div class="mt-3">
-                    <a href="{{ route('end_of_day_reports.download.weekly') }}" class="btn btn-success"><i class="bi bi-download"></i> PDF</a>
-                    <a href="{{ route('end_of_day_reports.index') }}" class="btn btn-secondary">Cancel</a>
+                    <a href="{{ route('end_of_day_reports.download.weekly') }}" class="btn btn-success btn-sm"><i class="bi bi-download"></i> PDF</a>
+                    <a href="{{ route('end_of_day_reports.index') }}" class="btn btn-secondary btn-sm">Cancel</a>
                 </div>
             </div>
         </div>
-    @endif
 
 @endsection

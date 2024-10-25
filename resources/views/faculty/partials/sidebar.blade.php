@@ -48,6 +48,13 @@
     </a>
   </li><!-- End File Management Nav -->
 
+  <li class="nav-item">
+    <a class="nav-link {{ request()->routeIs('evaluations.recipientIndex') ? '' : 'collapsed' }}" href="{{ route('evaluations.recipientIndex') }}">        
+      <i class="bi bi-clipboard-data"></i>
+      <span>Evaluations</span>  
+    </a>
+  </li><!-- End Evaluation Nav -->
+
   <li class="nav-heading">Account Management</li>
 
   <li class="nav-item">

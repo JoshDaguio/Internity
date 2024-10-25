@@ -94,8 +94,8 @@
         @endif
 
         <div class="mt-3">
-            <a href="{{ route('end_of_day_reports.download.monthly', ['month' => $selectedMonth]) }}" class="btn btn-success"><i class="bi bi-download"></i> PDF</a>
-            <a href="{{ route('end_of_day_reports.index') }}" class="btn btn-secondary">Cancel</a>
+            <a href="{{ route('end_of_day_reports.download.monthly', ['month' => $selectedMonth]) }}" class="btn btn-success btn-sm"><i class="bi bi-download"></i> PDF</a>
+            <a href="{{ route('end_of_day_reports.index') }}" class="btn btn-secondary btn-sm">Cancel</a>
         </div>
     </div>
 </div>

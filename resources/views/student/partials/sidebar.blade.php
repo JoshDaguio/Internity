@@ -69,7 +69,7 @@
 
   <li class="nav-item">
     <a class="nav-link collapsed" href="#">
-      <i class="bi bi-file-earmark-text"></i>
+      <i class="bi bi-envelope"></i>
       <span>Requests</span>  
     </a>
   </li><!-- End Request Nav -->
@@ -79,7 +79,14 @@
       <i class="bi bi-folder"></i>
       <span>Files</span>  
     </a>
-</li><!-- End File Nav -->
+  </li><!-- End File Nav -->
+
+  <li class="nav-item">
+    <a class="nav-link {{ request()->routeIs('evaluations.recipientIndex') ? '' : 'collapsed' }}" href="{{ route('evaluations.recipientIndex') }}">        
+      <i class="bi bi-clipboard-data"></i>
+      <span>Evaluations</span>  
+    </a>
+  </li><!-- End Evaluation Nav -->
 
   <li class="nav-heading">Account Management</li>
 

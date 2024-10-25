@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Profile;
 use App\Models\User;
+use App\Models\Course;
 use App\Models\ActivityLog;
 use App\Mail\AdminApprovalMail;
 use App\Mail\AdminUpdateNotificationMail;
@@ -78,13 +79,15 @@ class AdminAccountController extends Controller
     // Method to show admin details
     public function show(User $admin)
     {
+        $courses = Course::all();
+
         // Make sure the user is an admin
         if ($admin->role_id !== 2) {
             return redirect()->route('admin-accounts.index')->with('error', 'User is not an admin.');
         }
         $logs = ActivityLog::where('admin_id', $admin->id)->latest()->get();
 
-        return view('super_admin.admin-accounts.show', compact('admin', 'logs'));
+        return view('super_admin.admin-accounts.show', compact('admin', 'logs', 'courses'));
     }
 
     public function edit(User $admin)
@@ -160,4 +163,55 @@ class AdminAccountController extends Controller
 
         return redirect()->route('admin-accounts.index')->with('success', 'Admin account reactivated successfully.');
     }
+
+    public function promote(Request $request, $facultyId)
+    {
+        $request->validate(['password' => 'required|string']);
+    
+        // Confirm Super Admin's password
+        if (!Hash::check($request->password, auth()->user()->password)) {
+            return redirect()->back()->withErrors(['password' => 'Incorrect password. Please try again.']);
+        }
+    
+        // Retrieve the faculty user instance
+        $faculty = User::findOrFail($facultyId);
+        
+        // Update role and clear course
+        $faculty->role_id = 2;
+        $faculty->course_id = null;
+    
+        // Save changes
+        $faculty->save();
+    
+        // Redirect to Admin index with success message
+        return redirect()->route('admin-accounts.index')->with('success', 'Account promoted to Admin.');
+    }
+    
+    public function demote(Request $request, $adminId)
+    {
+        $request->validate([
+            'password' => 'required|string',
+            'course_id' => 'required|exists:courses,id',
+        ]);
+    
+        // Confirm Super Admin's password
+        if (!Hash::check($request->password, auth()->user()->password)) {
+            return redirect()->back()->withErrors(['password' => 'Incorrect password. Please try again.']);
+        }
+    
+        // Retrieve the admin user instance
+        $admin = User::findOrFail($adminId);
+        
+        // Update role and assign course
+        $admin->role_id = 3;
+        $admin->course_id = $request->course_id;
+    
+        // Save changes
+        $admin->save();
+    
+        // Redirect to Faculty index with success message
+        return redirect()->route('faculty.index')->with('success', 'Account demoted to Faculty.');
+    }
+    
+
 }

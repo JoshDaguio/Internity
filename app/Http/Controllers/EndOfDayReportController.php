@@ -552,16 +552,19 @@ class EndOfDayReportController extends Controller
             ->whereBetween('date_submitted', [$startOfWeek->format('Y-m-d'), $endOfWeek->format('Y-m-d')])
             ->orderBy('date_submitted', 'asc')
             ->get();
-    
+
+        // Get missing submission dates within this week (last 7 days)
+        $missingDates = $this->getMissingWeeklySubmissionDates($user->id, $startOfWeek, $endOfWeek, $scheduleDays);
+
         // Check if reports are empty and send appropriate message
         if ($reports->isEmpty()) {
             return view('end_of_day_reports.weekly_compilation', [
                 'noReports' => true,
+                'startOfWeek' => $startOfWeek,
+                'endOfWeek' => $endOfWeek,
+                'missingDates' => $missingDates,
             ]);
         }
-    
-        // Get missing submission dates within this week (last 7 days)
-        $missingDates = $this->getMissingWeeklySubmissionDates($user->id, $startOfWeek, $endOfWeek, $scheduleDays);
     
         return view('end_of_day_reports.weekly_compilation', compact('reports', 'startOfWeek', 'missingDates', 'endOfWeek',  'scheduleDays'));
     }
@@ -603,14 +606,7 @@ class EndOfDayReportController extends Controller
             ->whereBetween('date_submitted', [$startOfWeek->format('Y-m-d'), $endOfWeek->format('Y-m-d')])
             ->orderBy('date_submitted', 'asc')
             ->get();
-    
-        // Check if reports are empty and send appropriate message
-        if ($reports->isEmpty()) {
-            return view('end_of_day_reports.weekly_compilation', [
-                'noReports' => true,
-            ]);
-        }
-    
+
         // Get missing submission dates within this week (last 7 days)
         $missingDates = $this->getMissingWeeklySubmissionDates($user->id, $startOfWeek, $endOfWeek, $scheduleDays);
     
