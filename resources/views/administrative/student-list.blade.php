@@ -21,9 +21,9 @@
     @endif
 
     <!-- Add Student Button -->
-    <a href="{{ route('students.create') }}" class="btn btn-primary mb-3">Add Student</a>
+    <a href="{{ route('students.create') }}" class="btn btn-primary mb-3 btn-sm">Add Student</a>
 
-    <a href="{{ route('students.import') }}" class="btn btn-success mb-3 ms-2">Import Students</a>
+    <a href="{{ route('students.import') }}" class="btn btn-success mb-3 ms-2 btn-sm">Import Students</a>
     
     <div class="row">
         <!-- Filters and Progress Bar Row -->

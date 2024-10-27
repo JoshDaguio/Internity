@@ -12,7 +12,7 @@
         </nav>
     </div><!-- End Page Title -->
 
-    <a href="{{ route('penalties.create') }}" class="btn btn-primary mb-3">Add Penalty</a>
+    <a href="{{ route('penalties.create') }}" class="btn btn-primary mb-3 btn-sm">Add Penalty</a>
 
     <div class="card">
         <div class="card-body">

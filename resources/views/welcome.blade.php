@@ -80,6 +80,24 @@
 </head>
 <body class="antialiased">
 
+    @auth
+        {{-- Redirect authenticated users to their respective dashboards --}}
+        @php
+            $role = Auth::user()->role_id;
+            if ($role == 1) {
+                echo "<script>window.location.href = '".route('super_admin.dashboard')."';</script>";
+            } elseif ($role == 2) {
+                echo "<script>window.location.href = '".route('admin.dashboard')."';</script>";
+            } elseif ($role == 3) {
+                echo "<script>window.location.href = '".route('faculty.dashboard')."';</script>";
+            } elseif ($role == 4) {
+                echo "<script>window.location.href = '".route('company.dashboard')."';</script>";
+            } elseif ($role == 5) {
+                echo "<script>window.location.href = '".route('student.dashboard')."';</script>";
+            }
+        @endphp
+    @endauth
+
     <div class="main-container">
         <h1>
             <img src="{{ asset('assets/img/logo-red.png') }}" alt="Logo">

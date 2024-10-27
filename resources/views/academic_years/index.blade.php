@@ -20,7 +20,7 @@
     <div class="alert alert-danger">{{ session('error') }}</div>
 @endif
 
-<a href="{{ route('academic-years.create') }}" class="btn btn-primary mb-3">Add Academic Year</a>
+<a href="{{ route('academic-years.create') }}" class="btn btn-primary mb-3 btn-sm">Add Academic Year</a>
 
 <div class="card">
     <div class="card-body">

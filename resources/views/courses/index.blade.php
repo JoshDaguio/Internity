@@ -20,7 +20,7 @@
     <div class="alert alert-danger">{{ session('error') }}</div>
 @endif
 
-<a href="{{ route('courses.create') }}" class="btn btn-primary mb-3">Add Course</a>
+<a href="{{ route('courses.create') }}" class="btn btn-primary mb-3 btn-sm">Add Course</a>
 
 <div class="row">
     <!-- Course List -->

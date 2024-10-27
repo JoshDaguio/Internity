@@ -20,7 +20,7 @@
     <div class="alert alert-danger">{{ session('error') }}</div>
 @endif
 
-<a href="{{ route('internship_hours.create') }}" class="btn btn-primary mb-3">Add Internship Hours</a>
+<a href="{{ route('internship_hours.create') }}" class="btn btn-primary mb-3 btn-sm">Add Internship Hours</a>
 
 <div class="card">
     <div class="card-body">

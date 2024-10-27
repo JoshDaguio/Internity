@@ -49,7 +49,6 @@
   <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.2/main.min.js"></script>
 
 
-
 </head>
 
 <body>

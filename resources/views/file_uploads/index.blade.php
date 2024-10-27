@@ -20,7 +20,7 @@
     @if(session('error'))
         <div class="alert alert-danger">{{ session('error') }}</div>
     @endif
-    <a href="{{ route('file_uploads.create') }}" class="btn btn-primary mb-3">Upload File</a>
+    <a href="{{ route('file_uploads.create') }}" class="btn btn-primary mb-3 btn-sm">Upload File</a>
 
     <!-- Filter Section -->
     <form method="GET" action="{{ route('file_uploads.index') }}" class="mb-3">

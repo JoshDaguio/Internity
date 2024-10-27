@@ -29,12 +29,12 @@
                             <p><strong>Company Name:</strong> {{ $user->acceptedInternship->job->company->name }}</p>
                             <p><strong>Location:</strong> {{ $user->acceptedInternship->job->company->profile->address ?? 'No Address Added' }}</p>
                             <div class="form-group mb-3">
-                                <label for="supervisor_name">Name of Supervisor:</label>
+                                <label for="supervisor_name"><strong>Supervisor:</strong></label>
                                 <input type="text" name="supervisor_name" id="supervisor_name" class="form-control" required>
                             </div>
                         @endif
 
-                        <h5 class="card-title">Evaluation Question</h5>
+                        <h5 class="card-title">Evaluation Questions</h5>
                         
                         @foreach ($evaluation->questions as $question)
                             <div class="mb-3">
@@ -72,7 +72,8 @@
                             </div>
                         @endforeach
 
-                        <button type="submit" class="btn btn-primary">Submit Evaluation</button>
+                        <button type="submit" class="btn btn-primary btn-sm">Submit</button>
+                        <a href="{{ route('evaluations.recipientIndex') }}" class="btn btn-secondary btn-sm">Cancel</a>
                     </form>
                 </div>
             </div>

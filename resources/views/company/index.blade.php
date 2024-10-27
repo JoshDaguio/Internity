@@ -19,8 +19,8 @@
     <div class="alert alert-danger">{{ session('error') }}</div>
 @endif
 
-<a href="{{ route('company.create') }}" class="btn btn-primary mb-3">Add Company</a>
-<a href="{{ route('company.import') }}" class="btn btn-success mb-3 ms-2">Import Companies</a>
+<a href="{{ route('company.create') }}" class="btn btn-primary mb-3 btn-sm">Add Company</a>
+<a href="{{ route('company.import') }}" class="btn btn-success mb-3 ms-2 btn-sm">Import Companies</a>
 
 
 <form method="GET" action="{{ route('company.index') }}" class="mb-3">

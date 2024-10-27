@@ -21,7 +21,7 @@
     @endif
 
     <!-- Button to trigger the modal for adding a new skill tag -->
-    <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#createSkillTagModal">
+    <button type="button" class="btn btn-primary mb-3 btn-sm" data-bs-toggle="modal" data-bs-target="#createSkillTagModal">
         Add Skill Tag
     </button>
 

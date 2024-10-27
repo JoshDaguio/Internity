@@ -14,17 +14,6 @@
 
     <!-- First Row -->
     <div class="row">
-        <div class="col-md-4">
-            <div class="card shadow-sm dashboard-info-card">
-                <div class="card-body d-flex justify-content-between align-items-center">
-                    <div>
-                        <div class="text mb-1">Current S.Y.</div>
-                        <div class="h5 mb-0">{{ $schoolYear }}</div> <!-- Display current school year -->
-                    </div>
-                    <i class="bi bi-calendar3"></i>
-                </div>
-            </div>
-        </div>
 
         <div class="col-md-4">
             <div class="card shadow-sm dashboard-info-card">
@@ -49,121 +38,126 @@
                 </div>
             </div>
         </div> 
+        
+        <div class="col-md-4">
+            <div class="card shadow-sm dashboard-info-card">
+                <div class="card-body d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="text mb-1">Current S.Y.</div>
+                        <div class="h5 mb-0">{{ $schoolYear }}</div> <!-- Display current school year -->
+                    </div>
+                    <i class="bi bi-calendar3"></i>
+                </div>
+            </div>
+        </div>
+
     </div>
     <!-- End First Row -->
-
-
-    <div class="row">
-        <!-- Admin Card -->
-        <div class="col-md-3">
-            <div class="card info-card admins-card">
-                <div class="card-body">
-                    <h5 class="card-title">Admin</h5>
-                    <div class="d-flex align-items-center">
-                        <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
-                            <i class="bi bi-shield-lock"></i>
-                        </div>
-                        <div class="ps-3">
-                            <h6>{{ $totalAdmins }}</h6>
-                            <span class="text-primary small pt-1 fw-bold">{{ $adminPercentage }}%</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- End Admin Card -->
-
-        <!-- Faculty Card -->
-        <div class="col-md-3">
-            <div class="card info-card faculty-card">
-                <div class="filter">
-                    <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
-                    <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
-                        <li class="dropdown-header text-start">
-                            <h6>Filter</h6>
-                        </li>
-                        <li><a class="dropdown-item filter-faculty-item" data-filter="all">All</a></li>
-                        @foreach($courses as $course)
-                            <li><a class="dropdown-item filter-faculty-item" data-filter="{{ $course->id }}">{{ $course->course_code }}</a></li>
-                        @endforeach
-                    </ul>
-                </div>
-
-                <div class="card-body">
-                    <h5 class="card-title">Faculty <span id="selected-faculty-course">| {{ $selectedFacultyCourse }}</span></h5>
-                    <div class="d-flex align-items-center">
-                        <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
-                            <i class="bi bi-person-badge"></i>
-                        </div>
-                        <div class="ps-3">
-                            <h6 id="total-faculty">{{ $totalFaculty }}</h6>
-                            <span id="faculty-percentage" class="text-primary small pt-1 fw-bold">{{ $facultyPercentage }}%</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- End Faculty Card -->
-
-        <!-- Company Card -->
-        <div class="col-md-3">
-            <div class="card info-card company-card">
-                <div class="card-body">
-                    <h5 class="card-title">Company</h5>
-                    <div class="d-flex align-items-center">
-                        <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
-                            <i class="bi bi-building"></i>
-                        </div>
-                        <div class="ps-3">
-                            <h6>{{ $totalCompanies }}</h6>
-                            <span class="text-primary small pt-1 fw-bold">{{ $companyPercentage }}%</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- End Company Card -->
-
-        <!-- Student Card -->
-        <div class="col-md-3">
-            <div class="card info-card student-card">
-                <div class="filter">
-                    <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
-                    <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
-                        <li class="dropdown-header text-start">
-                            <h6>Filter</h6>
-                        </li>
-                        <li><a class="dropdown-item filter-item" data-filter="all">All</a></li>
-                        @foreach($courses as $course)
-                            <li><a class="dropdown-item filter-item" data-filter="{{ $course->id }}">{{ $course->course_code }}</a></li>
-                        @endforeach
-                    </ul>
-                </div>
-
-                <div class="card-body">
-                    <h5 class="card-title">Student <span id="selected-course">| {{ $selectedStudentCourse }}</span></h5>
-                    <div class="d-flex align-items-center">
-                        <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
-                            <i class="bi bi-mortarboard"></i>
-                        </div>
-                        <div class="ps-3">
-                            <h6 id="total-students">{{ $totalStudents }}</h6>
-                            <span id="student-percentage" class="text-primary small pt-1 fw-bold">{{ $studentPercentage }}%</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- End Student Card -->
-    </div>
-
     
-<div class="row">
+  <div class="row">
         <!-- Left side columns -->
         <div class="col-lg-8">
 
         <div class="row">
+              <!-- Admin Card -->
+              <div class="col-6">
+                  <div class="card info-card admins-card" style="min-height: 100px;">
+                      <div class="card-body">
+                          <h5 class="card-title">Admin</h5>
+                          <div class="d-flex align-items-center">
+                              <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                  <i class="bi bi-shield-lock"></i>
+                              </div>
+                              <div class="ps-3">
+                                  <h6>{{ $totalAdmins }}</h6>
+                                  <span class="text-primary small pt-1 fw-bold">{{ $adminPercentage }}%</span>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+              <!-- End Admin Card -->
 
+              <!-- Faculty Card -->
+              <div class="col-6">
+                  <div class="card info-card faculty-card" style="min-height: 100px;">
+                      <div class="filter">
+                          <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
+                          <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+                              <li class="dropdown-header text-start">
+                                  <h6>Filter</h6>
+                              </li>
+                              <li><a class="dropdown-item filter-faculty-item" data-filter="all">All</a></li>
+                              @foreach($courses as $course)
+                                  <li><a class="dropdown-item filter-faculty-item" data-filter="{{ $course->id }}">{{ $course->course_code }}</a></li>
+                              @endforeach
+                          </ul>
+                      </div>
+                      <div class="card-body">
+                          <h5 class="card-title">Faculty <span id="selected-faculty-course">| {{ $selectedFacultyCourse }}</span></h5>
+                          <div class="d-flex align-items-center">
+                              <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                  <i class="bi bi-person-badge"></i>
+                              </div>
+                              <div class="ps-3">
+                                  <h6 id="total-faculty">{{ $totalFaculty }}</h6>
+                                  <span id="faculty-percentage" class="text-primary small pt-1 fw-bold">{{ $facultyPercentage }}%</span>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+              <!-- End Faculty Card -->
+
+              <!-- Company Card -->
+              <div class="col-6">
+                  <div class="card info-card company-card" style="min-height: 100px;">
+                      <div class="card-body">
+                          <h5 class="card-title">Company</h5>
+                          <div class="d-flex align-items-center">
+                              <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                  <i class="bi bi-building"></i>
+                              </div>
+                              <div class="ps-3">
+                                  <h6>{{ $totalCompanies }}</h6>
+                                  <span class="text-primary small pt-1 fw-bold">{{ $companyPercentage }}%</span>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+              <!-- End Company Card -->
+
+              <!-- Student Card -->
+              <div class="col-6">
+                  <div class="card info-card student-card" style="min-height: 100px;">
+                      <div class="filter">
+                          <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
+                          <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+                              <li class="dropdown-header text-start">
+                                  <h6>Filter</h6>
+                              </li>
+                              <li><a class="dropdown-item filter-item" data-filter="all">All</a></li>
+                              @foreach($courses as $course)
+                                  <li><a class="dropdown-item filter-item" data-filter="{{ $course->id }}">{{ $course->course_code }}</a></li>
+                              @endforeach
+                          </ul>
+                      </div>
+                      <div class="card-body">
+                          <h5 class="card-title">Student <span id="selected-course">| {{ $selectedStudentCourse }}</span></h5>
+                          <div class="d-flex align-items-center">
+                              <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                  <i class="bi bi-mortarboard"></i>
+                              </div>
+                              <div class="ps-3">
+                                  <h6 id="total-students">{{ $totalStudents }}</h6>
+                                  <span id="student-percentage" class="text-primary small pt-1 fw-bold">{{ $studentPercentage }}%</span>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+              <!-- End Student Card -->
             <!-- Reports -->
             <div class="col-12">
               <div class="card">
@@ -400,6 +394,13 @@
         <!-- Right side columns -->
         <div class="col-lg-4">
 
+          <div class="card">
+              <div class="card-body">
+                  <h5 class="card-title">Calendar</h5>
+                  <div id="calendar"></div>
+              </div>
+          </div>
+
           <!-- Recent Activity -->
           <div class="card">
             <div class="filter">
@@ -567,61 +568,6 @@
 
               <div id="trafficChart" style="min-height: 400px;" class="echart"></div>
 
-              <script>
-                document.addEventListener("DOMContentLoaded", () => {
-                  echarts.init(document.querySelector("#trafficChart")).setOption({
-                    tooltip: {
-                      trigger: 'item'
-                    },
-                    legend: {
-                      top: '5%',
-                      left: 'center'
-                    },
-                    series: [{
-                      name: 'Access From',
-                      type: 'pie',
-                      radius: ['40%', '70%'],
-                      avoidLabelOverlap: false,
-                      label: {
-                        show: false,
-                        position: 'center'
-                      },
-                      emphasis: {
-                        label: {
-                          show: true,
-                          fontSize: '18',
-                          fontWeight: 'bold'
-                        }
-                      },
-                      labelLine: {
-                        show: false
-                      },
-                      data: [{
-                          value: 1048,
-                          name: 'Search Engine'
-                        },
-                        {
-                          value: 735,
-                          name: 'Direct'
-                        },
-                        {
-                          value: 580,
-                          name: 'Email'
-                        },
-                        {
-                          value: 484,
-                          name: 'Union Ads'
-                        },
-                        {
-                          value: 300,
-                          name: 'Video Ads'
-                        }
-                      ]
-                    }]
-                  });
-                });
-              </script>
-
             </div>
           </div><!-- End Website Traffic -->
 
@@ -737,6 +683,57 @@
                 });
             });
         });
+
+        //Calendar Script
+        document.addEventListener('DOMContentLoaded', function() {
+            var calendarEl = document.getElementById('calendar');
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                locale: 'en-ph',
+                headerToolbar: {
+                    left: 'title',
+                    center: '',
+                    right: 'prev,next'
+                },
+                nowIndicator: true,
+                now: '{{ \Carbon\Carbon::now("Asia/Manila")->format("Y-m-d") }}',
+                height: 350, // Ensures the calendar fits within the card
+                dateClick: function(info) {
+                    alert('Clicked on: ' + info.dateStr);
+                }
+            });
+            calendar.render();
+        });
+
     </script>
+    <style>
+        #calendar {
+            max-width: 100%;
+            height: 450px; /* Adjust height to fit the whole month view */
+            padding: 10px; 
+            margin: 0 auto;
+        }
+
+        .fc {
+            font-size: 0.75rem; /* Slightly reduce overall font size */
+        }
+
+        .fc-toolbar-title {
+            font-size: 0.9rem; /* Reduce title size */
+        }
+
+        .fc-button {
+            padding: 2px 6px; /* Make buttons smaller */
+        }
+
+        .fc-toolbar-chunk {
+            flex: 0 0 auto; /* Prevents too much stretching */
+        }
+
+        .fc-daygrid-day-frame {
+            padding: 2px; /* Adjust padding within day cells */
+        }
+    </style>
+
     </section>
 @endsection

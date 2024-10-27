@@ -123,7 +123,7 @@
   </li><!-- End Request Nav -->
 
   <li class="nav-item">
-    <a class="nav-link {{ request()->routeIs('evaluations.index', 'evaluations.create', 'evaluations.results', 'evaluations.showResponseForm') ? '' : 'collapsed' }}" href="{{ route('evaluations.index') }}">
+    <a class="nav-link {{ request()->routeIs('evaluations.index', 'evaluations.create', 'evaluations.results', 'evaluations.showResponseForm','evaluations.internCompanyRecipientList', 'evaluations.manageQuestions') ? '' : 'collapsed' }}" href="{{ route('evaluations.index') }}">
         <i class="bi bi-clipboard-data"></i>
         <span>Evaluations</span>  
     </a>

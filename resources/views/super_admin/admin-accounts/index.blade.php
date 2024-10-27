@@ -19,7 +19,7 @@
     <div class="alert alert-danger">{{ session('error') }}</div>
 @endif
 
-<a href="{{ route('admin-accounts.create') }}" class="btn btn-primary mb-3">Add Admin</a>
+<a href="{{ route('admin-accounts.create') }}" class="btn btn-primary mb-3 btn-sm">Add Admin</a>
 
 <div class="card mb-3">
     <div class="card-body">

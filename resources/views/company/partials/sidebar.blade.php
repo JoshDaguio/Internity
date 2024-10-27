@@ -59,7 +59,7 @@
 
 
     <li class="nav-item">
-      <a class="nav-link {{ request()->routeIs('evaluations.recipientIndex') ? '' : 'collapsed' }}" href="{{ route('evaluations.recipientIndex') }}">        
+      <a class="nav-link {{ request()->routeIs('evaluations.recipientIndex', 'evaluations.showResponseForm', 'evaluations.viewUserResponse') ? '' : 'collapsed' }}" href="{{ route('evaluations.recipientIndex') }}">        
         <i class="bi bi-clipboard-data"></i>
         <span>Evaluations</span>  
       </a>
