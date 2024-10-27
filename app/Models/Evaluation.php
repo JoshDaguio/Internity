@@ -37,4 +37,8 @@ class Evaluation extends Model
         return $this->belongsTo(User::class, 'created_by');
     }
 
+    public function recipients()
+    {
+        return $this->hasMany(EvaluationRecipient::class, 'evaluation_id');
+    }
 }

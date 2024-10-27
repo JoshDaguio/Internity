@@ -20,8 +20,22 @@
                     <div class="form-text">
                         <p><strong>{{ $evaluation->description }}</strong></p>
                     </div>
+
                     <form action="{{ route('evaluations.submitResponse', $evaluation->id) }}" method="POST">
                         @csrf
+
+                        @if ($evaluation->evaluation_type === 'intern_company')
+                            <h5 class="card-title">Internship Details</h5>
+                            <p><strong>Company Name:</strong> {{ $user->acceptedInternship->job->company->name }}</p>
+                            <p><strong>Location:</strong> {{ $user->acceptedInternship->job->company->profile->address ?? 'No Address Added' }}</p>
+                            <div class="form-group mb-3">
+                                <label for="supervisor_name">Name of Supervisor:</label>
+                                <input type="text" name="supervisor_name" id="supervisor_name" class="form-control" required>
+                            </div>
+                        @endif
+
+                        <h5 class="card-title">Evaluation Question</h5>
+                        
                         @foreach ($evaluation->questions as $question)
                             <div class="mb-3">
                                 <label for="question-{{ $question->id }}" class="form-label"><strong>{{ $question->question_text }}</strong></label>

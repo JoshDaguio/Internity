@@ -12,7 +12,7 @@
         </nav>
     </div>
 
-    <a href="{{ route('evaluations.index') }}" class="btn btn-secondary mb-3">Back</a>
+    <a href="{{ route('evaluations.index') }}" class="btn btn-secondary mb-3 btn-sm">Back</a>
 
     <div class="row mb-2">
         <div class="col-md-12">

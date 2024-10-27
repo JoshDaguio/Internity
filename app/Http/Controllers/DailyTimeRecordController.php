@@ -81,7 +81,7 @@ class DailyTimeRecordController extends Controller
         $remainingHours = $latestDailyRecord ? $latestDailyRecord->remaining_hours : $internshipHours->hours - $totalWorkedHours;
 
         // Calculate completion percentage
-        $completionPercentage = ($totalWorkedHours / $remainingHours) * 100;
+        $completionPercentage = $remainingHours > 0 ? ($totalWorkedHours / $remainingHours) * 100 : 100;
 
         // Estimate finish date based on remaining hours
         $estimatedFinishDate = $this->calculateFinishDate($remainingHours, $startDate, $scheduledDays);
@@ -373,7 +373,7 @@ class DailyTimeRecordController extends Controller
         }
 
         // Calculate completion percentage
-        $completionPercentage = ($totalWorkedHours / $remainingHours) * 100;
+        $completionPercentage = $remainingHours > 0 ? ($totalWorkedHours / $remainingHours) * 100 : 100;
 
 
         // Estimate the finish date
@@ -422,6 +422,13 @@ class DailyTimeRecordController extends Controller
         // Calculate total worked hours
         $totalWorkedHours = $dailyRecords->sum('total_hours_worked');
         $remainingHours = $latestDailyRecord ? $latestDailyRecord->remaining_hours : $internshipHours->hours;
+
+        // Avoid division by zero and handle completed internships
+        if ($remainingHours > 0) {
+            $completionPercentage = ($totalWorkedHours / $remainingHours) * 100;
+        } else {
+            $completionPercentage = 100; // Consider the internship completed if remaining hours are 0
+        }
 
         // Fetch the schedule
         $schedule = $acceptedInternship->schedule;
@@ -502,8 +509,8 @@ class DailyTimeRecordController extends Controller
             $monthStart->addDay();
         }
 
-        // Calculate completion percentage
-        $completionPercentage = ($totalWorkedHours / $remainingHours) * 100;
+        // // Calculate completion percentage
+        // $completionPercentage = ($totalWorkedHours / $remainingHours) * 100;
 
         // Estimate the finish date
         $estimatedFinishDate = $this->calculateFinishDate($remainingHours, $currentDate, $scheduledDays);

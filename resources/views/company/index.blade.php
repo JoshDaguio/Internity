@@ -52,7 +52,7 @@
                         <th>Contact Person</th>
                         <th>Expiry Date</th>
                         <th>Status</th>
-                        <th>Actions</th>
+                        <!-- <th>Actions</th> -->
                     </tr>
                 </thead>
                 <tbody>
@@ -66,8 +66,14 @@
                             <td>{{ $company->email }}</td>
                             <td>{{ $company->profile->first_name ?? 'N/A' }} {{ $company->profile->last_name ?? '' }}</td>
                             <td>{{ $company->expiry_date ? \Carbon\Carbon::parse($company->expiry_date)->toFormattedDateString() : 'N/A' }}</td>
-                            <td>{{ $company->status_id == 1 ? 'Active' : 'Inactive' }}</td>
                             <td>
+                                @if($company->status_id == 1)
+                                    <span class="badge bg-success">Active</span>
+                                @else
+                                    <span class="badge bg-danger">Inactive</span>
+                                @endif
+                            </td>
+                            <!-- <td>
                                 @if($company->status_id == 1)
                                     <a href="{{ route('company.edit', $company->id) }}" class="btn btn-warning btn-sm"><i class="bi bi-pencil"></i></a>
                                     <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deactivateModal-{{ $company->id }}">
@@ -82,11 +88,11 @@
                                         </button>
                                     </form>
                                 @endif
-                            </td>
+                            </td> -->
                         </tr>
 
-                        <!-- Deactivate Modal -->
-                        <div class="modal fade" id="deactivateModal-{{ $company->id }}" tabindex="-1" aria-labelledby="deactivateModalLabel-{{ $company->id }}" aria-hidden="true">
+                        
+                        <!-- <div class="modal fade" id="deactivateModal-{{ $company->id }}" tabindex="-1" aria-labelledby="deactivateModalLabel-{{ $company->id }}" aria-hidden="true">
                             <div class="modal-dialog">
                                 <div class="modal-content">
                                     <div class="modal-header">
@@ -106,7 +112,7 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </div> -->
                     @endforeach
                 </tbody>
             </table>

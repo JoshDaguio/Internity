@@ -100,7 +100,7 @@
                                     <th>Email</th>
                                     <th>Course</th>
                                     <th>Status</th>
-                                    <th>Action</th>
+                                    <!-- <th>Action</th> -->
                                 </tr>
                             </thead>
                             <tbody>
@@ -121,16 +121,21 @@
                                         <td>{{ $faculty->email }}</td>
                                         <td>{{ $faculty->course ? $faculty->course->course_code : 'N/A' }}</td>
                                         <td>
-                                            {{ $faculty->status_id == 1 ? 'Active' : 'Inactive' }}
+                                            <!-- {{ $faculty->status_id == 1 ? 'Active' : 'Inactive' }} -->
+                                            @if($faculty->status_id == 1)
+                                                <span class="badge bg-success">Active</span>
+                                            @else
+                                                <span class="badge bg-danger">Inactive</span>
+                                            @endif
                                         </td>
-                                        <td>
+                                        <!-- <td>
                                             @if($faculty->status_id == 1)
                                                 <a href="{{ route('faculty.edit', $faculty) }}" class="btn btn-warning btn-sm"><i class="bi bi-pencil"></i></a>
                                                 <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deactivateModal-{{ $faculty->id }}">
                                                     <i class="bi bi-trash"></i>
                                                 </button>
 
-                                                <!-- Deactivate Modal -->
+                                                
                                                 <div class="modal fade" id="deactivateModal-{{ $faculty->id }}" tabindex="-1" aria-labelledby="deactivateModalLabel" aria-hidden="true">
                                                     <div class="modal-dialog">
                                                         <div class="modal-content">
@@ -161,7 +166,7 @@
                                                     </button>
                                                 </form>
                                             @endif
-                                        </td>
+                                        </td> -->
                                     </tr>
                                 @endforeach
                             </tbody>

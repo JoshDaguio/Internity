@@ -12,7 +12,7 @@
             </ol>
         </nav>
     </div><!-- End Page Title -->
-    <a href="{{ route('company.index') }}" class="btn btn-secondary mb-3">Back</a>
+    <a href="{{ route('company.index') }}" class="btn btn-secondary mb-3 btn-sm">Back</a>
 
     <div class="card mb-4">
         <div class="card-body">
@@ -74,13 +74,13 @@
             <!-- Action Buttons Section -->
             <div class="row mt-4">
                 <div class="col-md-12">
-                    <a href="{{ route('company.edit', $company->id) }}" class="btn btn-warning me-2 {{ $company->status_id != 1 ? 'd-none' : '' }}">
+                    <a href="{{ route('company.edit', $company->id) }}" class="btn btn-warning me-2 btn-sm {{ $company->status_id != 1 ? 'd-none' : '' }}">
                         <i class="bi bi-pencil me-1"></i> Edit
                     </a>
 
                     @if($company->status_id == 1)
                         <!-- Deactivate button -->
-                        <button type="button" class="btn btn-danger me-2" data-bs-toggle="modal" data-bs-target="#deactivateModal">
+                        <button type="button" class="btn btn-danger me-2 btn-sm" data-bs-toggle="modal" data-bs-target="#deactivateModal">
                             <i class="bi bi-trash me-1"></i> Deactivate
                         </button>
 
@@ -113,7 +113,7 @@
                         <form action="{{ route('company.reactivate', $company->id) }}" method="POST" style="display:inline;">
                             @csrf
                             @method('PATCH')
-                            <button type="submit" class="btn btn-success">
+                            <button type="submit" class="btn btn-success btn-sm">
                                 <i class="bi bi-arrow-repeat me-1"></i> Reactivate
                             </button>
                         </form>

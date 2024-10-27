@@ -21,20 +21,38 @@
 
     <div class="card mb-4">
         <div class="card-body">
-            <h5 class="card-title">Evaluations</h5>
+            <h5 class="card-title">Filter by Academic Year & Evaluation Type</h5>
+            <form method="GET" action="{{ route('evaluations.index') }}">
+                <div class="row">
+                    <!-- Academic Year Filter -->
+                    <div class="col-md-6">
+                        <select name="academic_year_id" class="form-select" onchange="this.form.submit()">
+                            @foreach($academicYears as $year)
+                                <option value="{{ $year->id }}" {{ $selectedYearId == $year->id ? 'selected' : '' }}>
+                                    {{ $year->start_year }} - {{ $year->end_year }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
 
-            <!-- Academic Year Filter -->
-            <form method="GET" action="{{ route('evaluations.index') }}" class="mb-3">
-                <label for="academic_year_id">Filter by Academic Year:</label>
-                <select name="academic_year_id" class="form-select form-select-sm" onchange="this.form.submit()">
-                    @foreach($academicYears as $year)
-                        <option value="{{ $year->id }}" {{ $selectedYearId == $year->id ? 'selected' : '' }}>
-                            {{ $year->start_year }} - {{ $year->end_year }}
-                        </option>
-                    @endforeach
-                </select>
+                    <!-- Evaluation Type Filter -->
+                    <div class="col-md-6">
+                        <select name="evaluation_type" class="form-select" onchange="this.form.submit()">
+                            <option value="" {{ $selectedEvaluationType == '' ? 'selected' : '' }}>All Types</option>
+                            <option value="program" {{ $selectedEvaluationType == 'program' ? 'selected' : '' }}>Program</option>
+                            <option value="program" {{ $selectedEvaluationType == 'intern_student' ? 'selected' : '' }}>Intern Evalution by Company</option>
+                            <option value="intern_company" {{ $selectedEvaluationType == 'intern_company' ? 'selected' : '' }}>Company Evalution by Intern</option>
+                        </select>
+                    </div>
+                </div>
             </form>
+        </div>
+    </div>
 
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title">Evaluations</h5>
             <a href="{{ route('evaluations.create') }}" class="btn btn-success btn-sm mb-3"><i class="bi bi-plus-circle"></i> Create</a>
 
             <div class="table-responsive">
@@ -44,52 +62,86 @@
                             <th>Title</th>
                             <th>Type</th>
                             <th>Created By</th>
-                            <th>Sent To</th> <!-- Added a new column for recipient role -->
+                            <th>Sent To</th>
                             <th>Send</th>
-                            <th>Results</th>
-                            <th>View Form</th>
+                            <!-- <th>Results</th> -->
+                            <th>Manage Questions</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach($evaluations as $evaluation)
                             <tr>
-                                <td>{{ $evaluation->title }}</td>
-                                <td>{{ ucfirst($evaluation->evaluation_type) }}</td>
-                                <td>{{ $evaluation->creator->profile->first_name}} {{ $evaluation->creator->profile->last_name }}</td>
                                 <td>
-                                    @if($evaluation->recipient_role)
-                                        @if($evaluation->recipient_role == 'all')
-                                            All (Faculty, Company, Students)
-                                        @elseif($evaluation->recipient_role == 'faculty')
-                                            Faculty
-                                        @elseif($evaluation->recipient_role == 'company')
-                                            Company
-                                        @elseif($evaluation->recipient_role == 'student')
-                                            Students
-                                        @endif
-                                    @else
-                                        Not Sent
+                                    @if ($evaluation->evaluation_type == 'program')
+                                        <a href="{{ route('evaluations.results', $evaluation->id) }}" class="btn btn-light btn-sm">
+                                            {{ $evaluation->title }}
+                                        </a>
+                                    @elseif ($evaluation->evaluation_type == 'intern_student')
+                                        <a href="{{ route('evaluations.internStudentRecipientList', $evaluation->id) }}" class="btn btn-light btn-sm">
+                                            {{ $evaluation->title }}
+                                        </a>
+                                    @elseif ($evaluation->evaluation_type == 'intern_company')
+                                        <a href="{{ route('evaluations.internCompanyRecipientList', $evaluation->id) }}" class="btn btn-light btn-sm">
+                                            {{ $evaluation->title }}
+                                        </a>
                                     @endif
                                 </td>
                                 <td>
-                                    <form method="POST" action="{{ route('evaluations.send', $evaluation->id) }}">
-                                        @csrf
-                                        <div class="d-flex align-items-center">
-                                            <select name="recipient_role" class="form-select form-select-sm me-2" style="width: 150px;">
-                                                <option value="all">All</option>
-                                                <option value="faculty">Faculty</option>
-                                                <option value="company">Company</option>
-                                                <option value="student">Students</option>
-                                            </select>
-                                            <button type="submit" class="btn btn-primary btn-sm">Send</button>
-                                        </div>
-                                    </form>
+                                    @if ($evaluation->evaluation_type == 'program')
+                                        Program Evaluation
+                                    @elseif ($evaluation->evaluation_type == 'intern_student')
+                                        Intern Evaluation by Company
+                                    @elseif ($evaluation->evaluation_type == 'intern_company')
+                                        Company Evaluation by Intern
+                                    @endif
+                                </td>
+                                <td>{{ $evaluation->creator->profile->first_name}} {{ $evaluation->creator->profile->last_name }}</td>
+                                <td>
+                                    @if ($evaluation->evaluation_type == 'program')
+                                        @if($evaluation->recipient_role)
+                                            @if($evaluation->recipient_role == 'all')
+                                                All (Faculty, Company, Students)
+                                            @elseif($evaluation->recipient_role == 'faculty')
+                                                Faculty
+                                            @elseif($evaluation->recipient_role == 'company')
+                                                Company
+                                            @elseif($evaluation->recipient_role == 'student')
+                                                Students
+                                            @endif
+                                        @else
+                                            Not Sent
+                                        @endif
+                                    @elseif ($evaluation->evaluation_type == 'intern_student')
+                                        Companies
+                                    @elseif ($evaluation->evaluation_type == 'intern_company')
+                                        Students
+                                    @endif
                                 </td>
                                 <td>
+                                    @if ($evaluation->evaluation_type == 'program')
+                                        <form method="POST" action="{{ route('evaluations.send', $evaluation->id) }}">
+                                            @csrf
+                                            <div class="d-flex align-items-center">
+                                                <select name="recipient_role" class="form-select form-select-sm me-2" style="width: 150px;">
+                                                    <option value="all">All</option>
+                                                    <option value="faculty">Faculty</option>
+                                                    <option value="company">Companies</option>
+                                                    <option value="student">Students</option>
+                                                </select>
+                                                <button type="submit" class="btn btn-primary btn-sm">Send</button>
+                                            </div>
+                                        </form>
+                                    @elseif ($evaluation->evaluation_type == 'intern_student')
+                                        To be sent to Companies
+                                    @elseif ($evaluation->evaluation_type == 'intern_company')
+                                        To be sent to Students
+                                    @endif
+                                </td>
+                                <!-- <td>
                                     <a href="{{ route('evaluations.results', $evaluation->id) }}" class="btn btn-info btn-sm"><i class="bi bi-bar-chart-line"></i></a>
-                                </td>
+                                </td> -->
                                 <td>
-                                    <a href="{{ route('evaluations.showResponseForm', $evaluation->id) }}" class="btn btn-primary btn-sm"><i class="bi bi-file-earmark-text"></i></a>
+                                    <a href="{{ route('evaluations.manageQuestions', $evaluation->id) }}" class="btn btn-primary btn-sm"><i class="bi bi-gear"></i></a>
                                 </td>
                             </tr>
                         @endforeach

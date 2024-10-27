@@ -11,7 +11,7 @@
 
   <!-- Favicons -->
   <link href="{{ asset('assets/img/favicon-internity.png') }}" rel="icon">
-    <link href="{{ asset('assets/img/apple-touch-icon-internity.png') }}" rel="apple-touch-icon">
+  <link href="{{ asset('assets/img/apple-touch-icon-internity.png') }}" rel="apple-touch-icon">
 
 
   <!-- Google Fonts -->
@@ -84,7 +84,7 @@
                 </li>
                 @foreach($unreadMessages as $unreadMessage)
                     <li class="message-item">
-                        <a href="{{ route('messages.show', $unreadMessage->id) }}">
+                        <a href="{{ route('messages.index') }}">
                         <img src="{{ $unreadMessage->sender->profile && $unreadMessage->sender->profile->profile_picture ? Storage::url($unreadMessage->sender->profile->profile_picture) : asset('assets/img/profile-img.jpg') }}" class="rounded-circle">
                             <div>
                                 <h4>{{ $unreadMessage->sender->name }}</h4>

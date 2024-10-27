@@ -26,8 +26,8 @@
                     <thead>
                         <tr>
                             <th>Title</th>
-                            <th>Description</th>
-                            <th>Type</th>
+                            <th>Eval. Type</th>
+                            <th>Posted By</th>
                             <th>Status</th>
                             <th>Action</th>
                         </tr>
@@ -35,23 +35,45 @@
                     <tbody>
                         @foreach($evaluations as $evaluation)
                             <tr>
-                                <td>{{ $evaluation->title }}</td>
-                                <td>{{ $evaluation->description }}</td>
-                                <td>{{ ucfirst($evaluation->evaluation_type) }}</td>
                                 <td>
-                                    @if($evaluation->responses->where('user_id', auth()->id())->count() > 0)
-                                        Answered
+                                    <a href="{{ route('evaluations.viewUserResponse', $evaluation->id) }}" class="btn btn-light btn-sm">
+                                        {{ $evaluation->title }}
+                                    </a>
+                                </td>
+                                <td>
+                                    @if ($evaluation->evaluation_type == 'program')
+                                        Program Evaluation
+                                    @elseif ($evaluation->evaluation_type == 'intern_student')
+                                        Intern Evaluation by Company
+                                    @elseif ($evaluation->evaluation_type == 'intern_company')
+                                        Company Evaluation by Intern
+                                    @endif
+                                </td>
+                                <td>{{ $evaluation->creator->profile->first_name}} {{ $evaluation->creator->profile->last_name }}</td>
+                                <td>
+                                    @if($evaluation->is_answered)
+                                        <span class="badge bg-success">Answered</span>
                                     @else
-                                        Not Answered
+                                        <span class="badge bg-warning">Not Answered</span>
                                     @endif
                                 </td>
                                 <td>
-                                    @if($evaluation->responses->where('user_id', auth()->id())->count() == 0)
+                                    @if(!$evaluation->is_answered)
                                         <a href="{{ route('evaluations.showResponseForm', $evaluation->id) }}" class="btn btn-primary btn-sm"><i class="bi bi-file-earmark-text"></i> Answer</a>
                                     @else
                                         <span class="badge bg-success">Already Answered</span>
                                     @endif
                                 </td>
+
+                                <!-- <td>
+                                    @if($evaluation->responses->where('user_id', auth()->id())->count() > 0)
+                                        <a href="{{ route('evaluations.viewUserResponse', $evaluation->id) }}" class="btn btn-info btn-sm">
+                                            <i class="bi bi-file-earmark-text"></i> 
+                                        </a>
+                                    @else
+                                        <span class="badge bg-secondary">No Response</span>
+                                    @endif
+                                </td> -->
                             </tr>
                         @endforeach
                     </tbody>

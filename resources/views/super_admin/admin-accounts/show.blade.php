@@ -21,7 +21,7 @@
     @endif
 
 <!-- Back to List Button -->
-<a href="{{ route('admin-accounts.index') }}" class="btn btn-secondary mb-3">Back</a>
+<a href="{{ route('admin-accounts.index') }}" class="btn btn-secondary mb-3 btn-sm">Back</a>
 
 
 <div class="card mb-4">
@@ -82,13 +82,13 @@
         <!-- Action Buttons Section -->
         <div class="row mt-4 text">
             <div class="col-md-12">
-                <a href="{{ route('admin-accounts.edit', $admin) }}" class="btn btn-warning me-2">
+                <a href="{{ route('admin-accounts.edit', $admin) }}" class="btn btn-warning me-2 btn-sm">
                     <i class="bi bi-pencil me-1"></i> Edit
                 </a>
 
                 @if($admin->status_id == 1)
                     <!-- Deactivate button -->
-                    <button type="button" class="btn btn-danger me-2" data-bs-toggle="modal" data-bs-target="#deactivateModal-{{ $admin->id }}">
+                    <button type="button" class="btn btn-danger me-2 btn-sm" data-bs-toggle="modal" data-bs-target="#deactivateModal-{{ $admin->id }}">
                         <i class="bi bi-trash me-1"></i> Deactivate
                     </button>
 
@@ -121,15 +121,15 @@
                     <form action="{{ route('admin-accounts.reactivate', $admin) }}" method="POST" style="display:inline;">
                         @csrf
                         @method('PATCH')
-                        <button type="submit" class="btn btn-success">
+                        <button type="submit" class="btn btn-success btn-sm">
                             <i class="bi bi-arrow-repeat me-1"></i> Reactivate
                         </button>
                     </form>
                 @endif
 
                 <!-- Demote button -->
-                <button type="button" class="btn btn-secondary me-2" data-bs-toggle="modal" data-bs-target="#demoteModal-{{ $admin->id }}">
-                    <i class="bi bi-arrow-down-circle me-1"></i> Demote Account
+                <button type="button" class="btn btn-secondary me-2 btn-sm" data-bs-toggle="modal" data-bs-target="#demoteModal-{{ $admin->id }}">
+                    <i class="bi bi-arrow-down-circle me-1"></i> Demote
                 </button>
 
                 <!-- Demote Modal -->

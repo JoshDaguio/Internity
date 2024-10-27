@@ -9,6 +9,9 @@ use App\Models\Requirement;
 use App\Models\ActivityLog;
 use App\Models\AcademicYear;
 use App\Models\Priority;
+use App\Models\AcceptedInternship;
+use App\Models\InternshipHours;
+use App\Models\DailyTimeRecord;
 use App\Mail\StudentApprovalMail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -18,6 +21,8 @@ use Illuminate\Support\Str;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Imports\StudentsImport;
 use Illuminate\Support\Facades\Storage;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Http;
 
 
 class AdminController extends Controller
@@ -59,7 +64,7 @@ class AdminController extends Controller
         return view('administrative.pending-registrations', compact('pendingRegistrations', 'allPendingRegistrations', 'courses'));
     }
 
-    // Method to show approved students
+    // Method to show approved student list
     public function approvedStudents(Request $request)
     {
         $user = Auth::user();
@@ -101,11 +106,50 @@ class AdminController extends Controller
         if ($user->role_id == 3) {
             $query->where('course_id', $user->course_id);
         }
-    
+
         $approvedStudents = $query->get();
+
+        // Attach progress details for each student
+        foreach ($approvedStudents as $student) {
+            $acceptedInternship = AcceptedInternship::where('student_id', $student->id)->first();
+
+            if ($acceptedInternship) {
+                // Fetch all daily records and latest daily record
+                $dailyRecords = DailyTimeRecord::where('student_id', $student->id)->get();
+                $latestDailyRecord = DailyTimeRecord::where('student_id', $student->id)
+                    ->orderBy('log_date', 'desc')
+                    ->first();
+
+                // Fetch total internship hours for the student's course
+                $internshipHours = InternshipHours::where('course_id', $student->course_id)->first();
+
+                // Calculate total worked hours
+                $totalWorkedHours = $dailyRecords->sum('total_hours_worked');
+
+                // Determine remaining hours based on the latest DTR or fallback to the total internship hours
+                $remainingHours = $latestDailyRecord ? $latestDailyRecord->remaining_hours : ($internshipHours->hours ?? 0);
+
+                if ($remainingHours > 0) {
+                    $student->completionPercentage = ($totalWorkedHours / $remainingHours) * 100;
+                } else {
+                    // If remaining hours are 0, consider the internship completed
+                    $student->completionPercentage = 100;
+                }
+
+                $student->totalWorkedHours = $totalWorkedHours;
+                $student->remainingHours = $remainingHours;
+                $student->hasInternship = true;
+            } else {
+                // If no internship is found
+                $student->completionPercentage = 0;
+                $student->totalWorkedHours = 0;
+                $student->remainingHours = 0;
+                $student->hasInternship = false;
+            }
+        }
     
         // Get all courses for filtering purposes
-        $courses = \App\Models\Course::all();
+        $courses = Course::all();
     
         return view('administrative.student-list', compact('approvedStudents', 'courses'));
     }
@@ -192,9 +236,94 @@ class AdminController extends Controller
             ->with('job.company') // Ensure to load the related job and company
             ->orderBy('priority') // Order by the priority level (1st, 2nd, etc.)
             ->get();
-    
+
+        $acceptedInternship = AcceptedInternship::where('student_id', $student->id)->first();
+
+        // Get current date from API
+        try {
+            $response = Http::get('http://worldtimeapi.org/api/timezone/Asia/Manila');
+            $currentDateTime = Carbon::parse($response->json('datetime'));
+        } catch (\Exception $e) {
+            $currentDateTime = Carbon::now(new \DateTimeZone('Asia/Manila'));
+        }
+
+        $startDate = Carbon::parse($acceptedInternship->start_date);
+
+        // Check if student is irregular
+        if ($student->profile->is_irregular && $acceptedInternship->custom_schedule) {
+            // Use custom schedule for irregular students
+            $schedule = $acceptedInternship->custom_schedule;
+            $scheduledDays = array_keys($schedule); // Extract the days based on keys
+        } else {
+            // Use regular schedule for regular students
+            $schedule = json_decode($acceptedInternship->schedule, true);
+
+            // Determine scheduled days based on work type
+            if ($acceptedInternship->work_type === 'Hybrid') {
+                // Combine onsite and remote days for hybrid schedules
+                $scheduledDays = array_merge($schedule['onsite_days'], $schedule['remote_days']);
+            } else {
+                // For On-site or Remote, use the standard 'days' array
+                $scheduledDays = $schedule['days'];
+            }
+        }
+
+        // Check if today is a scheduled day and after the start date
+        $isScheduledDay = in_array($currentDateTime->format('l'), $scheduledDays) && $currentDateTime->gte($startDate);
+
+        if ($acceptedInternship) {
+            // Fetch all daily records and latest daily record
+            $dailyRecords = DailyTimeRecord::where('student_id', $student->id)->get();
+            $latestDailyRecord = DailyTimeRecord::where('student_id', $student->id)
+                ->orderBy('log_date', 'desc')
+                ->first();
+
+            // Fetch total internship hours for the student's course
+            $internshipHours = InternshipHours::where('course_id', $student->course_id)->first();
+
+            // Calculate total worked hours
+            $totalWorkedHours = $dailyRecords->sum('total_hours_worked');
+
+            // Determine remaining hours based on the latest DTR or fallback to the total internship hours
+            $remainingHours = $latestDailyRecord ? $latestDailyRecord->remaining_hours : ($internshipHours->hours ?? 0);
+
+            if ($remainingHours > 0) {
+                $student->completionPercentage = ($totalWorkedHours / $remainingHours) * 100;
+            } else {
+                // If remaining hours are 0, consider the internship completed
+                $student->completionPercentage = 100;
+            }
+            $student->totalWorkedHours = $totalWorkedHours;
+            $student->remainingHours = $remainingHours;
+            $student->estimatedFinishDate = $this->calculateFinishDate($remainingHours, $startDate, $scheduledDays);
+            $student->hasInternship = true;
+        } else {
+            // If no internship is found
+            $student->completionPercentage = 0;
+            $student->totalWorkedHours = 0;
+            $student->remainingHours = 0;
+            $student->hasInternship = false;
+        }
+
         // Pass the student and priorityListings data to the view
         return view('administrative.show-student', compact('student', 'priorityListings'));
+    }
+
+    private function calculateFinishDate($remainingHours, $startDate, $scheduledDays)
+    {
+        $estimatedDays = ceil($remainingHours / 8);
+        // $date = Carbon::parse($startDate);
+        $date = Carbon::now();  // Start from today
+        $daysWorked = 0;
+    
+        while ($daysWorked < $estimatedDays) {
+            if (in_array($date->format('l'), $scheduledDays)) {
+                $daysWorked++;
+            }
+            $date->addDay();
+        }
+    
+        return $date;
     }
 
     // Method to show the form for creating a new student

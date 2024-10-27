@@ -62,7 +62,14 @@
                             </td>
                             <td>{{ $admin->email }}</td>
                             <td>{{ $admin->profile->id_number ?? 'N/A' }}</td>
-                            <td>{{ $admin->status_id == 1 ? 'Active' : 'Inactive' }}</td>
+                            <td>
+                                <!-- {{ $admin->status_id == 1 ? 'Active' : 'Inactive' }} -->
+                                @if($admin->status_id == 1)
+                                    <span class="badge bg-success">Active</span>
+                                @else
+                                    <span class="badge bg-danger">Inactive</span>
+                                @endif
+                            </td>
                             <td>
                                 <a href="{{ route('admin-accounts.edit', $admin) }}" class="btn btn-warning btn-sm"><i class="bi bi-pencil"></i></a>
                                 <!-- Show the Deactivate button only if the account is active -->

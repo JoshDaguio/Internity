@@ -48,11 +48,11 @@
                                 </button>
 
                                 <!-- Delete Form -->
-                                <form action="{{ route('skill_tags.destroy', $tag->id) }}" method="POST" style="display:inline-block;">
+                                <!-- <form action="{{ route('skill_tags.destroy', $tag->id) }}" method="POST" style="display:inline-block;">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="btn btn-danger btn-sm"><i class="bi bi-trash"></i></button>
-                                </form>
+                                </form> -->
 
                                 <!-- Modal for Editing Skill Tag -->
                                 <div class="modal fade" id="editSkillTagModal-{{ $tag->id }}" tabindex="-1" aria-labelledby="editSkillTagModalLabel-{{ $tag->id }}" aria-hidden="true">

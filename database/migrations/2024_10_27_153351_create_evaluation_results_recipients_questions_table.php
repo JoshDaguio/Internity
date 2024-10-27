@@ -33,18 +33,20 @@ return new class extends Migration
         Schema::create('responses', function (Blueprint $table) {
             $table->id();
             $table->foreignId('evaluation_id')->constrained('evaluations')->onDelete('cascade'); // FK for evaluations table
-            $table->foreignId('user_id')->constrained('users')->onDelete('cascade'); // FK for users table
+            $table->foreignId('evaluator')->constrained('users')->onDelete('cascade'); // Reference to evaluator
+            $table->foreignId('evaluatee')->nullable()->constrained('users')->onDelete('cascade'); // Reference to evaluatee
             $table->foreignId('question_id')->constrained('questions')->onDelete('cascade'); // FK for questions table
             $table->string('response_text')->nullable(); // For long text answers
             $table->integer('response_value')->nullable(); // For radio button answers (1-4)
+            $table->string('supervisor')->nullable(); // Supervisor's name if needed
             $table->timestamps();
         });
 
-        Schema::create('evaluation_results', function (Blueprint $table) {
+        Schema::create('evaluation_recipients', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('evaluation_id')->constrained('evaluations')->onDelete('cascade'); // Added FK constraint
-            $table->unsignedBigInteger('user_id')->nullable(); // For company/student evaluation results
-            $table->decimal('total_score', 5, 2)->nullable(); // For overall score or average
+            $table->foreignId('evaluation_id')->constrained('evaluations')->onDelete('cascade'); // FK for evaluations table
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade'); // FK for users table
+            $table->boolean('is_answered')->default(false); // Track if answered
             $table->timestamps();
         });
     }
@@ -54,7 +56,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('evaluation_results');
+        Schema::dropIfExists('evaluation_recipients');
         Schema::dropIfExists('responses');
         Schema::dropIfExists('questions');
         Schema::dropIfExists('evaluations');

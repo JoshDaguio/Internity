@@ -12,9 +12,11 @@ class Response extends Model
     protected $fillable = [
         'evaluation_id', 
         'question_id', 
-        'user_id', 
+        'evaluator', 
+        'evaluatee', 
         'response_text', 
-        'response_value'
+        'response_value',
+        'supervisor'
     ];
 
     public function evaluation()

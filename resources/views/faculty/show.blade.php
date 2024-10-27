@@ -21,7 +21,7 @@
         <div class="alert alert-danger">{{ session('error') }}</div>
     @endif
 
-<a href="javascript:history.back()" class="btn btn-secondary mb-3">Back</a>
+<a href="javascript:history.back()" class="btn btn-secondary mb-3 btn-sm">Back</a>
 
 <div class="card mb-4">
 
@@ -83,13 +83,13 @@
         <!-- Action Buttons Section -->
         <div class="row mt-4 text">
             <div class="col-md-12">
-                <a href="{{ route('faculty.edit', $faculty) }}" class="btn btn-warning me-2 {{ $faculty->status_id != 1 ? 'd-none' : '' }}">
+                <a href="{{ route('faculty.edit', $faculty) }}" class="btn btn-warning me-2 btn-sm {{ $faculty->status_id != 1 ? 'd-none' : '' }}">
                     <i class="bi bi-pencil me-1"></i> Edit
                 </a>
 
                 @if($faculty->status_id == 1)
                     <!-- Deactivate button -->
-                    <button type="button" class="btn btn-danger me-2" data-bs-toggle="modal" data-bs-target="#deactivateModal-{{ $faculty->id }}">
+                    <button type="button" class="btn btn-danger me-2 btn-sm" data-bs-toggle="modal" data-bs-target="#deactivateModal-{{ $faculty->id }}">
                         <i class="bi bi-trash me-1"></i> Deactivate
                     </button>
 
@@ -122,7 +122,7 @@
                     <form action="{{ route('faculty.reactivate', $faculty) }}" method="POST" style="display:inline;">
                         @csrf
                         @method('PATCH')
-                        <button type="submit" class="btn btn-success">
+                        <button type="submit" class="btn btn-success btn-sm">
                             <i class="bi bi-arrow-repeat me-1"></i> Reactivate
                         </button>
                     </form>
@@ -130,8 +130,8 @@
 
                 @if(Auth::user()->role_id == 1)
                 <!-- Promote button -->
-                    <button type="button" class="btn btn-primary me-2" data-bs-toggle="modal" data-bs-target="#promoteModal-{{ $faculty->id }}">
-                        <i class="bi bi-arrow-up-circle me-1"></i> Promote Account
+                    <button type="button" class="btn btn-primary me-2 btn-sm" data-bs-toggle="modal" data-bs-target="#promoteModal-{{ $faculty->id }}">
+                        <i class="bi bi-arrow-up-circle me-1"></i> Promote
                     </button>
 
                     <!-- Promote Modal -->
