@@ -23,8 +23,10 @@
     <!-- Add Student Button -->
     <a href="{{ route('students.create') }}" class="btn btn-primary mb-3 btn-sm">Add Student</a>
 
-    <a href="{{ route('students.import') }}" class="btn btn-success mb-3 ms-2 btn-sm">Import Students</a>
-    
+    @if(Auth::user()->role_id == 1 || Auth::user()->role_id == 2)
+        <a href="{{ route('students.import') }}" class="btn btn-success mb-3 ms-2 btn-sm">Import Students</a>
+    @endif
+
     <div class="row">
         <!-- Filters and Progress Bar Row -->
         <div class="col-lg-6">
@@ -32,8 +34,14 @@
             <div class="card mb-3">
                 <div class="card-body">
                     <h5 class="card-title">Filter</h5>
+                    @if(Auth::user()->role_id == 1 || Auth::user()->role_id == 2)
                     <div class="filter-container" style="min-height: 163px; max-height: 163px; overflow-y: auto;">
+                    @else
+                    <div class="filter-container" style="min-height: 72px; max-height: 72px;">
+                    @endif
                         <form method="GET" action="{{ route('students.list') }}">
+
+                            @if(Auth::user()->role_id == 1 || Auth::user()->role_id == 2)
                             <div class="mb-3">
                                 <select name="course_id" id="course_id" class="form-select" onchange="this.form.submit()">
                                     <option value="">All Courses</option>
@@ -59,6 +67,15 @@
                                     <option value="2" {{ request('status_id') == '2' ? 'selected' : '' }}>Inactive</option>
                                 </select>
                             </div>
+                            @else
+                            <div class="mb-3">
+                                <select name="status_id" id="status_id" class="form-select" onchange="this.form.submit()">
+                                    <option value="">All Statuses</option>
+                                    <option value="1" {{ request('status_id') == '1' ? 'selected' : '' }}>Active</option>
+                                    <option value="2" {{ request('status_id') == '2' ? 'selected' : '' }}>Inactive</option>
+                                </select>
+                            </div>
+                            @endif
                         </form>
                     </div>
                 </div>
@@ -70,7 +87,11 @@
             <div class="card mb-3">
                 <div class="card-body">
                     <h5 class="card-title">Approved Students by Course</h5>
-                    <div class="progress-container" style="min-height: 163px; max-height: 163px; overflow-y: auto;">
+                    @if(Auth::user()->role_id == 1 || Auth::user()->role_id == 2)
+                    <div class="filter-container" style="min-height: 163px; max-height: 163px; overflow-y: auto;">
+                    @else
+                    <div class="filter-container" style="min-height: 72px; max-height: 72px;">
+                    @endif
                         @php
                             $totalApproved = $approvedStudents->count();
                         @endphp
@@ -163,7 +184,13 @@
                                             @endif
                                         </td>
                                         @endif
-                                        <td>{{ $student->status_id == 1 ? 'Active' : 'Inactive' }}</td>
+                                        <td>
+                                            @if($student->status_id == 1)
+                                                <span class="badge bg-success">Active</span>
+                                            @else
+                                                <span class="badge bg-danger">Inactive</span>
+                                            @endif
+                                        </td>
                                     </tr>
                                 @empty
                                     <tr>

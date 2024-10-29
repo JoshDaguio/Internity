@@ -247,58 +247,50 @@ class AdminController extends Controller
             $currentDateTime = Carbon::now(new \DateTimeZone('Asia/Manila'));
         }
 
-        $startDate = Carbon::parse($acceptedInternship->start_date);
-
-        // Check if student is irregular
-        if ($student->profile->is_irregular && $acceptedInternship->custom_schedule) {
-            // Use custom schedule for irregular students
-            $schedule = $acceptedInternship->custom_schedule;
-            $scheduledDays = array_keys($schedule); // Extract the days based on keys
-        } else {
-            // Use regular schedule for regular students
-            $schedule = json_decode($acceptedInternship->schedule, true);
-
-            // Determine scheduled days based on work type
-            if ($acceptedInternship->work_type === 'Hybrid') {
-                // Combine onsite and remote days for hybrid schedules
-                $scheduledDays = array_merge($schedule['onsite_days'], $schedule['remote_days']);
-            } else {
-                // For On-site or Remote, use the standard 'days' array
-                $scheduledDays = $schedule['days'];
-            }
-        }
-
-        // Check if today is a scheduled day and after the start date
-        $isScheduledDay = in_array($currentDateTime->format('l'), $scheduledDays) && $currentDateTime->gte($startDate);
-
         if ($acceptedInternship) {
-            // Fetch all daily records and latest daily record
+            $startDate = Carbon::parse($acceptedInternship->start_date);
+    
+            // Check if student is irregular and has a custom schedule
+            if ($student->profile->is_irregular && $acceptedInternship->custom_schedule) {
+                $schedule = $acceptedInternship->custom_schedule;
+                $scheduledDays = array_keys($schedule); // Extract the days based on keys
+            } else {
+                // Use regular schedule for regular students
+                $schedule = json_decode($acceptedInternship->schedule, true);
+    
+                // Determine scheduled days based on work type
+                if ($acceptedInternship->work_type === 'Hybrid') {
+                    $scheduledDays = array_merge($schedule['onsite_days'], $schedule['remote_days']);
+                } else {
+                    $scheduledDays = $schedule['days'];
+                }
+            }
+    
+            // Check if today is a scheduled day and after the start date
+            $isScheduledDay = in_array($currentDateTime->format('l'), $scheduledDays) && $currentDateTime->gte($startDate);
+    
+            // Fetch daily records and the latest daily record
             $dailyRecords = DailyTimeRecord::where('student_id', $student->id)->get();
             $latestDailyRecord = DailyTimeRecord::where('student_id', $student->id)
                 ->orderBy('log_date', 'desc')
                 ->first();
-
+    
             // Fetch total internship hours for the student's course
             $internshipHours = InternshipHours::where('course_id', $student->course_id)->first();
-
+    
             // Calculate total worked hours
             $totalWorkedHours = $dailyRecords->sum('total_hours_worked');
-
+    
             // Determine remaining hours based on the latest DTR or fallback to the total internship hours
             $remainingHours = $latestDailyRecord ? $latestDailyRecord->remaining_hours : ($internshipHours->hours ?? 0);
-
-            if ($remainingHours > 0) {
-                $student->completionPercentage = ($totalWorkedHours / $remainingHours) * 100;
-            } else {
-                // If remaining hours are 0, consider the internship completed
-                $student->completionPercentage = 100;
-            }
+    
+            $student->completionPercentage = $remainingHours > 0 ? ($totalWorkedHours / $remainingHours) * 100 : 100;
             $student->totalWorkedHours = $totalWorkedHours;
             $student->remainingHours = $remainingHours;
             $student->estimatedFinishDate = $this->calculateFinishDate($remainingHours, $startDate, $scheduledDays);
             $student->hasInternship = true;
         } else {
-            // If no internship is found
+            // Default values if no internship is found
             $student->completionPercentage = 0;
             $student->totalWorkedHours = 0;
             $student->remainingHours = 0;

@@ -154,8 +154,8 @@
 
             <!-- Submit and Cancel Buttons -->
             <div class="text-center">
-                <button type="submit" class="btn btn-primary">Update</button>
-                <a href="{{ route('jobs.index') }}" class="btn btn-secondary">Cancel</a>
+                <button type="submit" class="btn btn-primary btn-sm">Update</button>
+                <a href="{{ route('jobs.index') }}" class="btn btn-secondary btn-sm">Cancel</a>
             </div>
         </form>
     </div>

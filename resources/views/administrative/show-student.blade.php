@@ -294,8 +294,8 @@
                             </div>
                         </div>
 
-                        <p><strong><span class="badge bg-success"><i class="bi bi-calendar"></i> Start Date:</strong></span> {{ \Carbon\Carbon::parse($student->acceptedInternship->start_date)->format('F d, Y') }}</p>
-                        <p><strong><span class="badge bg-primary"><i class="bi bi-calendar-check"></i> Est. Date of Finish:</strong></span> {{ $student->estimatedFinishDate->format('F d, Y') }}</p>
+                        <p><strong><span class="badge bg-success"><i class="bi bi-calendar"></i> Start Date:</strong></span> {{ \Carbon\Carbon::parse($student->acceptedInternship->start_date)->format('F d, Y') ?? 'No Internship Yet'}}</p>
+                        <p><strong><span class="badge bg-primary"><i class="bi bi-calendar-check"></i> Est. Date of Finish:</strong></span> {{ $student->estimatedFinishDate->format('F d, Y') ?? 'No Internship Yet' }}</p>
 
                         <div class="row">
                             <div class="col-md-4">

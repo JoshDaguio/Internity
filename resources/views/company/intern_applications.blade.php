@@ -28,19 +28,21 @@
                             <th>Industry</th>
                             <th>Date Posted</th>
                             <th>Applicants</th>
-                            <th>Actions</th>
+                            <th>Accepted</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach ($jobs as $job)
                         <tr>
-                            <td>{{ $job->title }}</td>
+                            <td>
+                                <a href="{{ route('company.jobApplications', $job->id) }}" class="btn btn-light btn-sm">
+                                    {{ $job->title }}
+                                </a>
+                            </td>
                             <td>{{ $job->industry }}</td>
                             <td>{{ $job->created_at->format('M d, Y') }}</td>
                             <td>{{ $job->nonAcceptedApplicationsCount() }}</td>
-                            <td>
-                                <a href="{{ route('company.jobApplications', $job->id) }}" class="btn btn-info btn-sm"><i class="bi bi-info-circle"></i></a>
-                            </td>
+                            <td>{{ $job->acceptedApplicantsCount() }}</td>
                         </tr>
                         @endforeach
                     </tbody>

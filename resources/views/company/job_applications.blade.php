@@ -15,7 +15,7 @@
     </div><!-- End Page Title -->
 
     <!-- Back Button -->
-    <a href="{{ route('company.internApplications') }}" class="btn btn-secondary mb-3">Back</a>
+    <a href="{{ route('company.internApplications') }}" class="btn btn-secondary mb-3 btn-sm">Back</a>
 
     @if(session('success'))
         <div class="alert alert-success">{{ session('success') }}</div>
@@ -26,13 +26,13 @@
     @endif
     
     <!-- Job Information Section -->
-    <div class="row mb-0">
+    <div class="row mb-2">
         <!-- Job Information Card -->
         <div class="col-md-4">
             <div class="card">
                 <div class="card-body">
                     <h5 class="card-title">Job Information</h5>
-                    <p><strong>Available Positions:</strong> {{ $job->positions_available }}</p>
+                    <p><strong><i class="bi bi-person-plus"></i> Available Positions:</strong> {{ $job->positions_available }}</p>
                     
                     <!-- Schedule -->
                     @php
@@ -41,10 +41,10 @@
                         $endTime = \Carbon\Carbon::createFromFormat('H:i', $schedule['end_time'])->format('g:i A');
                     @endphp
                     
-                    <p><strong>Work Type:</strong> {{ $job->work_type }}</p>
+                    <p><strong><i class="bi bi-building"></i> Work Type:</strong> {{ $job->work_type }}</p>
 
                     <ul class="list-unstyled">
-                        <li><strong>Schedule:</strong></li>
+                        <li><strong><i class="bi bi-calendar3"></i> Schedule:</strong></li>
                         <li><strong>Days:</strong> {{ implode(', ', $schedule['days'] ?? []) }}</li>
                         @if ($job->work_type === 'Hybrid')
                             <li><strong>On-site Days:</strong> {{ implode(', ', $schedule['onsite_days'] ?? []) }}</li>
@@ -68,7 +68,7 @@
                         <div class="accordion-item">
                             <h2 class="accordion-header" id="headingDescription">
                                 <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseDescription" aria-expanded="false" aria-controls="collapseDescription">
-                                    Description
+                                    <strong><i class="bi bi-file-text"></i> Description</strong>
                                 </button>
                             </h2>
                             <div id="collapseDescription" class="accordion-collapse collapse" aria-labelledby="headingDescription" data-bs-parent="#jobDetailsAccordion">
@@ -82,7 +82,7 @@
                         <div class="accordion-item">
                             <h2 class="accordion-header" id="headingQualification">
                                 <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseQualification" aria-expanded="false" aria-controls="collapseQualification">
-                                    Qualification
+                                    <strong><i class="bi bi-mortarboard"></i> Qualification</strong>
                                 </button>
                             </h2>
                             <div id="collapseQualification" class="accordion-collapse collapse" aria-labelledby="headingQualification" data-bs-parent="#jobDetailsAccordion">
@@ -96,12 +96,12 @@
                         <div class="accordion-item">
                             <h2 class="accordion-header" id="headingSkills">
                                 <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSkills" aria-expanded="false" aria-controls="collapseSkills">
-                                    Preferred Skills
+                                    <strong><i class="bi bi-lightbulb"></i> Preferred Skills</strong>
                                 </button>
                             </h2>
                             <div id="collapseSkills" class="accordion-collapse collapse" aria-labelledby="headingSkills" data-bs-parent="#jobDetailsAccordion">
                                 <div class="accordion-body">
-                                    {{ $job->skillTags->pluck('name')->implode(', ') }}
+                                    {{ $job->skillTags->pluck('name')->implode(', ') ?? 'No Skill Tag Added' }}
                                 </div>
                             </div>
                         </div>

@@ -13,7 +13,7 @@
         </nav>
     </div>
 
-    <a href="{{ route('students.show', $student->id) }}" class="btn btn-secondary mb-3">Back</a>
+    <a href="{{ route('students.show', $student->id) }}" class="btn btn-secondary mb-3 btn-sm">Back</a>
 
     <div class="card mb-3">
         <div class="card-body">

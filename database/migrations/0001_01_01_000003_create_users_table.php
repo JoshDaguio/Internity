@@ -56,6 +56,7 @@ return new class extends Migration
             $table->foreignId('course_id')->nullable()->constrained('courses');
             $table->foreignId('profile_id')->nullable()->constrained('profiles');
             $table->date('expiry_date')->nullable(); // Expiry date for company accounts
+            $table->integer('pullout_count')->default(10);
             $table->rememberToken();
             $table->timestamps();
         });

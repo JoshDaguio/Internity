@@ -52,11 +52,11 @@
             <table class="table table-borderless">
                 <tbody>
                     <tr>
-                        <td class="fw-bold">Industry:</td>
+                        <td class="fw-bold"><i class="bi bi-briefcase"></i> Industry:</td>
                         <td>{{ $job->industry }}</td>
                     </tr>
                     <tr>
-                        <td class="fw-bold">Positions Available:</td>
+                        <td class="fw-bold"><i class="bi bi-person-plus"></i> Positions Available:</td>
                         <td>
                             @if($job->positions_available > 0)
                                 {{ $job->positions_available }}
@@ -66,15 +66,15 @@
                         </td>
                     </tr>
                     <tr>
-                        <td class="fw-bold">Location:</td>
+                        <td class="fw-bold"><i class="bi bi-geo-alt"></i> Location:</td>
                         <td>{{ $job->location }}</td>
                     </tr>
                     <tr>
-                        <td class="fw-bold">Work Type:</td>
+                        <td class="fw-bold"><i class="bi bi-building"></i> Work Type:</td>
                         <td>{{ $job->work_type }}</td>
                     </tr>
                     <tr>
-                        <td class="fw-bold">Schedule:</td>
+                        <td class="fw-bold"><i class="bi bi-calendar3"></i> Schedule:</td>
                         <td>
                             @php
                                 $schedule = json_decode($job->schedule, true);
@@ -90,15 +90,15 @@
                         </td>
                     </tr>
                     <tr>
-                        <td class="fw-bold">Description:</td>
+                        <td class="fw-bold"><i class="bi bi-file-text"></i> Description:</td>
                         <td>{{ $job->description }}</td>
                     </tr>
                     <tr>
-                        <td class="fw-bold">Qualification:</td>
+                        <td class="fw-bold"><i class="bi bi-mortarboard"></i> Qualification:</td>
                         <td>{{ $job->qualification }}</td>
                     </tr>
                     <tr>
-                        <td class="fw-bold">Preferred Skills:</td>
+                        <td class="fw-bold"><i class="bi bi-lightbulb"></i> Preferred Skills:</td>
                         <td>{{ $job->skillTags->pluck('name')->implode(', ') }}</td>
                     </tr>
                 </tbody>
@@ -107,7 +107,7 @@
 
         <div class="d-flex">
             @if(Auth::id() === $job->company_id)
-                <a href="{{ route('jobs.edit', $job) }}" class="btn btn-warning me-2">
+                <a href="{{ route('jobs.edit', $job) }}" class="btn btn-warning me-2 btn-sm">
                     <i class="bi bi-pencil"></i> 
                 </a>
             @endif
@@ -129,67 +129,26 @@
                         <th>Email</th>
                         <th>Course</th>
                         <th>Start Date</th>
-                        <th>Action</th>
+                        <th>Est. Finish Date</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach($acceptedInterns as $intern)
                     <tr>
-                        <td>{{ $intern->student->profile->first_name }} {{ $intern->student->profile->last_name }}</td>
+                        <td>
+                            <a href="{{ route('students.show', $intern->student->id) }}" class="btn btn-light btn-sm">
+                                {{ $intern->student->profile->last_name }}, {{ $intern->student->profile->first_name }}
+                            </a>
+                        </td>
                         <td>{{ $intern->student->email }}</td>
                         <td>{{ $intern->student->course->course_code }}</td>
-                        <td>{{ \Carbon\Carbon::parse($intern->start_date)->format('F d, Y') }}</td>
-                        <td>
-                            <button class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#viewInternModal{{ $intern->id }}"><i class="bi bi-info-circle"></i></button>
-                        </td>
+                        <td><span class="badge bg-success">{{ \Carbon\Carbon::parse($intern->start_date)->format('M d, Y') }}</span></td>
+                        <td><span class="badge bg-primary">{{ \Carbon\Carbon::parse($intern->estimatedFinishDate)->format('M d, Y') }}</span></td> <!-- Display Est. Finish Date -->
                     </tr>
-
-                    <!-- Intern Details Modal -->
-                    <div class="modal fade" id="viewInternModal{{ $intern->id }}" tabindex="-1" aria-labelledby="viewInternModalLabel{{ $intern->id }}" aria-hidden="true">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="viewInternModalLabel{{ $intern->id }}">Intern Information</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body">
-                                    <p><strong>Full Name:</strong> {{ $intern->student->profile->first_name }} {{ $intern->student->profile->last_name }}</p>
-                                    <p><strong>Course:</strong> {{ $intern->student->course->course_code }}</p>
-                                    <p><strong>Email:</strong> {{ $intern->student->email }}</p>
-                                    <p><strong>Job Title:</strong> {{ $job->title }}</p>
-                                    <p><strong>Start Date:</strong> {{ \Carbon\Carbon::parse($intern->start_date)->format('F d, Y') }}</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                     @endforeach
                 </tbody>
             </table>
         </div>
     </div>
 </div>
-
-<!-- Modal for file preview -->
-<div class="modal fade" id="filePreviewModal" tabindex="-1" aria-labelledby="filePreviewLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="filePreviewLabel">File Preview</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <iframe id="filePreviewIframe" src="" style="width: 100%; height: 500px;" frameborder="0"></iframe>
-            </div>
-        </div>
-    </div>
-</div>
-
-<script>
-    function showPreview(url) {
-        document.getElementById('filePreviewIframe').src = url;
-        var filePreviewModal = new bootstrap.Modal(document.getElementById('filePreviewModal'), {});
-        filePreviewModal.show();
-    }
-</script>
-
 @endsection

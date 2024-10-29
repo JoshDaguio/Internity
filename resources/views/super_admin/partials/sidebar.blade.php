@@ -116,9 +116,9 @@
   </li><!-- End Skill Tags Nav -->
 
   <li class="nav-item">
-    <a class="nav-link collapsed" href="#">
-      <i class="bi bi-envelope"></i>
-      <span>Requests</span>  
+    <a class="nav-link {{ request()->routeIs('pullouts.index') ? '' : 'collapsed' }}" href="{{ route('pullouts.index') }}">
+        <i class="bi bi-envelope"></i>
+        <span>Requests</span>  
     </a>
   </li><!-- End Request Nav -->
 

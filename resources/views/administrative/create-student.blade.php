@@ -49,7 +49,7 @@
                 <div class="col-md-12">
                     <div class="form-floating">
                         <input type="email" name="email" class="form-control" id="email" value="{{ old('email') }}" placeholder="Email" required>
-                        <label for="email">Email (AUF Email)</label>
+                        <label for="email">AUF Email (lastname.firstname@auf.edu.ph)</label>
                         <div class="invalid-feedback">Please enter a valid email address.</div>
                     </div>
                     <x-input-error :messages="$errors->get('email')" class="mt-2" />
@@ -65,19 +65,33 @@
                 </div>
 
                 <div class="col-md-12">
-                    <div class="form-floating">
-                        <select name="course_id" class="form-select" id="course_id" required>
-                            @foreach($courses as $course)
-                                <option value="{{ $course->id }}" {{ old('course_id') == $course->id ? 'selected' : '' }}>
-                                    {{ $course->course_code }}
-                                </option>
-                            @endforeach
-                        </select>
-                        <label for="course_id">Course</label>
-                        <div class="invalid-feedback">Please select a course.</div>
-                    </div>
-                    <x-input-error :messages="$errors->get('course_id')" class="mt-2" />
+                    @if(Auth::user()->role_id == 1 || Auth::user()->role_id == 2) <!-- Super Admin or Admin -->
+                        <div class="form-floating">
+                            <select name="course_id" class="form-select" id="course_id" required>
+                                <option value="">Select a course</option> <!-- Optional placeholder -->
+                                @foreach($courses as $course)
+                                    <option value="{{ $course->id }}" {{ old('course_id') == $course->id ? 'selected' : '' }}>
+                                        {{ $course->course_code }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            <label for="course_id">Course</label>
+                            <div class="invalid-feedback">Please select a course.</div>
+                        </div>
+                        <x-input-error :messages="$errors->get('course_id')" class="mt-2" />
+                    @else <!-- For faculty, set the course automatically -->
+                    
+                        <input type="hidden" name="course_id" value="{{ Auth::user()->course_id }}">
+                        <div class="form-floating">
+                            <input type="text" class="form-control" value="{{ Auth::user()->course->course_code }}" disabled>
+                            <label>Course</label>
+                        </div>
+                        <div class="form-text">
+                            <p><strong><code>Faculty Users Can Only Add Students From Their Course</code></strong></p>
+                        </div>
+                    @endif
                 </div>
+
 
                 <div class="text-center mt-3">
                     <button type="submit" class="btn btn-primary">Create</button>

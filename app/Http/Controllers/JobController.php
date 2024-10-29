@@ -5,7 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\Job;
 use App\Models\SkillTag;
 use App\Models\AcceptedInternship;
+use App\Models\InternshipHours;
+use App\Models\DailyTimeRecord;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 
 class JobController extends Controller
@@ -90,7 +93,60 @@ class JobController extends Controller
             ->where('job_id', $job->id)
             ->get();
 
+        foreach ($acceptedInterns as $intern) {
+            $student = $intern->student;
+            $startDate = Carbon::parse($intern->start_date);
+
+            // Determine if the student has a custom schedule for irregular students
+            if ($student->profile->is_irregular && $intern->custom_schedule) {
+                $schedule = $intern->custom_schedule;
+                $scheduledDays = array_keys($schedule); // Extract days from keys
+            } else {
+                $schedule = json_decode($intern->schedule, true);
+
+                if ($intern->work_type === 'Hybrid') {
+                    // Combine onsite and remote days for hybrid schedules
+                    $scheduledDays = array_merge($schedule['onsite_days'], $schedule['remote_days']);
+                } else {
+                    // Use regular days for On-site or Remote work types
+                    $scheduledDays = $schedule['days'];
+                }
+            }
+
+            // Fetch daily records and calculate total worked hours
+            $dailyRecords = DailyTimeRecord::where('student_id', $student->id)->get();
+            $totalWorkedHours = $dailyRecords->sum('total_hours_worked');
+
+            // Fetch total internship hours for the student's course
+            $internshipHours = InternshipHours::where('course_id', $student->course_id)->first();
+
+            // Determine remaining hours
+            $latestDailyRecord = $dailyRecords->last();
+            $remainingHours = $latestDailyRecord ? $latestDailyRecord->remaining_hours : ($internshipHours->hours ?? 0);
+
+            // Calculate estimated finish date
+            $intern->estimatedFinishDate = $remainingHours > 0
+                ? $this->calculateFinishDate($remainingHours, $startDate, $scheduledDays)
+                : Carbon::now();
+        }
+        
         return view('jobs.show', compact('job', 'acceptedInterns', 'company'));
+    }
+
+    private function calculateFinishDate($remainingHours, $startDate, $scheduledDays)
+    {
+        $estimatedDays = ceil($remainingHours / 8);
+        $date = Carbon::now(); // Start from today
+        $daysWorked = 0;
+
+        while ($daysWorked < $estimatedDays) {
+            if (in_array($date->format('l'), $scheduledDays)) {
+                $daysWorked++;
+            }
+            $date->addDay();
+        }
+
+        return $date;
     }
 
     public function edit(Job $job)

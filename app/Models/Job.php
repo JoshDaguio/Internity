@@ -47,4 +47,10 @@ class Job extends Model
                     ->count();
     }
 
+
+    public function acceptedApplicantsCount()
+    {
+        return $this->hasMany(AcceptedInternship::class, 'job_id')->count();
+    }
+
 }

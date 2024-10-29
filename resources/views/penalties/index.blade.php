@@ -22,8 +22,8 @@
                     <thead>
                         <tr>
                             <th>Violation</th>
-                            <th>Penalty Hours</th>
-                            <th>Equivalent Days</th> <!-- Add this column -->
+                            <th>Penalty</th>
+                            <th>Equivalent</th> <!-- Add this column -->
                             <th>Conditions</th>
                             <th>Action</th>
                         </tr>
@@ -47,11 +47,11 @@
                             <td>{{ $penalty->conditions ?? 'None' }}</td>
                             <td>
                                 <a href="{{ route('penalties.edit', $penalty) }}" class="btn btn-warning btn-sm"><i class="bi bi-pencil"></i></a>
-                                <form action="{{ route('penalties.destroy', $penalty) }}" method="POST" style="display:inline;">
+                                <!-- <form action="{{ route('penalties.destroy', $penalty) }}" method="POST" style="display:inline;">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="btn btn-danger btn-sm"><i class="bi bi-trash"></i></button>
-                                </form>
+                                </form> -->
                             </td>
                         </tr>
                         @endforeach

@@ -19,13 +19,9 @@ class AdminAccountController extends Controller
     {
         $query = User::where('role_id', 2); // Fetch only admin accounts
 
-        // Apply status filter
-        if ($request->has('status')) {
-            if ($request->status == 'active') {
-                $query->where('status_id', 1);
-            } elseif ($request->status == 'inactive') {
-                $query->where('status_id', 2);
-            }
+        // Apply the status filter
+        if ($request->has('status_id') && in_array($request->status_id, ['1', '2'])) {
+            $query->where('status_id', $request->status_id);
         }
     
         $admins = $query->get();

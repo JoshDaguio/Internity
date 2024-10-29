@@ -21,7 +21,7 @@
         <div class="alert alert-danger">{{ session('error') }}</div>
     @endif
     
-    <a href="{{ route('jobs.create') }}" class="btn btn-primary mb-3">Add Job</a>
+    <a href="{{ route('jobs.create') }}" class="btn btn-primary btn-sm mb-3">Add Job</a>
 
     <div class="row">
         <!-- Job Listings Table -->

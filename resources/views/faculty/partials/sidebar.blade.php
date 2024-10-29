@@ -20,29 +20,28 @@
     </a>
   </li><!-- End Profile Page Nav -->
 
+  <li class="nav-heading">Internship Management</li>
 
   <li class="nav-item">
-    <a class="nav-link {{ request()->routeIs('registrations.pending', 'students.list') ? '' : 'collapsed' }}" data-bs-target="#student-nav" data-bs-toggle="collapse" href="#">
-      <i class="bi bi-menu-button-wide"></i><span>Student</span><i class="bi bi-chevron-down ms-auto"></i>
+    <a class="nav-link {{ request()->routeIs('registrations.pending', 'students.list', 'students.create', 'students.show', 'students.edit', 'students.eod','students.dtr') ? '' : 'collapsed' }}" data-bs-target="#student-nav" data-bs-toggle="collapse" href="#">
+      <i class="bi bi-people"></i><span>Student</span><i class="bi bi-chevron-down ms-auto"></i>
     </a>
-    <ul id="student-nav" class="nav-content {{ request()->routeIs('registrations.pending', 'students.list') ? '' : 'collapse' }} " data-bs-parent="#sidebar-nav">
+    <ul id="student-nav" class="nav-content {{ request()->routeIs('registrations.pending', 'students.list', 'students.create', 'students.show', 'students.edit', 'students.eod', 'students.dtr') ? '' : 'collapse' }} " data-bs-parent="#sidebar-nav">
       <li>
         <a href="{{ route('registrations.pending') }}" class="{{ Request::routeIs('registrations.pending') ? 'active' : '' }}">
           <i class="bi bi-circle"></i><span>Student Registration</span>
         </a>
       </li>
       <li>
-        <a href="{{ route('students.list') }}" class="{{ Request::routeIs('students.list') ? 'active' : '' }}">
+        <a href="{{ route('students.list') }}" class="{{ Request::routeIs('students.list', 'students.show', 'students.edit', 'students.eod', 'students.dtr') ? 'active' : '' }}">
           <i class="bi bi-circle"></i><span>Student List</span>
         </a>
       </li>
     </ul>
   </li><!-- End Student Nav -->
 
-  <li class="nav-heading">Internship Management</li>
-
   <li class="nav-item">
-    <a class="nav-link {{ request()->routeIs('file_uploads.index', 'file_uploads.create') ? '' : 'collapsed' }}" href="{{ route('file_uploads.index') }}">
+    <a class="nav-link {{ request()->routeIs('file_uploads.index', 'file_uploads.create', 'file_uploads.edit') ? '' : 'collapsed' }}" href="{{ route('file_uploads.index') }}">
       <i class="bi bi-folder"></i>
       <span>File Management</span>  
     </a>

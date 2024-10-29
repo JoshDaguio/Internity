@@ -23,6 +23,8 @@ use App\Http\Controllers\AdminJobController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\DailyTimeRecordController;
 use App\Http\Controllers\EvaluationController;
+use App\Http\Controllers\PulloutController;
+
 
 
 Route::get('/', function () {
@@ -378,4 +380,15 @@ Route::middleware(['auth'])->group(function () {
 });
 
 
+Route::middleware(['auth', 'administrative'])->group(function () {
+    Route::get('/api/company/{company}/students', [PulloutController::class, 'getStudentsByCompany']);
+    Route::get('/pullouts', [PulloutController::class, 'index'])->name('pullouts.index');
+    Route::get('/pullouts/create', [PulloutController::class, 'create'])->name('pullouts.create');
+    Route::post('/pullouts', [PulloutController::class, 'store'])->name('pullouts.store');
+});
 
+Route::middleware(['auth'])->group(function () {
+    Route::get('/pullouts/company', [PulloutController::class, 'companyIndex'])->name('pullouts.companyIndex');
+    Route::get('/pullouts/{pullout}/respond', [PulloutController::class, 'showRespondForm'])->name('pullouts.showRespondForm');
+    Route::post('/pullouts/{pullout}/respond', [PulloutController::class, 'respond'])->name('pullouts.respond');
+});

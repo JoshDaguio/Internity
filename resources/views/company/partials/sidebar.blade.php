@@ -51,10 +51,10 @@
     </li><!-- End Intern Nav -->
 
     <li class="nav-item">
-      <a class="nav-link collapsed" href="#">
-        <i class="bi bi-envelope"></i>
-        <span>Requests</span>  
-      </a>
+        <a class="nav-link {{ request()->routeIs('pullouts.companyIndex') ? '' : 'collapsed' }}" href="{{ route('pullouts.companyIndex') }}">
+            <i class="bi bi-envelope"></i>
+            <span>Requests</span>  
+        </a>
     </li><!-- End Request Nav -->
 
 
