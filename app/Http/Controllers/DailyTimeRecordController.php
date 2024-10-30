@@ -137,121 +137,106 @@ class DailyTimeRecordController extends Controller
             $currentTime = Carbon::now(new \DateTimeZone('Asia/Manila'))->format('h:i A');
         }
 
-        // Ensure the log type is valid
         $validTypes = ['morning_in', 'morning_out', 'afternoon_in', 'afternoon_out'];
         if (!in_array($type, $validTypes)) {
             return redirect()->back()->with('error', 'Invalid log type.');
         }
-
-        // Fetch the student's internship details
+    
         $acceptedInternship = AcceptedInternship::where('student_id', $student->id)->first();
         if (!$acceptedInternship) {
             return redirect()->back()->with('error', 'No internship found.');
         }
-
-        // Determine start time based on the student's schedule
-        $dayOfWeek = Carbon::now()->format('l'); // Get the current day of the week (e.g., 'Monday')
+    
+        $dayOfWeek = Carbon::now()->format('l');
         $startTime = $acceptedInternship->start_time;
-
+    
         if ($student->profile->is_irregular && $acceptedInternship->custom_schedule) {
             $customSchedule = is_array($acceptedInternship->custom_schedule) 
                 ? $acceptedInternship->custom_schedule 
                 : json_decode($acceptedInternship->custom_schedule, true);
-
+    
             if (isset($customSchedule[$dayOfWeek])) {
                 $startTime = $customSchedule[$dayOfWeek]['start'];
             }
         }
-
-        // Compare the start time and check for lateness
-        $isLate = Carbon::parse($currentTime)->gt(Carbon::parse($startTime)); // If current time is greater than start time
-        $lateMinutes = Carbon::parse($currentTime)->diffInMinutes(Carbon::parse($startTime), false);
-
+    
+        $isLate = ($type === 'morning_in') && Carbon::parse($currentTime)->gt(Carbon::parse($startTime));
+        $lateMinutes = $isLate ? Carbon::parse($currentTime)->diffInMinutes(Carbon::parse($startTime), false) : 0;
+    
         $dailyRecord = DailyTimeRecord::firstOrCreate([
             'student_id' => $student->id,
             'log_date' => Carbon::now()->format('Y-m-d'),
         ]);
-
-        // Decode the existing log_times JSON, or create a new array if it's null
+    
         $logTimes = $dailyRecord->log_times ? json_decode($dailyRecord->log_times, true) : [];
-
-        // Ensure the 'type' is set correctly in the logTimes array
+    
         if (!isset($logTimes[$type])) {
             $logTimes[$type] = $currentTime;
             $dailyRecord->log_times = json_encode($logTimes);
             $dailyRecord->save();
-
-            // Recalculate total work hours and adjust remaining hours
-            $morningWork = 0;
-            $afternoonWork = 0;
-
-            if (isset($logTimes['morning_in'], $logTimes['morning_out'])) {
-                $morningWork = Carbon::parse($logTimes['morning_in'])->diffInHours(Carbon::parse($logTimes['morning_out']), false);
-            }
-
-            if (isset($logTimes['afternoon_in'], $logTimes['afternoon_out'])) {
-                $afternoonWork = Carbon::parse($logTimes['afternoon_in'])->diffInHours(Carbon::parse($logTimes['afternoon_out']), false);
-            }
-
-            // Handle cases where only `morning_in` and `afternoon_out` are logged
-            if (isset($logTimes['morning_in'], $logTimes['afternoon_out']) && !isset($logTimes['morning_out'], $logTimes['afternoon_in'])) {
-                $totalWorkHours = Carbon::parse($logTimes['morning_in'])->diffInHours(Carbon::parse($logTimes['afternoon_out']), false);
-            } else {
-                $totalWorkHours = $morningWork + $afternoonWork;
-            }
-
-
+    
+            // Calculate morning and afternoon work hours
+            $morningWork = isset($logTimes['morning_in'], $logTimes['morning_out'])
+                ? Carbon::parse($logTimes['morning_in'])->diffInHours(Carbon::parse($logTimes['morning_out']), false)
+                : 0;
+    
+            $afternoonWork = isset($logTimes['afternoon_in'], $logTimes['afternoon_out'])
+                ? Carbon::parse($logTimes['afternoon_in'])->diffInHours(Carbon::parse($logTimes['afternoon_out']), false)
+                : 0;
+    
+            // Check for continuous session without break
+            $totalWorkHours = isset($logTimes['morning_in'], $logTimes['afternoon_out']) && !isset($logTimes['morning_out'], $logTimes['afternoon_in'])
+                ? Carbon::parse($logTimes['morning_in'])->diffInHours(Carbon::parse($logTimes['afternoon_out']), false)
+                : $morningWork + $afternoonWork;
+    
+            // Update total hours worked and calculate remaining hours based only on new hours worked
+            $previousWorkHours = $dailyRecord->total_hours_worked;
             $dailyRecord->total_hours_worked = $totalWorkHours;
-
-            // Calculate the remaining hours across all records for this student
-            $totalWorkedHours = DailyTimeRecord::where('student_id', $student->id)->sum('total_hours_worked');
-            $internshipHours = InternshipHours::where('course_id', $student->course_id)->first();
-
-            // Fetch the latest remaining hours from the last daily record
-            $latestRecord = DailyTimeRecord::where('student_id', $student->id)
-                ->orderBy('log_date', 'desc')
-                ->first();
-                
-            $remainingHours = $latestRecord ? $latestRecord->remaining_hours : $internshipHours->hours;
-
-            // If the student is late, apply the penalty
-            if ($isLate) {
-                if ($lateMinutes < 30) {
-                    // Less than 30 minutes late: 1 hour for every 10 minutes late
-                    $penaltyHours = ceil($lateMinutes / 10);
-
-                    $penalty = Penalty::where('violation', 'Tardiness (Less than 30 minutes)')->first();
-                } else {
-                    // More than 1 hour but less than 4 hours: 1 day (8 hours)
-                    $penaltyHours = 8;
-
-                    $penalty = Penalty::where('violation', 'Tardiness (More than 1 hour but less than 4 hours)')->first();
+            $additionalHoursWorked = $totalWorkHours - $previousWorkHours;
+    
+            $remainingHours = max($dailyRecord->remaining_hours - $additionalHoursWorked, 0);
+            $dailyRecord->remaining_hours = $remainingHours;
+            $dailyRecord->save();
+    
+            // Apply penalty for lateness only on morning_in
+            if ($isLate && $type === 'morning_in') {
+                switch (true) {
+                    case (abs($lateMinutes) < 30):
+                        // Apply "Tardiness (Less than 30 minutes)" penalty
+                        $penalty = Penalty::where('violation', 'Tardiness (Less than 30 minutes)')->first();
+                        $penaltyHours = $penalty ? ceil($lateMinutes / 10) : 0; // 1 hour for every 10 minutes late
+                        break;
+            
+                    case (abs($lateMinutes) >= 60):
+                        // Apply "Tardiness (More than 1 hour but less than 4 hours)" penalty
+                        $penalty = Penalty::where('violation', 'Tardiness (More than 1 hour but less than 4 hours)')->first();
+                        $penaltyHours = $penalty ? 8 : 0; // Fixed 8 hours for lateness over 1 hour but less than 4 hours
+                        break;
+            
+                    default:
+                        $penaltyHours = 0;
+                        $penalty = null;
+                        break;
                 }
-
+    
                 if (isset($penalty)) {
-
-                    // Ensure penalty hours are positive before saving
-                    $penaltyHours = abs($penaltyHours);
-
-                    // Award the penalty
                     PenaltiesAwarded::create([
                         'student_id' => $student->id,
                         'penalty_id' => $penalty->id,
                         'dtr_id' => $dailyRecord->id,
-                        'penalty_hours' => $penaltyHours,
+                        'penalty_hours' => abs($penaltyHours),
                         'awarded_date' => Carbon::now(),
                         'remarks' => 'Automatic penalty for tardiness',
                     ]);
-
-                    // Update remaining hours after penalty
-                    $dailyRecord->remaining_hours += $penaltyHours;  // Add penalty hours positively
+    
+                    $dailyRecord->remaining_hours += abs($penaltyHours);
                     $dailyRecord->save();
                 }
             }
-
+    
             return redirect()->back()->with('success', 'Time logged successfully.');
         }
-
+    
         return redirect()->back()->with('error', 'Time already logged for this period.');
     }
     

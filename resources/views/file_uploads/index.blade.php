@@ -70,10 +70,10 @@
                             </td>
                             <td>
                                 @if(!$file->trashed())
-                                    <button class="btn btn-dark" onclick="showPreview('{{ route('file_uploads.preview', $file->id) }}')"><i class="bi bi-folder"></i></button>
-                                    <a href="{{ route('file_uploads.download', $file->id) }}" class="btn btn-success"><i class="bi bi-download"></i></a>
+                                    <button class="btn btn-dark btn-sm" onclick="showPreview('{{ route('file_uploads.preview', $file->id) }}')"><i class="bi bi-folder"></i></button>
+                                    <a href="{{ route('file_uploads.download', $file->id) }}" class="btn btn-success btn-sm"><i class="bi bi-download"></i></a>
                                     @if(Auth::id() == $file->uploaded_by || in_array(Auth::user()->role_id, [1, 2]))
-                                        <a href="{{ route('file_uploads.edit', $file->id) }}" class="btn btn-warning">
+                                        <a href="{{ route('file_uploads.edit', $file->id) }}" class="btn btn-warning btn-sm">
                                             <i class="bi bi-pencil"></i>
                                         </a>
                                     @endif
@@ -82,7 +82,7 @@
                                         <form action="{{ route('file_uploads.destroy', $file->id) }}" method="POST" style="display:inline;">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="btn btn-danger"><i class="bi bi-trash"></i></button>
+                                            <button type="submit" class="btn btn-danger btn-sm"><i class="bi bi-trash"></i></button>
                                         </form>
                                     @endif
                                 @else
@@ -91,7 +91,7 @@
                                         <form action="{{ route('file_uploads.restore', $file->id) }}" method="POST" style="display:inline;">
                                             @csrf
                                             @method('POST')
-                                            <button type="submit" class="btn btn-success"><i class="bi bi-arrow-repeat"></i></button>
+                                            <button type="submit" class="btn btn-success btn-sm"><i class="bi bi-arrow-repeat"></i></button>
                                         </form>
                                     @endif
                                 @endif

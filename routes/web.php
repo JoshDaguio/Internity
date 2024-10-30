@@ -352,7 +352,7 @@ Route::middleware(['auth', 'studentmonitoring'])->group(function () {
 });
 
 
-// Admins access
+// Evaluations Admins Access
 Route::middleware(['auth', 'administrative'])->group(function () {
     Route::get('/evaluations', [EvaluationController::class, 'index'])->name('evaluations.index');
     Route::get('/evaluations/create', [EvaluationController::class, 'create'])->name('evaluations.create');
@@ -371,6 +371,7 @@ Route::middleware(['auth', 'administrative'])->group(function () {
     Route::post('/evaluations/{evaluation}/update-questions', [EvaluationController::class, 'updateQuestions'])->name('evaluations.updateQuestions');
 });
 
+// Evaluations Recipient Access
 Route::middleware(['auth'])->group(function () {
     Route::post('/evaluations/{evaluation}/submit', [EvaluationController::class, 'storeResponse'])->name('evaluations.submitResponse');
     Route::get('/evaluations/{evaluation}/submit', [EvaluationController::class, 'showResponseForm'])->name('evaluations.showResponseForm');

@@ -44,6 +44,7 @@
                             <p><strong><i class="bi bi-card-text me-2"></i> ID Number:</strong> {{ $student->profile->id_number ?? 'N/A' }}</p>
                             <p><strong><i class="bi bi-envelope me-2"></i> Email:</strong> {{ $student->email }}</p>
                             <p><strong><i class="bi bi-book me-2"></i> Course:</strong> {{ $student->course->course_code ?? 'N/A' }}</p>
+                            <p><strong><i class="bi bi-box-arrow-in-right"></i> Pullouts Remaining:</strong> {{ $student->pullout_count}}</p>
                             <p><strong><i class="bi bi-person-check-fill me-2"></i> Status:</strong> 
                                 <span class="badge {{ $student->status_id == 1 ? 'bg-success' : 'bg-danger' }}">
                                     {{ $student->status_id == 1 ? 'Active' : 'Inactive' }}

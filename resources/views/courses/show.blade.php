@@ -14,7 +14,7 @@
     </div><!-- End Page Title -->
 
     <!-- Back to List Button -->
-    <a href="{{ route('courses.index') }}" class="btn btn-secondary mb-3">Back to List</a>
+    <a href="{{ route('courses.index') }}" class="btn btn-secondary mb-3 btn-sm">Back</a>
 
     <div class="row">
 

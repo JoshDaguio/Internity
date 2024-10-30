@@ -58,24 +58,29 @@ class CourseController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'course_code' => 'required|string|max:255',
+            'course_code' => 'required|string|max:255|unique:courses,course_code',
             'course_name' => 'required|string|max:255',
         ]);
 
-        $course = Course::create($request->all());
-
-        // Log the creation of the course
-        ActivityLog::create([
-            'admin_id' => Auth::id(),
-            'action' => 'Created Course',
-            'target' => $course->course_code . ' - ' . $course->course_name,
-            'changes' => json_encode([
-                'course_code' => $course->course_code,
-                'course_name' => $course->course_name,
-            ]),
-        ]);
-
-        return redirect()->route('courses.index')->with('success', 'Course created successfully.');
+        try {
+            $course = Course::create($request->all());
+    
+            // Log the creation of the course
+            ActivityLog::create([
+                'admin_id' => Auth::id(),
+                'action' => 'Created Course',
+                'target' => $course->course_code . ' - ' . $course->course_name,
+                'changes' => json_encode([
+                    'course_code' => $course->course_code,
+                    'course_name' => $course->course_name,
+                ]),
+            ]);
+    
+            return redirect()->route('courses.index')->with('success', 'Course created successfully.');
+    
+        } catch (\Exception $e) {
+            return redirect()->back()->withErrors(['course_code' => 'The course code already exists. Please use a different course code.']);
+        }    
     }
 
     /**

@@ -163,7 +163,7 @@
                                                 </div>
                                                 </a>
                                             @else
-                                                <span>No Internship Yet</span>
+                                                <span class="badge bg-warning">No Internship Yet</span>
                                             @endif
                                         </td>
                                         <td>

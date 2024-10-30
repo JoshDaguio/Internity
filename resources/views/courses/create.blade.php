@@ -47,8 +47,8 @@
 
             <!-- Submit and Cancel Buttons -->
             <div class="text-center">
-                <button type="submit" class="btn btn-primary">Create</button>
-                <a href="{{ route('courses.index') }}" class="btn btn-secondary">Cancel</a>
+                <button type="submit" class="btn btn-primary btn-sm">Create</button>
+                <a href="{{ route('courses.index') }}" class="btn btn-secondary btn-sm">Cancel</a>
             </div>
         </form>
     </div>

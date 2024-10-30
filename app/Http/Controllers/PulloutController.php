@@ -36,13 +36,19 @@ class PulloutController extends Controller
             ->whereHas('student', function ($query) {
                 $query->where('pullout_count', '>', 0);
             })
-            ->with('student:id,name,pullout_count')
+            ->with('student.profile:id,first_name,last_name') // Include profile with first and last name only
             ->get()
-            ->pluck('student');
-
+            ->map(function ($internship) {
+                return [
+                    'id' => $internship->student->id,
+                    'name' => $internship->student->profile->first_name . ' ' . $internship->student->profile->last_name,
+                    'pullout_count' => $internship->student->pullout_count,
+                ];
+            });
+    
         return response()->json($students);
     }
-
+    
     public function companyIndex(Request $request)
     {
         $company = Auth::user();
@@ -90,7 +96,6 @@ class PulloutController extends Controller
         foreach ($request->students as $studentId) {
             if (collect($eligibleStudents)->where('id', $studentId)->isNotEmpty()) {
                 $pullout->students()->attach($studentId);
-                User::where('id', $studentId)->decrement('pullout_count');
             }
         }
     

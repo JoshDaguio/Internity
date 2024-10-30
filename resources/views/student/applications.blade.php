@@ -83,12 +83,12 @@
                                 <button class="btn btn-info" data-bs-toggle="modal" data-bs-target="#jobModal{{ $priority->job->id }}"><i class="bi bi-info-circle"></i></button>
 
                                 <!-- Remove priority button (only show if application is not yet submitted) -->
-                                @if(!$submitted)
+                                <!-- @if(!$submitted)
                                     <form method="POST" action="{{ route('internship.removePriority', $priority->job->id) }}" style="display:inline;">
                                         @csrf
                                         <button type="submit" class="btn btn-danger">Remove Priority</button>
                                     </form>
-                                @endif
+                                @endif -->
                             </td>
                         </tr>
 
