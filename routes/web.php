@@ -32,7 +32,23 @@ Route::get('/', function () {
 });
 
 Route::get('/dashboard', function () {
-    return view('dashboard');
+    $role = Auth::user()->role_id ?? null;
+
+    // Redirect based on user role
+    switch ($role) {
+        case 1:
+            return redirect()->route('super_admin.dashboard');
+        case 2:
+            return redirect()->route('admin.dashboard');
+        case 3:
+            return redirect()->route('faculty.dashboard');
+        case 4:
+            return redirect()->route('company.dashboard');
+        case 5:
+            return redirect()->route('student.dashboard');
+        default:
+            return abort(403, 'Unauthorized access');
+    }
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 //Forget Password / Password Reset
