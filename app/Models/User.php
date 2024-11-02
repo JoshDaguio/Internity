@@ -114,4 +114,9 @@ class User extends Authenticatable
         return $this->hasMany(PenaltiesAwarded::class, 'student_id');
     }
 
+    public function monthlyReports()
+    {
+        return $this->hasMany(MonthlyReport::class, 'student_id');
+    }
+
 }

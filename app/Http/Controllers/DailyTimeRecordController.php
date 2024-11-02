@@ -8,11 +8,14 @@ use App\Models\InternshipHours;
 use App\Models\Penalty;
 use App\Models\PenaltiesAwarded;
 use App\Models\User;
+use App\Models\MonthlyReport;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Storage;
+
 
 
 class DailyTimeRecordController extends Controller
@@ -598,8 +601,28 @@ class DailyTimeRecordController extends Controller
             'totalMakeupHours' => $totalMakeupHours,
             'month' => Carbon::createFromDate(null, $request->input('month'))->format('F')
         ]);
+
+        $fileName = 'DTR-Report-' . $student->profile->first_name . '-' . Carbon::createFromDate(null, $selectedMonth)->format('F') . '.pdf';
+        $filePath = "monthly_reports/{$student->id}/dtr/{$fileName}";
+
+        // Save the PDF file to storage
+        Storage::put($filePath, $pdf->output());
+
+        // Save the file path to the monthly_reports table if it doesn't exist
+        $monthYearDate = Carbon::createFromDate(null, $selectedMonth, 1)->startOfMonth()->format('Y-m-d');
+        MonthlyReport::updateOrCreate(
+            [
+                'student_id' => $student->id,
+                'type' => 'dtr',
+                'month_year' => $monthYearDate,
+            ],
+            [
+                'file_path' => $filePath,
+            ]
+        );
+
     
-        return $pdf->download('DTR-Report-' . $student->profile->first_name . '.pdf');
+        return $pdf->download($fileName);
     }
     
      

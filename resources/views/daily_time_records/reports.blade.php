@@ -15,6 +15,14 @@
 
     <a href="javascript:history.back()" class="btn btn-secondary btn-sm mb-3">Back</a>
 
+    @if(session('success'))
+        <div class="alert alert-success">{{ session('success') }}</div>
+    @endif
+
+    @if(session('error'))
+        <div class="alert alert-danger">{{ session('error') }}</div>
+    @endif
+
     @if(isset($noInternship) && $noInternship)
         <div class="alert alert-danger text-center">
             <p><strong>Section is Locked</strong></p>
@@ -135,7 +143,9 @@
                             <input type="hidden" name="month" value="{{ $selectedMonth }}">
                             <button type="submit" class="btn btn-success btn-sm mb-3"><i class="bi bi-download"></i> Generate PDF</button>
                         </form>
-
+                        <div class="form-text">
+                            <p><strong><code>Note: Downloading Monthly PDF Report also links your Report File on the Internship Files Section.</code></strong></p>
+                        </div>
                         <!-- Display Table for Logs -->
                         <div class="table-responsive" style="max-height: 300px; overflow-y: auto;">
                             <table class="table datatable">

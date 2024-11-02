@@ -24,6 +24,7 @@ use App\Http\Controllers\MessageController;
 use App\Http\Controllers\DailyTimeRecordController;
 use App\Http\Controllers\EvaluationController;
 use App\Http\Controllers\PulloutController;
+use App\Http\Controllers\InternshipFilesController;
 
 
 
@@ -396,7 +397,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/evaluations/{evaluation}/downloadResponsePDF', [EvaluationController::class, 'downloadResponsePDF'])->name('evaluations.downloadResponsePDF');
 });
 
-
+// Pullouts Request
+// Admin Access (Super Admin and Admin)
 Route::middleware(['auth', 'administrative'])->group(function () {
     Route::get('/api/company/{company}/students', [PulloutController::class, 'getStudentsByCompany']);
     Route::get('/pullouts', [PulloutController::class, 'index'])->name('pullouts.index');
@@ -404,8 +406,39 @@ Route::middleware(['auth', 'administrative'])->group(function () {
     Route::post('/pullouts', [PulloutController::class, 'store'])->name('pullouts.store');
 });
 
+// Company Access
 Route::middleware(['auth'])->group(function () {
     Route::get('/pullouts/company', [PulloutController::class, 'companyIndex'])->name('pullouts.companyIndex');
     Route::get('/pullouts/{pullout}/respond', [PulloutController::class, 'showRespondForm'])->name('pullouts.showRespondForm');
     Route::post('/pullouts/{pullout}/respond', [PulloutController::class, 'respond'])->name('pullouts.respond');
+});
+
+
+// Student Internship Files Compilation
+
+//Student Process
+Route::middleware(['auth'])->group(function () {
+    // Internship Files Routes
+    Route::get('/internship-files', [InternshipFilesController::class, 'index'])->name('internship.files');
+    Route::get('/internship-files/eod', [InternshipFilesController::class, 'viewEodReports'])->name('internship.files.eod');
+    Route::get('/internship-files/dtr', [InternshipFilesController::class, 'viewDtrReports'])->name('internship.files.dtr');
+    Route::post('/upload-monthly-report/{type}', [InternshipFilesController::class, 'uploadMonthlyReport'])->name('upload.monthly.report');
+    Route::post('/upload-completion-file/{type}', [InternshipFilesController::class, 'uploadCompletionFile'])->name('upload.completion.file');
+    Route::get('/download-all-files', [InternshipFilesController::class, 'downloadAllFiles'])->name('download.all.files');
+
+    // Monthly Reports Preview Route
+    Route::get('/internship-files/monthly-report/preview/{type}/{id}', [InternshipFilesController::class, 'previewMonthlyReport'])
+        ->name('internship.files.monthly.preview');
+
+    // Completion Requirements Preview Route
+    Route::get('/internship-files/completion/preview/{type}/{id}', [InternshipFilesController::class, 'previewCompletionRequirement'])
+        ->name('internship.files.completion.preview');
+
+});
+
+// Admin and Faculty View
+Route::middleware(['auth', 'facultyaccess'])->group(function () {
+    Route::get('/internship-files/{studentId}', [InternshipFilesController::class, 'viewStudentFiles'])->name('student.internship.files.view');
+    Route::get('/internship-files/monthly/preview/{type}/{id}/{studentId?}', [InternshipFilesController::class, 'previewMonthlyReport'])
+        ->name('admin.internship.files.monthly.preview');
 });

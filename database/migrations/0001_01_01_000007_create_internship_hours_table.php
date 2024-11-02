@@ -17,6 +17,25 @@ return new class extends Migration
             $table->integer('hours');
             $table->timestamps();
         });
+
+        DB::table('internship_hours')->insert([
+            'course_id' => 1,
+            'hours' => 486,
+            'created_at' => now(),
+            'updated_at' => now()
+        ]);
+        DB::table('internship_hours')->insert([
+            'course_id' => 2,
+            'hours' => 486,
+            'created_at' => now(),
+            'updated_at' => now()
+        ]);
+        DB::table('internship_hours')->insert([
+            'course_id' => 3,
+            'hours' => 250,
+            'created_at' => now(),
+            'updated_at' => now()
+        ]);
     }
 
     /**

@@ -113,7 +113,7 @@
     </div>
 
     <!-- Applicants for Interview Section -->
-    <div class="card mt-4">
+    <div class="card mb-3">
         <div class="card-body">
             <h5 class="card-title">Applicants for Interview</h5>
             <div class="table-responsive">
@@ -299,41 +299,78 @@
 
                         <!-- Applicant Modal -->
                         <div class="modal fade" id="viewApplicantModal{{ $application->id }}" tabindex="-1" aria-labelledby="viewApplicantModalLabel{{ $application->id }}" aria-hidden="true">
-                            <div class="modal-dialog">
+                            <div class="modal-dialog"  style="max-width: 700px;">
                                 <div class="modal-content">
                                     <div class="modal-header">
                                         <h5 class="modal-title" id="viewApplicantModalLabel{{ $application->id }}">Applicant Information</h5>
                                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                     </div>
                                     <div class="modal-body">
-                                        <p><strong>Full Name:</strong> {{ $application->student->profile->first_name }} {{ $application->student->profile->last_name }}</p>
-                                        <p><strong>Course:</strong> {{ $application->student->course->course_code }}</p>
-                                        <p><strong>Email:</strong> {{ $application->student->email }}</p>
-                                        <p><strong>About:</strong> {{ $application->student->profile->about ?? 'N/A' }}</p>
-                                        <p><strong>Skills:</strong> {{ $application->student->profile->skillTags->pluck('name')->implode(', ') }}</p>
-                                        <p><strong>Endorsement Letter:</strong> 
+                                        <div class="card-body d-flex align-items-center">
+                                                <img src="{{ $application->job->company->profile->profile_picture ? asset('storage/' . $application->job->company->profile->profile_picture) : asset('assets/img/profile-img.jpg') }}" alt="Company Profile" class="rounded-circle img-thumbnail" width="150">
+                                            <div class="ms-5">
+                                                <h5 class="card-title">{{ $application->student->profile->first_name }} {{ $application->student->profile->last_name }}</h5>
+                                                <p><strong><i class="bi bi-envelope me-2"></i> Email:</strong> {{ $application->student->email }}</p>
+                                                <p><strong><i class="bi bi-book me-2"></i> Course:</strong> {{ $application->student->course->course_code }}</p>
+                                                <p><strong><i class="bi bi-info-circle me-2"></i> About:</strong> {{ $application->student->profile->about ?? 'No Details Provided' }}</p>
+                                            </div>
+                                        </div>
+
+                                        <hr class="my-4">
+
+                                        <div class="row">
+                                            <div class="col-md-3">
+                                                <strong><i class="bi bi-lightbulb-fill me-2"></i> Skills:</strong>
+                                            </div>
+                                            <div class="col-md-9">
+                                                @if($application->student->profile->skillTags->isEmpty())
+                                                    <p class="fst-italic">No skills available.</p>
+                                                @else
+                                                    {{ $application->student->profile->skillTags->pluck('name')->implode(', ') }}
+                                                @endif
+                                            </div>
+                                        </div>
+
+                                        <hr class="my-4">
+
+                                        <!-- Links Section -->
+                                        <div class="row">
+                                            <div class="col-md-3">
+                                                <strong><i class="bi bi-link-45deg me-2"></i> Links:</strong>
+                                            </div>
+                                            <div class="col-md-9">
+                                                @if($application->student->profile->links->isNotEmpty())
+                                                    <ul class="list-unstyled">
+                                                        @foreach($application->student->profile->links as $link)
+                                                            <li><a href="{{ $link->link_url }}" target="_blank">{{ $link->link_name }}</a></li>
+                                                        @endforeach
+                                                    </ul>
+                                                @else
+                                                    <p>No links available.</p>
+                                                @endif
+                                            </div>
+                                        </div>
+
+                                        <hr class="my-4">
+
+                                        <p><strong><i class="bi bi-file-earmark-text me-2"></i> Endorsement Letter:</strong> 
                                             <button class="btn btn-dark" onclick="showPreview('{{ route('application.preview', ['type' => 'endorsement_letter', 'id' => $application->id]) }}')"><i class="bi bi-folder"></i></button>
                                         </p>
-                                        <p><strong>CV:</strong> 
+                                        <p><strong><i class="bi bi-file-person me-2"></i> CV:</strong> 
                                             <button class="btn btn-dark" onclick="showPreview('{{ route('application.preview', ['type' => 'cv', 'id' => $application->id]) }}')"><i class="bi bi-folder"></i></button>
                                         </p>
 
-                                        <!-- Action Dropdown: For Interview, Accept, Reject -->
+                                        <hr class="my-4">
+
+                                        <!-- Action Dropdown: For Interview, Reject -->
                                         <div class="dropdown">
-                                            <button class="btn btn-secondary dropdown-toggle" type="button" id="statusDropdown{{ $application->id }}" data-bs-toggle="dropdown" aria-expanded="false">
-                                                Update Status
+                                            <button class="btn btn-primary dropdown-toggle" type="button" id="statusDropdown{{ $application->id }}" data-bs-toggle="dropdown" aria-expanded="false">
+                                                Update Application
                                             </button>
                                             <ul class="dropdown-menu" aria-labelledby="statusDropdown{{ $application->id }}">
                                                 <li>
                                                     <a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#interviewModal{{ $application->id }}">For Interview</a>
                                                 </li>
-                                                <!-- <li>
-                                                    <form method="POST" action="{{ route('application.updateStatus', ['application' => $application->id, 'status' => 'Accepted']) }}">
-                                                        @csrf
-                                                        @method('PATCH')
-                                                        <button type="submit" class="dropdown-item">Accept</button>
-                                                    </form>
-                                                </li> -->
                                                 <li>
                                                     <form method="POST" action="{{ route('application.updateStatus', ['application' => $application->id, 'status' => 'Rejected']) }}">
                                                         @csrf

@@ -30,17 +30,17 @@
   </li><!-- End Admin Nav -->
 
   <li class="nav-item">
-    <a class="nav-link {{ request()->routeIs('registrations.pending', 'students.list', 'students.edit', 'students.show', 'students.create', 'requirements.review', 'students.import') ? '' : 'collapsed' }}" data-bs-target="#student-nav" data-bs-toggle="collapse" href="#">
+    <a class="nav-link {{ request()->routeIs('registrations.pending', 'students.list', 'students.edit', 'students.show', 'students.create', 'requirements.review', 'students.import', 'student.internship.files.view') ? '' : 'collapsed' }}" data-bs-target="#student-nav" data-bs-toggle="collapse" href="#">
       <i class="bi bi-people"></i><span>Student</span><i class="bi bi-chevron-down ms-auto"></i>
     </a>
-    <ul id="student-nav" class="nav-content {{ request()->routeIs('registrations.pending', 'students.list', 'students.edit', 'students.show', 'students.create', 'requirements.review', 'students.import') ? '' : 'collapse' }} " data-bs-parent="#sidebar-nav">
+    <ul id="student-nav" class="nav-content {{ request()->routeIs('registrations.pending', 'students.list', 'students.edit', 'students.show', 'students.create', 'requirements.review', 'students.import', 'student.internship.files.view') ? '' : 'collapse' }} " data-bs-parent="#sidebar-nav">
       <li>
         <a href="{{ route('registrations.pending') }}" class="{{ Request::routeIs('registrations.pending') ? 'active' : '' }}">
           <i class="bi bi-circle"></i><span>Student Registration</span>
         </a>
       </li>
       <li>
-        <a href="{{ route('students.list') }}" class="{{ Request::routeIs('students.list', 'students.edit', 'students.show', 'students.create', 'requirements.review', 'students.import') ? 'active' : '' }}">
+        <a href="{{ route('students.list') }}" class="{{ Request::routeIs('students.list', 'students.edit', 'students.show', 'students.create', 'requirements.review', 'students.import', 'student.internship.files.view') ? 'active' : '' }}">
           <i class="bi bi-circle"></i><span>Student List</span>
         </a>
       </li>
@@ -116,11 +116,22 @@
   </li><!-- End Skill Tags Nav -->
 
   <li class="nav-item">
-    <a class="nav-link {{ request()->routeIs('pullouts.index') ? '' : 'collapsed' }}" href="{{ route('pullouts.index') }}">
-        <i class="bi bi-envelope"></i>
-        <span>Requests</span>  
+    <a class="nav-link {{ request()->routeIs('pullouts.index', 'pullouts.create') ? '' : 'collapsed' }}" data-bs-target="#request-nav" data-bs-toggle="collapse" href="#">
+      <i class="bi bi-envelope"></i><span>Requests</span><i class="bi bi-chevron-down ms-auto"></i>
     </a>
-  </li><!-- End Request Nav -->
+    <ul id="request-nav" class="nav-content {{ request()->routeIs('pullouts.index', 'pullouts.create') ? '' : 'collapse' }} " data-bs-parent="#sidebar-nav">
+      <li>
+        <a href="{{ route('pullouts.index') }}" class="{{ Request::routeIs('pullouts.index', 'pullouts.create') ? 'active' : '' }}">
+          <i class="bi bi-circle"></i><span>Pullouts Request</span>
+        </a>
+      </li>
+      <li>
+        <a href="#" class="{{ Request::routeIs('') ? 'active' : '' }}">
+          <i class="bi bi-circle"></i><span>Student Request</span>
+        </a>
+      </li>
+    </ul>
+  </li><!-- End Student Nav -->
 
   <li class="nav-item">
     <a class="nav-link {{ request()->routeIs('evaluations.index', 'evaluations.create', 'evaluations.results', 'evaluations.showResponseForm','evaluations.internCompanyRecipientList', 'evaluations.manageQuestions') ? '' : 'collapsed' }}" href="{{ route('evaluations.index') }}">

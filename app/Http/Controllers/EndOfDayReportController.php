@@ -6,12 +6,14 @@ use App\Models\EndOfDayReport;
 use App\Models\DailyTask;
 use App\Models\User;
 use App\Models\AcceptedInternship;
+use App\Models\MonthlyReport;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Storage;
 
 
 class EndOfDayReportController extends Controller
@@ -485,8 +487,26 @@ class EndOfDayReportController extends Controller
         $studentName = $profile->last_name . ', ' . $profile->first_name;
    
         $pdf = Pdf::loadView('end_of_day_reports.pdf.monthly_compilation', compact('reports', 'selectedMonth', 'currentYear', 'studentName', 'missingDates'));
-    
-        return $pdf->download("{$studentName}_{$selectedMonth}_{$currentYear}_Monthly_Report.pdf");
+        $fileName = "{$studentName}_{$selectedMonth}_{$currentYear}_Monthly_Report.pdf";
+
+        // Store the PDF file
+        $filePath = "monthly_reports/{$user->id}/eod/{$fileName}";
+        Storage::put($filePath, $pdf->output());
+
+        // Save the file path to the monthly_reports table if it doesn't exist
+        $monthYearDate = Carbon::create($currentYear, $selectedMonth, 1)->startOfMonth()->format('Y-m-d');
+        MonthlyReport::updateOrCreate(
+            [
+                'student_id' => $user->id,
+                'type' => 'eod',
+                'month_year' => $monthYearDate,
+            ],
+            [
+                'file_path' => $filePath,
+            ]
+        );
+
+        return $pdf->download($fileName);
     }
 
     //For Weekly

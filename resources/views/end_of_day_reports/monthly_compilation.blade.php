@@ -13,6 +13,14 @@
         </nav>
     </div>
 
+    @if(session('success'))
+        <div class="alert alert-success">{{ session('success') }}</div>
+    @endif
+
+    @if(session('error'))
+        <div class="alert alert-danger">{{ session('error') }}</div>
+    @endif
+
     <!-- Month Selection Form -->
     <div class="card">
         <div class="card-body">
@@ -96,6 +104,9 @@
         <div class="mt-3">
             <a href="{{ route('end_of_day_reports.download.monthly', ['month' => $selectedMonth]) }}" class="btn btn-success btn-sm"><i class="bi bi-download"></i> PDF</a>
             <a href="{{ route('end_of_day_reports.index') }}" class="btn btn-secondary btn-sm">Cancel</a>
+        </div>
+        <div class="form-text">
+            <p><strong><code>Note: Downloading Monthly PDF Report also links your Report File on the Internship Files Section.</code></strong></p>
         </div>
     </div>
 </div>

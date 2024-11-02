@@ -70,7 +70,7 @@
                             @if($requirements->waiver_status_id == 1)
                                 <span class="badge bg-warning">To Review</span>
                             @elseif($requirements->waiver_status_id == 2)
-                                <span class="badge bg-success">Accepted</span>
+                                <span class="badge bg-success">Approved</span>
                             @elseif($requirements->waiver_status_id == 3)
                                 <span class="badge bg-danger">Rejected</span>
                             @endif

@@ -53,7 +53,7 @@
                         </div>
                     </div>
 
-                    @if(Auth::user()->role_id == 1 || Auth::user()->role_id == 2 || Auth::user()->role_id == 3)
+                    @if(Auth::user()->role_id == 1 || Auth::user()->role_id == 2)
                         <!-- Action Buttons Section -->
                         <div class="row mt-4 text">
                             <div class="col-md-12">
@@ -101,8 +101,15 @@
                                         </button>
                                     </form>
                                 @endif
+                                <a href="{{ route('student.internship.files.view', ['studentId' => $student->id]) }}" class="btn btn-primary btn-sm">
+                                    <i class="bi bi-file-earmark-zip"></i> Internship Files
+                                </a>
                             </div>
                         </div>
+                    @elseif (Auth::user()->role_id == 3)
+                        <a href="{{ route('student.internship.files.view', ['studentId' => $student->id]) }}" class="btn btn-primary btn-sm">
+                            <i class="bi bi-file-earmark-zip"></i> Internship Files
+                        </a>
                     @endif
 
                     <hr class="my-4">

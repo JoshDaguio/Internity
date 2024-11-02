@@ -25,6 +25,13 @@
   <li class="nav-heading">Internship Management</li>
 
   <li class="nav-item">
+    <a class="nav-link {{ request()->routeIs('internship.files','internship.files.eod','internship.files.dtr') ? '' : 'collapsed' }}" href="{{ route('internship.files') }}">
+      <i class="bi bi-file-earmark-zip"></i>
+      <span>Internship Files</span>  
+    </a>
+  </li><!-- End Requirement Nav -->
+
+  <li class="nav-item">
     <a class="nav-link {{ request()->routeIs('requirements.index') ? '' : 'collapsed' }}" href="{{ route('requirements.index') }}">
       <i class="bi bi-clipboard-check"></i>
       <span>Requirements</span>  
@@ -61,9 +68,9 @@
   <li class="nav-item">
     <a class="nav-link {{ request()->routeIs('end_of_day_reports.create', 'end_of_day_reports.index','end_of_day_reports.compile.weekly', 'end_of_day_reports.compile.monthly', 'end_of_day_reports.show') ? '' : 'collapsed' }}" href="{{ route('end_of_day_reports.index') }}">
       <i class="bi bi-file-earmark-text"></i>
-      <span>Reports</span>  
+      <span>End of Day</span>  
     </a>
-  </li><!-- End Reports Nav -->
+  </li><!-- End End Of Day Nav -->
 
   @endif
 
