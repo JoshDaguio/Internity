@@ -56,6 +56,13 @@ class RequestController extends Controller
     // Student: Show create form for excusal request
     public function create()
     {
+        // Check if the student has an accepted internship
+        $student = Auth::user();
+        if (!$student->acceptedInternship) {
+            return redirect()->route('requests.studentIndex')
+                ->with('error', 'You cannot create an excusal request without an accepted internship.');
+        }
+
         return view('requests.create');
     }
 
@@ -63,6 +70,14 @@ class RequestController extends Controller
     // Store a new excusal request by Students
     public function store(HttpRequest $httpRequest)
     {
+
+        // Check if the student has an accepted internship
+        $student = Auth::user();
+        if (!$student->acceptedInternship) {
+            return redirect()->route('requests.studentIndex')
+                ->with('error', 'You cannot create an excusal request without an accepted internship.');
+        }
+
         $httpRequest->validate([
             'reason' => 'required|string',
             'absence_date' => 'required|date',

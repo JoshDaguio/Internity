@@ -33,7 +33,7 @@
             <h5 class="card-title">Requests</h5>
             <div class="table-responsive">
                 @if($requests->isEmpty())
-                    <p>No approved requests found.</p>
+                    <p class="text-center">No approved requests found.</p>
                 @else
                     <table class="table datatable">
                         <thead>

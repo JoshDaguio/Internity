@@ -17,7 +17,12 @@
         <div class="alert alert-success">
             {{ session('success') }}
         </div>
+    @elseif(session('error'))
+        <div class="alert alert-danger">
+            {{ session('error') }}
+        </div>
     @endif
+
 
     <a href="{{ route('requests.create') }}" class="btn btn-success btn-sm mb-3">Create Request</a>
     
