@@ -139,6 +139,7 @@ class StudentController extends Controller
                     'endorsement_letter_path' => $endorsementLetterPath, // Use endorsement letter from requirements
                     'cv_path' => $student->profile->cv_file_path, // Use CV from the profile
                     'status_id' => 1, // "To Review"
+                    'date_posted' => now(),
                 ]
             );
 
