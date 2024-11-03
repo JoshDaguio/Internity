@@ -25,6 +25,8 @@ use App\Http\Controllers\DailyTimeRecordController;
 use App\Http\Controllers\EvaluationController;
 use App\Http\Controllers\PulloutController;
 use App\Http\Controllers\InternshipFilesController;
+use App\Http\Controllers\RequestController;
+
 
 
 
@@ -441,4 +443,25 @@ Route::middleware(['auth', 'facultyaccess'])->group(function () {
     Route::get('/internship-files/{studentId}', [InternshipFilesController::class, 'viewStudentFiles'])->name('student.internship.files.view');
     Route::get('/internship-files/monthly/preview/{type}/{id}/{studentId?}', [InternshipFilesController::class, 'previewMonthlyReport'])
         ->name('admin.internship.files.monthly.preview');
+});
+
+
+// Excusal Requests
+Route::middleware(['auth'])->group(function () {
+    // Student routes
+    Route::get('/requests/company', [RequestController::class, 'companyIndex'])->name('requests.companyIndex');
+    Route::get('/requests/company/{request}', [RequestController::class, 'companyShow'])->name('requests.companyShow');
+    Route::get('/requests', [RequestController::class, 'studentIndex'])->name('requests.studentIndex');
+    Route::get('/requests/create', [RequestController::class, 'create'])->name('requests.create');
+    Route::post('/requests', [RequestController::class, 'store'])->name('requests.store');
+    Route::get('/requests/{request}', [RequestController::class, 'studentShow'])->name('requests.studentShow');
+
+    // Admin routes
+    Route::middleware(['auth', 'administrative'])->group(function () {
+        Route::get('/admin/requests', [RequestController::class, 'adminIndex'])->name('requests.adminIndex');
+        Route::get('/admin/requests/{request}', [RequestController::class, 'show'])->name('requests.show');
+        Route::post('/admin/requests/{request}/respond', [RequestController::class, 'respond'])->name('requests.respond');
+    });
+
+    Route::get('/requests/{request}/preview', [RequestController::class, 'preview'])->name('requests.preview');
 });

@@ -42,7 +42,7 @@
         <div class="card-body">
             <h5 class="card-title">Pullout Requests Recieved</h5>
             @if($pullouts->isEmpty())
-                <p>No pullout requests found.</p>
+                <p class="text-center">No pullout requests found.</p>
             @else
                 <div class="table-responsive">
                     <table class="table datatable">

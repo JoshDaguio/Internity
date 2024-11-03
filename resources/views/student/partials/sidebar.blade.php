@@ -75,7 +75,7 @@
   @endif
 
   <li class="nav-item">
-    <a class="nav-link collapsed" href="#">
+    <a class="nav-link {{ request()->routeIs('requests.studentIndex','requests.create','requests.studentShow') ? '' : 'collapsed' }}" href="{{ route('requests.studentIndex') }}">
       <i class="bi bi-envelope"></i>
       <span>Requests</span>  
     </a>

@@ -57,6 +57,25 @@
         </a>
     </li><!-- End Request Nav -->
 
+    <li class="nav-item">
+        <a class="nav-link {{ request()->routeIs('requests.companyIndex') ? '' : 'collapsed' }}" data-bs-target="#request-nav" data-bs-toggle="collapse" href="#">
+            <i class="bi bi-envelope"></i><span>Requests</span><i class="bi bi-chevron-down ms-auto"></i>
+        </a>
+        <ul id="request-nav" class="nav-content {{ request()->routeIs('pullouts.companyIndex', 'requests.companyIndex', 'requests.companyShow') ? '' : 'collapse' }}" data-bs-parent="#sidebar-nav">
+            <li>
+                <a href="{{ route('pullouts.companyIndex') }}" class="{{ request()->routeIs('pullouts.companyIndex') ? 'active' : '' }}">
+                    <i class="bi bi-circle"></i><span>Pullouts Request</span>
+                </a>
+            </li>
+            <li>
+                <a href="{{ route('requests.companyIndex') }}" class="{{ request()->routeIs('requests.companyIndex', 'requests.companyShow') ? 'active' : '' }}">
+                    <i class="bi bi-circle"></i><span>Student Request</span>
+                </a>
+            </li>
+        </ul>
+    </li><!-- End Requests Nav -->
+
+
 
     <li class="nav-item">
       <a class="nav-link {{ request()->routeIs('evaluations.recipientIndex', 'evaluations.showResponseForm', 'evaluations.viewUserResponse') ? '' : 'collapsed' }}" href="{{ route('evaluations.recipientIndex') }}">        
