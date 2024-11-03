@@ -126,6 +126,16 @@ class EvaluationController extends Controller
         $evaluation = Evaluation::findOrFail($evaluationId);
         $evaluatorId = auth()->id();
 
+        // Check if the recipient has already answered this evaluation
+        $recipientRecord = EvaluationRecipient::where('evaluation_id', $evaluationId)
+            ->where('user_id', $evaluatorId)
+            ->first();
+
+        if ($recipientRecord && $recipientRecord->is_answered) {
+            // If already answered, redirect with a message
+            return redirect()->route('evaluations.recipientIndex')->with('error', 'You have already completed this evaluation.');
+        }
+
         // Validate that supervisor_name is either a string or can be null
         $request->validate([
             'supervisor_name' => 'nullable|string|max:255',
@@ -198,8 +208,17 @@ class EvaluationController extends Controller
         $user = auth()->user();
 
         $evaluation = Evaluation::findOrFail($evaluationId);
-        $questions = $evaluation->questions;
 
+        // Check if already answered
+        $recipientRecord = EvaluationRecipient::where('evaluation_id', $evaluationId)
+                                            ->where('user_id', $user->id)
+                                            ->first();
+
+        if ($recipientRecord && $recipientRecord->is_answered) {
+            return redirect()->route('evaluations.recipientIndex')->with('error', 'You have already completed this evaluation.');
+        }
+        
+        $questions = $evaluation->questions;
         return view('evaluations.submit_response', compact('evaluation', 'questions', 'user'));
     }
 
