@@ -79,7 +79,30 @@
                     </tbody>
                 </table>
             </div>
-
         </div>
     </div>
+
+<!-- Card for Student to View Company Evaluation -->
+@if(auth()->user()->role_id == 5) <!-- Only visible to students -->
+        <div class="col-md-12">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Intern Evaluation by Company</h5>
+                    
+                    @if($completedCompanyEvaluation)
+                        <!-- Show button to view evaluation if completed by the company -->
+                        <p>
+                            Your Intern Evaluation is now available. Click here to see score:
+                            <a href="{{ route('evaluations.viewStudentEvaluation', ['evaluation' => $completedCompanyEvaluation->id, 'student' => auth()->id()]) }}" class="btn btn-primary btn-sm">
+                                View
+                            </a>
+                        </p>
+                    @else
+                        <!-- Message if no evaluation has been completed yet -->
+                        <p class="text-muted">No evaluation from your internship company is available yet.</p>
+                    @endif
+                </div>
+            </div>
+        </div>
+    @endif
 @endsection

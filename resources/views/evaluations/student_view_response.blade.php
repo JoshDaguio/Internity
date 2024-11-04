@@ -2,12 +2,12 @@
 
 @section('body')
     <div class="pagetitle">
-        <h1>Evaluation Response</h1>
+        <h1>Evaluation Given by Company</h1>
         <nav>
             <ol class="breadcrumb">
                 <li class="breadcrumb-item">Home</li>
                 <li class="breadcrumb-item">Evaluations</li>
-                <li class="breadcrumb-item active">Responses</li>
+                <li class="breadcrumb-item active">View Evaluation</li>
             </ol>
         </nav>
     </div>
@@ -23,20 +23,12 @@
                         <p><strong>{{ $evaluation->description }}</strong></p>
                     </div>
 
-                    @if ($evaluation->evaluation_type === 'intern_student' && $evaluatee)
-                        <h5 class="card-title">Intern Details</h5>
-                        <p><strong>Intern Name:</strong> {{ $evaluatee->profile->first_name }} {{ $evaluatee->profile->last_name }}</p>
-                        <p><strong>Intern's Course:</strong> {{ $evaluatee->course->course_code ?? 'N/A' }}</p>
-                        <p><strong>Intern's Position:</strong> {{ $evaluatee->acceptedInternship->job->title ?? 'N/A' }}</p>
-                        <p><strong>Company:</strong> {{ $user->name }}</p>
-                    @elseif ($evaluation->evaluation_type === 'intern_company' && $evaluationResult)
-                        <div class="mb-3">
-                            <h5><strong>Supervisor Name:</strong></h5>
-                            <p>{{ $evaluationResult->supervisor }}</p>
-                        </div>
-                    @endif
+                    <h5 class="card-title">Evaluator Details</h5>
+                        <p><strong>Company Name:</strong> {{ $student->acceptedInternship->job->company->name }}</p>
+                        <p><strong>Contact Person:</strong> {{ $student->acceptedInternship->job->company->profile->first_name }} {{ $student->acceptedInternship->job->company->profile->last_name }}</p>
+                        <p><strong>Email:</strong> {{ $student->acceptedInternship->job->company->email }}</p>
 
-                    <h5 class="card-title">Your Responses:</h5>
+                    <h5 class="card-title">Company Evaluation Responses:</h5>
 
                     @if ($responses->isNotEmpty())
                         @foreach ($responses as $response)
@@ -75,8 +67,10 @@
                     @else
                         <p>No detailed responses to display for this evaluation yet.</p>
                     @endif
-                        <a href="{{ route('evaluations.downloadResponsePDF', $evaluation->id) }}" class="btn btn-success btn-sm"><i class="bi bi-download"></i> PDF</a>
-                    </div>
+
+                    <a href="{{ route('evaluations.downloadStudentEvaluationPDF', ['evaluation' => $evaluation->id, 'student' => $student->id]) }}" class="btn btn-success btn-sm">
+                        <i class="bi bi-download"></i> Download PDF
+                    </a>
                 </div>
             </div>
         </div>

@@ -129,6 +129,7 @@ class EvaluationController extends Controller
         // Check if the recipient has already answered this evaluation
         $recipientRecord = EvaluationRecipient::where('evaluation_id', $evaluationId)
             ->where('user_id', $evaluatorId)
+            ->where('evaluatee_id', $request->input('evaluatee_id')) // Check for evaluatee in `intern_student` evaluations
             ->first();
 
         if ($recipientRecord && $recipientRecord->is_answered) {
@@ -136,10 +137,12 @@ class EvaluationController extends Controller
             return redirect()->route('evaluations.recipientIndex')->with('error', 'You have already completed this evaluation.');
         }
 
-        // Validate that supervisor_name is either a string or can be null
-        $request->validate([
-            'supervisor_name' => 'nullable|string|max:255',
-        ]);
+        // Validate supervisor_name only if needed
+        if ($evaluation->evaluation_type === 'intern_company') {
+            $request->validate([
+                'supervisor_name' => 'nullable|string|max:255',
+            ]);
+        }
 
         // Fetch the supervisor name directly from the form input
         // $supervisorName = $request->input('supervisor_name');
@@ -185,11 +188,27 @@ class EvaluationController extends Controller
                     'supervisor' => $supervisorName,
                 ]);
             }
+        } elseif ($evaluation->evaluation_type === 'intern_student') {
+            $evaluateeId = $request->input('evaluatee_id'); // The student being evaluated
+    
+            foreach ($request->responses as $questionId => $response) {
+                if (!is_numeric($questionId)) continue;
+    
+                Response::create([
+                    'evaluation_id' => $evaluationId,
+                    'question_id' => $questionId,
+                    'evaluator' => $evaluatorId,
+                    'evaluatee' => $evaluateeId,
+                    'response_text' => $response['response_text'] ?? null,
+                    'response_value' => $response['response_value'] ?? null
+                ]);
+            }
         }
     
         // Update the 'is_answered' field for any evaluation
         EvaluationRecipient::where('evaluation_id', $evaluationId)
                             ->where('user_id', auth()->id())
+                            ->where('evaluatee_id', $request->input('evaluatee_id')) // Ensure only the relevant evaluation is updated
                             ->update(['is_answered' => true]);
     
 
@@ -217,9 +236,12 @@ class EvaluationController extends Controller
         if ($recipientRecord && $recipientRecord->is_answered) {
             return redirect()->route('evaluations.recipientIndex')->with('error', 'You have already completed this evaluation.');
         }
-        
+
+        // Retrieve the evaluatee (intern) being evaluated
+        $evaluatee = User::find($recipientRecord->evaluatee_id);
+            
         $questions = $evaluation->questions;
-        return view('evaluations.submit_response', compact('evaluation', 'questions', 'user'));
+        return view('evaluations.submit_response', compact('evaluation', 'questions', 'user', 'evaluatee'));
     }
 
     public function viewResults($evaluationId)
@@ -393,9 +415,16 @@ class EvaluationController extends Controller
 
             $evaluation->is_answered = $recipient ? $recipient->is_answered : false;
         }
-    
 
-        return view('evaluations.recipient_index', compact('evaluations'));
+        // Get the first completed intern_student evaluation for the student
+        $completedCompanyEvaluation = Evaluation::where('evaluation_type', 'intern_student')
+            ->whereHas('recipients', function ($query) use ($user) {
+                $query->where('evaluatee_id', $user->id)
+                    ->where('is_answered', true);
+            })
+            ->first();
+
+        return view('evaluations.recipient_index', compact('evaluations', 'completedCompanyEvaluation'));
     }
 
     public function viewUserResponse($evaluationId)
@@ -405,6 +434,8 @@ class EvaluationController extends Controller
         $totalScore = null;
         $totalPossibleScore = null;
         $evaluationResult = null;
+        $evaluatee = null; 
+        $user = auth()->user();
     
         if ($evaluation->evaluation_type === 'program') {
             // Program evaluations show detailed responses
@@ -414,7 +445,7 @@ class EvaluationController extends Controller
                                 ->get();
     
             list($totalScore, $totalPossibleScore) = $this->calculateScore($evaluationId);
-        } elseif ($evaluation->evaluation_type === 'intern_company') {
+        } elseif ($evaluation->evaluation_type === 'intern_company'|| $evaluation->evaluation_type === 'intern_student') {
             // Fetch responses for 'intern_company' evaluations
             $responses = Response::where('evaluation_id', $evaluationId)
                                 ->where('evaluator', auth()->id())
@@ -423,11 +454,17 @@ class EvaluationController extends Controller
     
             // Retrieve one of the responses to get the supervisor name
             $evaluationResult = $responses->first();
+            if ($evaluation->evaluation_type === 'intern_student') {
+                $recipientRecord = EvaluationRecipient::where('evaluation_id', $evaluationId)
+                                                     ->where('user_id', auth()->id())
+                                                     ->first();
+                $evaluatee = User::find($recipientRecord->evaluatee_id); // Get the evaluated intern
+            }
             
             list($totalScore, $totalPossibleScore) = $this->calculateScore($evaluationId);
         }
     
-        return view('evaluations.view_response', compact('evaluation', 'responses', 'totalScore', 'totalPossibleScore', 'evaluationResult'));
+        return view('evaluations.view_response', compact('evaluation', 'responses', 'totalScore', 'totalPossibleScore', 'evaluationResult', 'evaluatee', 'user'));
     }
     
     
@@ -440,6 +477,7 @@ class EvaluationController extends Controller
         $totalScore = null;
         $totalPossibleScore = null;
         $evaluationResult = null;
+        $evaluatee = null;
     
         // Fetch responses and details
         if ($evaluation->evaluation_type === 'program') {
@@ -448,19 +486,25 @@ class EvaluationController extends Controller
                                 ->with('question')
                                 ->get();
             list($totalScore, $totalPossibleScore) = $this->calculateScore($evaluationId);
-        } elseif ($evaluation->evaluation_type === 'intern_company') {
+        } elseif ($evaluation->evaluation_type === 'intern_company' || $evaluation->evaluation_type === 'intern_student') {
             $responses = Response::where('evaluation_id', $evaluationId)
                                 ->where('evaluator', $user->id)
                                 ->with('question')
                                 ->get();
             // Fetch the supervisor name from the first response if present
             $evaluationResult = $responses->first();
+            if ($evaluation->evaluation_type === 'intern_student') {
+                $recipientRecord = EvaluationRecipient::where('evaluation_id', $evaluationId)
+                                                     ->where('user_id', auth()->id())
+                                                     ->first();
+                $evaluatee = User::find($recipientRecord->evaluatee_id); // Get the evaluated intern
+            }
             list($totalScore, $totalPossibleScore) = $this->calculateScore($evaluationId);
         }
     
         // Generate PDF using Dompdf
         $dompdf = new Dompdf();
-        $pdfView = View::make('evaluations.response_pdf', compact('evaluation', 'responses', 'user', 'totalScore', 'totalPossibleScore', 'evaluationResult'))->render();
+        $pdfView = View::make('evaluations.response_pdf', compact('evaluation', 'responses', 'user', 'totalScore', 'totalPossibleScore', 'evaluationResult', 'evaluatee'))->render();
         $dompdf->loadHtml($pdfView);
         $dompdf->render();
     
@@ -530,19 +574,195 @@ class EvaluationController extends Controller
 
     
 
-    private function calculateScore($evaluationId)
+    private function calculateScore($evaluationId, $evaluateeId = null)
     {
         $questions = Question::where('evaluation_id', $evaluationId)
                              ->where('question_type', 'radio')
                              ->get();
     
+                             $totalScoreQuery = Response::where('evaluation_id', $evaluationId)
+                             ->whereNotNull('response_value');
+
         $totalPossibleScore = $questions->count() * 4;
-        $totalScore = Response::where('evaluation_id', $evaluationId)
-                              ->whereNotNull('response_value')
-                              ->where('evaluator', auth()->id())
-                              ->sum('response_value');
+
+        // Add conditional check for evaluatee or evaluator
+        if ($evaluateeId) {
+            $totalScoreQuery->where('evaluatee', $evaluateeId);
+        } else {
+            $totalScoreQuery->where('evaluator', auth()->id());
+        }
+
+        $totalScore = $totalScoreQuery->sum('response_value');
     
         return [$totalScore, $totalPossibleScore];
     }
+
+
+    public function sendInternStudentEvaluation(Request $request, $evaluationId)
+    {
+        $evaluation = Evaluation::findOrFail($evaluationId);
+    
+        // Get companies with interns who have completed their internship
+        $companiesWithInterns = User::where('role_id', 4)
+            ->with(['interns' => function ($query) {
+                $query->whereHas('student.dailyTimeRecords', function ($subQuery) {
+                    $subQuery->where('remaining_hours', 0);
+                });
+            }])
+            ->get();
+    
+        foreach ($companiesWithInterns as $company) {
+            foreach ($company->interns as $intern) {
+                $studentId = $intern->student_id;
+                $exists = EvaluationRecipient::where('evaluation_id', $evaluationId)
+                    ->where('user_id', $company->id)
+                    ->where('evaluatee_id', $studentId)
+                    ->exists();
+    
+                if (!$exists) {
+                    Mail::to($company->email)->send(new EvaluationNotification($evaluation));
+    
+                    EvaluationRecipient::create([
+                        'evaluation_id' => $evaluationId,
+                        'user_id' => $company->id,
+                        'evaluatee_id' => $studentId,
+                        'is_answered' => false,
+                    ]);
+                }
+            }
+        }
+    
+        return redirect()->route('evaluations.index')->with('success', 'Evaluation sent to companies with eligible interns.');
+    }
+    
+
+    public function internStudentRecipientList(Request $request, $evaluationId)
+    {
+        $evaluation = Evaluation::findOrFail($evaluationId);
+
+        // Fetch companies with interns who have completed their internship hours
+        $companiesWithInterns = User::where('role_id', 4) // Assuming role_id 4 is for companies
+            ->with(['interns.student.profile', 'interns' => function ($query) {
+                $query->whereHas('student.dailyTimeRecords', function ($subQuery) {
+                    $subQuery->where('remaining_hours', 0);
+                });
+            }])
+            ->get();
+
+        // Filter by sent status: all, received, not received, answered, not answered
+        $receivedIds = EvaluationRecipient::where('evaluation_id', $evaluationId)
+                                        ->pluck('evaluatee_id')
+                                        ->toArray();
+        $answeredIds = EvaluationRecipient::where('evaluation_id', $evaluationId)
+                                        ->where('is_answered', true)
+                                        ->pluck('evaluatee_id')
+                                        ->toArray();
+
+        $filter = $request->input('filter', 'all');
+        foreach ($companiesWithInterns as $company) {
+            $company->interns = $company->interns->filter(function ($intern) use ($filter, $receivedIds, $answeredIds) {
+                $studentId = $intern->student_id;
+                if ($filter === 'received') {
+                    return in_array($studentId, $receivedIds);
+                } elseif ($filter === 'not_received') {
+                    return !in_array($studentId, $receivedIds);
+                } elseif ($filter === 'answered') {
+                    return in_array($studentId, $answeredIds);
+                } elseif ($filter === 'not_answered') {
+                    return !in_array($studentId, $answeredIds);
+                }
+                return true;
+            });
+        }
+
+        return view('evaluations.intern_student_recipients', compact('evaluation', 'companiesWithInterns', 'receivedIds', 'answeredIds', 'filter'));
+    }
+
+    // Student view of the Intern Evaluation by Company
+    public function viewStudentEvaluation($evaluationId, $studentId)
+    {
+        $evaluation = Evaluation::findOrFail($evaluationId);
+        $student = User::findOrFail($studentId);
+
+        // Retrieve student-specific responses
+        $responses = Response::where('evaluation_id', $evaluationId)
+                            ->where('evaluatee', $studentId)
+                            ->with('question')
+                            ->get();
+
+        list($totalScore, $totalPossibleScore) = $this->calculateScore($evaluationId, $studentId);
+        
+
+        return view('evaluations.student_view_response', compact('evaluation', 'responses', 'totalScore', 'totalPossibleScore', 'student'));
+    }
+
+    public function downloadStudentEvaluationPDF($evaluationId, $studentId)
+    {
+        $evaluation = Evaluation::findOrFail($evaluationId);
+        $student = User::findOrFail($studentId);
+
+        // Fetch responses for PDF generation
+        $responses = Response::where('evaluation_id', $evaluationId)
+                            ->where('evaluatee', $studentId)
+                            ->with('question')
+                            ->get();
+
+        list($totalScore, $totalPossibleScore) = $this->calculateScore($evaluationId, $studentId);
+
+        // Generate PDF using Dompdf
+        $dompdf = new Dompdf();
+        $pdfView = View::make('evaluations.student_evaluation_pdf', compact('evaluation', 'responses', 'student', 'totalScore', 'totalPossibleScore'))->render();
+        $dompdf->loadHtml($pdfView);
+        $dompdf->render();
+
+        return $dompdf->stream('student-evaluation-response.pdf');
+    }
+
+
+    public function viewStudentScores($evaluationId, $studentId)
+    {
+        $evaluation = Evaluation::findOrFail($evaluationId);
+        $student = User::findOrFail($studentId);
+
+        // Retrieve student-specific responses
+        $responses = Response::where('evaluation_id', $evaluationId)
+                            ->where('evaluatee', $studentId)
+                            ->with('question')
+                            ->get();
+
+        list($totalScore, $totalPossibleScore) = $this->calculateScore($evaluationId, $studentId);
+
+        // Fetch the associated company for the student's internship
+        $company = $student->acceptedInternship->company ?? null;
+
+        return view('evaluations.admin_view_student_scores', compact('evaluation', 'responses', 'totalScore', 'totalPossibleScore', 'student', 'company'));
+    }
+
+    public function downloadStudentScoresPDF($evaluationId, $studentId)
+    {
+        $evaluation = Evaluation::findOrFail($evaluationId);
+        $student = User::findOrFail($studentId);
+
+        // Fetch responses for PDF generation
+        $responses = Response::where('evaluation_id', $evaluationId)
+                            ->where('evaluatee', $studentId)
+                            ->with('question')
+                            ->get();
+
+        list($totalScore, $totalPossibleScore) = $this->calculateScore($evaluationId, $studentId);
+
+        // Fetch the associated company for the student's internship
+        $company = $student->acceptedInternship->company ?? null;
+
+        // Generate PDF using Dompdf
+        $dompdf = new Dompdf();
+        $pdfView = View::make('evaluations.admin_student_scores_pdf', compact('evaluation', 'responses', 'student', 'totalScore', 'totalPossibleScore', 'company'))->render();
+        $dompdf->loadHtml($pdfView);
+        $dompdf->render();
+
+        return $dompdf->stream('student-scores.pdf');
+    }
+
+
 
 }

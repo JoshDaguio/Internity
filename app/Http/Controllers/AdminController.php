@@ -12,6 +12,8 @@ use App\Models\Priority;
 use App\Models\AcceptedInternship;
 use App\Models\InternshipHours;
 use App\Models\DailyTimeRecord;
+use App\Models\Evaluation;
+use App\Models\EvaluationRecipient;
 use App\Mail\StudentApprovalMail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -109,6 +111,30 @@ class AdminController extends Controller
 
         $approvedStudents = $query->get();
 
+        $evaluation = Evaluation::where('evaluation_type', 'intern_company')->first();
+
+        // Apply internship status filter if provided
+        if ($request->filled('internship_status')) {
+            $approvedStudents = $approvedStudents->filter(function ($student) use ($request) {
+                $acceptedInternship = AcceptedInternship::where('student_id', $student->id)->first();
+                $latestDailyRecord = DailyTimeRecord::where('student_id', $student->id)
+                    ->orderBy('log_date', 'desc')
+                    ->first();
+                $remainingHours = $latestDailyRecord ? $latestDailyRecord->remaining_hours : null;
+
+                if ($request->internship_status === 'no_internship' && !$acceptedInternship) {
+                    return true;
+                }
+                if ($request->internship_status === 'ongoing' && $acceptedInternship && $remainingHours > 0) {
+                    return true;
+                }
+                if ($request->internship_status === 'complete' && $remainingHours === 0) {
+                    return true;
+                }
+                return false;
+            });
+        }
+
         // Attach progress details for each student
         foreach ($approvedStudents as $student) {
             $acceptedInternship = AcceptedInternship::where('student_id', $student->id)->first();
@@ -139,19 +165,32 @@ class AdminController extends Controller
                 $student->totalWorkedHours = $totalWorkedHours;
                 $student->remainingHours = $remainingHours;
                 $student->hasInternship = true;
+
+                // Determine evaluation status based on `EvaluationRecipient`
+                if ($remainingHours == 0) { // Internship completed
+                    $evaluationSent = EvaluationRecipient::where('evaluation_id', 1) // Replace with actual evaluation ID
+                        ->where('user_id', $student->id)
+                        ->exists();
+
+                    $student->evaluationStatus = $evaluationSent ? 'Sent' : 'Not Sent';
+                } else {
+                    $student->evaluationStatus = 'Internship Ongoing';
+                }
+            
             } else {
                 // If no internship is found
                 $student->completionPercentage = 0;
                 $student->totalWorkedHours = 0;
                 $student->remainingHours = 0;
                 $student->hasInternship = false;
+                $student->evaluationStatus = 'No Internship';
             }
         }
     
         // Get all courses for filtering purposes
         $courses = Course::all();
     
-        return view('administrative.student-list', compact('approvedStudents', 'courses'));
+        return view('administrative.student-list', compact('approvedStudents', 'courses', 'evaluation'));
     }
 
     // Method to approve a student registration
@@ -297,8 +336,15 @@ class AdminController extends Controller
             $student->hasInternship = false;
         }
 
+        $evaluation = Evaluation::where('evaluation_type', 'intern_student')
+            ->whereHas('recipients', function ($query) use ($student) {
+                $query->where('evaluatee_id', $student->id);
+            })
+            ->orderBy('created_at', 'desc')
+            ->first();
+
         // Pass the student and priorityListings data to the view
-        return view('administrative.show-student', compact('student', 'priorityListings'));
+        return view('administrative.show-student', compact('student', 'priorityListings','evaluation'));
     }
 
     private function calculateFinishDate($remainingHours, $startDate, $scheduledDays)

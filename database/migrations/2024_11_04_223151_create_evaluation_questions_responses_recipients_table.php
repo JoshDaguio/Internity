@@ -46,6 +46,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('evaluation_id')->constrained('evaluations')->onDelete('cascade'); // FK for evaluations table
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade'); // FK for users table
+            $table->foreignId('evaluatee_id')->nullable()->constrained('users')->onDelete('cascade'); // Evaluatee field
             $table->boolean('is_answered')->default(false); // Track if answered
             $table->timestamps();
         });

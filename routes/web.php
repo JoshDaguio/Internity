@@ -397,6 +397,16 @@ Route::middleware(['auth', 'administrative'])->group(function () {
     Route::get('/evaluations/intern_company/{evaluation}/recipients', [EvaluationController::class, 'internCompanyRecipientList'])->name('evaluations.internCompanyRecipientList');
     Route::get('/evaluations/{evaluation}/manage-questions', [EvaluationController::class, 'manageQuestions'])->name('evaluations.manageQuestions');
     Route::post('/evaluations/{evaluation}/update-questions', [EvaluationController::class, 'updateQuestions'])->name('evaluations.updateQuestions');
+    // Send evaluation to interns for intern_student evaluation type
+    Route::post('/evaluations/{evaluation}/send-intern-student', [EvaluationController::class, 'sendInternStudentEvaluation'])->name('evaluations.sendInternStudent');
+
+    // Recipient list for intern_student evaluations
+    Route::get('/evaluations/intern_student/{evaluation}/recipients', [EvaluationController::class, 'internStudentRecipientList'])->name('evaluations.internStudentRecipientList');
+
+    Route::get('evaluations/{evaluation}/student/{student}/view-scores', [EvaluationController::class, 'viewStudentScores'])->name('admin.evaluations.viewStudentScores');
+
+    Route::get('evaluations/{evaluation}/student/{student}/download-scores-pdf', [EvaluationController::class, 'downloadStudentScoresPDF'])->name('admin.evaluations.downloadStudentScoresPDF');
+    Route::get('/admin/evaluations/{evaluation}/student/{student}/scores', [EvaluationController::class, 'viewStudentScores'])->name('admin.evaluations.viewStudentScores');
 });
 
 // Evaluations Recipient Access
@@ -406,6 +416,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/evaluations/available', [EvaluationController::class, 'recipientIndex'])->name('evaluations.recipientIndex');
     Route::get('/evaluations/{evaluation}/view-response', [EvaluationController::class, 'viewUserResponse'])->name('evaluations.viewUserResponse');
     Route::get('/evaluations/{evaluation}/downloadResponsePDF', [EvaluationController::class, 'downloadResponsePDF'])->name('evaluations.downloadResponsePDF');
+    // Route for students to view evaluations given by companies
+    Route::get('/evaluations/student/view/{evaluation}/{student}', [EvaluationController::class, 'viewStudentEvaluation'])->name('evaluations.viewStudentEvaluation');
+    Route::get('/evaluations/student/download/{evaluation}/{student}', [EvaluationController::class, 'downloadStudentEvaluationPDF'])->name('evaluations.downloadStudentEvaluationPDF');
+
 });
 
 // Pullouts Request

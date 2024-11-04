@@ -30,7 +30,14 @@
                         <form action="{{ route('evaluations.submitResponse', $evaluation->id) }}" method="POST">
                             @csrf
 
-                            @if ($evaluation->evaluation_type === 'intern_company')
+                            @if ($evaluation->evaluation_type === 'intern_student')
+                                <h5 class="card-title">Intern Details</h5>
+                                <p><strong>Intern Name:</strong> {{ $evaluatee->profile->first_name }} {{ $evaluatee->profile->last_name }}</p>
+                                <p><strong>Intern's Course:</strong> {{ $evaluatee->course->course_code ?? 'N/A' }}</p>
+                                <p><strong>Intern's Position:</strong> {{ $evaluatee->acceptedInternship->job->title ?? 'N/A' }}</p>
+                                <p><strong>Company:</strong> {{ $user->name }}</p>
+                                <input type="hidden" name="evaluatee_id" value="{{ $evaluatee->id }}">
+                            @elseif ($evaluation->evaluation_type === 'intern_company')
                                 <h5 class="card-title">Internship Details</h5>
                                 <p><strong>Company Name:</strong> {{ $user->acceptedInternship->job->company->name }}</p>
                                 <p><strong>Location:</strong> {{ $user->acceptedInternship->job->company->profile->address ?? 'No Address Added' }}</p>

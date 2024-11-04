@@ -206,7 +206,11 @@
                                     @if (!empty($changes))
                                         <ul>
                                             @foreach ($changes as $field => $change)
-                                                <li>{{ ucfirst($field) }}: from <strong>{{ $change['old'] }}</strong> to <strong>{{ $change['new'] }}</strong></li>
+                                                @if(is_array($change) && isset($change['old']) && isset($change['new']))
+                                                    <li>{{ ucfirst($field) }}: from <strong>{{ $change['old'] }}</strong> to <strong>{{ $change['new'] }}</strong></li>
+                                                @else
+                                                    <li>{{ ucfirst($field) }}: {{ is_string($change) ? $change : 'N/A' }}</li>
+                                                @endif
                                             @endforeach
                                         </ul>
                                     @else

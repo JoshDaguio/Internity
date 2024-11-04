@@ -12,6 +12,7 @@ class EvaluationRecipient extends Model
     protected $fillable = [
         'evaluation_id',
         'user_id',
+        'evaluatee_id', 
         'is_answered',
     ];
 

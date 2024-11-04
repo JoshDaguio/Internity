@@ -53,6 +53,14 @@
                                 </select>
                             </div>
                             <div class="mb-3">
+                                <select name="internship_status" id="internship_status" class="form-select" onchange="this.form.submit()">
+                                    <option value="">All Internship Status</option>
+                                    <option value="ongoing" {{ request('internship_status') == 'ongoing' ? 'selected' : '' }}>Ongoing Internship</option>
+                                    <option value="no_internship" {{ request('internship_status') == 'no_internship' ? 'selected' : '' }}>No Internship</option>
+                                    <option value="complete" {{ request('internship_status') == 'complete' ? 'selected' : '' }}>Internship Hours Complete</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
                                 <select name="requirements_status" id="requirements_status" class="form-select" onchange="this.form.submit()">
                                     <option value="">All Requirements</option>
                                     <option value="complete" {{ request('requirements_status') == 'complete' ? 'selected' : '' }}>Complete</option>
@@ -153,7 +161,11 @@
                                         <td>
                                             @if ($student->hasInternship)
                                                 <a href="{{ route('students.dtr', $student->id) }}" class="btn btn-light btn-sm">
-                                                    <p><strong><i class="bi bi-hourglass-split"></i> Total Hrs:</strong> {{ $student->totalWorkedHours }} / {{ $student->remainingHours }} hrs <strong>({{ round($student->completionPercentage, 2) }}%)</strong></p>
+                                                    @if($student->remainingHours > 0)
+                                                        <p><strong><i class="bi bi-hourglass-split"></i> Total Hours:</strong> {{ $student->totalWorkedHours }} / {{ $student->remainingHours }} hrs <strong>({{ round($student->completionPercentage, 2) }}%)</strong></p>
+                                                    @else
+                                                        <p><span class="badge bg-success"><strong><i class="bi bi-check-circle"></i> Internship Hours Completed</strong></span></p>
+                                                    @endif                                                
                                                 <div class="progress mb-3" style="height: 15px; width: 250px;">
                                                     <div class="progress-bar" role="progressbar" 
                                                         style="width: {{ $student->completionPercentage }}%; background-color: #B30600;" 
@@ -167,12 +179,28 @@
                                             @endif
                                         </td>
                                         <td>
-                                            Sent | Not Sent | No Internship
+                                            @if ($student->evaluationStatus == 'No Internship')
+                                                <span class="badge bg-secondary">{{ $student->evaluationStatus }}</span>
+                                            @elseif ($student->evaluationStatus == 'Internship Ongoing')
+                                                <span class="badge bg-warning">{{ $student->evaluationStatus }}</span>
+                                            @elseif ($student->evaluationStatus == 'Sent' && $evaluation)
+                                                <a href="{{ route('evaluations.internCompanyRecipientList', $evaluation->id) }}" class="btn btn-light btn-sm">
+                                                    <span class="badge bg-primary">{{ $student->evaluationStatus }}</span>
+                                                </a>
+                                            @elseif ($student->evaluationStatus == 'Not Sent' && $evaluation)
+                                                <a href="{{ route('evaluations.internCompanyRecipientList', $evaluation->id) }}" class="btn btn-light btn-sm">
+                                                    <span class="badge bg-danger">{{ $student->evaluationStatus }}</span>
+                                                </a>
+                                            @else
+                                                <a href="{{ route('evaluations.create') }}" class="btn btn-light btn-sm">
+                                                    <span class="badge bg-secondary">Evaluation Not Available</span>
+                                                </a>
+                                            @endif
                                         </td>
-                                            @if(Auth::user()->role_id == 1 || Auth::user()->role_id == 2)
+                                    @if(Auth::user()->role_id == 1 || Auth::user()->role_id == 2)
                                         <td>
                                             @if($student->requirements)
-                                                <a href="{{ route('requirements.review', $student->requirements->id) }}">
+                                                <a href="{{ route('requirements.review', $student->requirements->id) }}" class="btn btn-light btn-sm">
                                                     @if($student->requirements->status_id == 2) <!-- Accepted -->
                                                         <span class="badge bg-success">Complete</span>
                                                     @else

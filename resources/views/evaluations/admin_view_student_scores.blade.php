@@ -2,17 +2,18 @@
 
 @section('body')
     <div class="pagetitle">
-        <h1>Evaluation Response</h1>
+        <h1>Student Evaluation Scores</h1>
         <nav>
             <ol class="breadcrumb">
                 <li class="breadcrumb-item">Home</li>
-                <li class="breadcrumb-item">Evaluations</li>
-                <li class="breadcrumb-item active">Responses</li>
+                <li class="breadcrumb-item">Students</li>
+                <li class="breadcrumb-item active">Evaluation Scores</li>
             </ol>
         </nav>
     </div>
 
-    <a href="{{ route('evaluations.recipientIndex') }}" class="btn btn-secondary btn-sm mb-3">Back</a>
+    <a href="{{ route('students.show', $student->id) }}" class="btn btn-secondary mb-3 btn-sm">Back</a>
+
 
     <div class="row mb-2">
         <div class="col-md-12">
@@ -23,20 +24,17 @@
                         <p><strong>{{ $evaluation->description }}</strong></p>
                     </div>
 
-                    @if ($evaluation->evaluation_type === 'intern_student' && $evaluatee)
-                        <h5 class="card-title">Intern Details</h5>
-                        <p><strong>Intern Name:</strong> {{ $evaluatee->profile->first_name }} {{ $evaluatee->profile->last_name }}</p>
-                        <p><strong>Intern's Course:</strong> {{ $evaluatee->course->course_code ?? 'N/A' }}</p>
-                        <p><strong>Intern's Position:</strong> {{ $evaluatee->acceptedInternship->job->title ?? 'N/A' }}</p>
-                        <p><strong>Company:</strong> {{ $user->name }}</p>
-                    @elseif ($evaluation->evaluation_type === 'intern_company' && $evaluationResult)
-                        <div class="mb-3">
-                            <h5><strong>Supervisor Name:</strong></h5>
-                            <p>{{ $evaluationResult->supervisor }}</p>
-                        </div>
+                    <!-- Student and Company Details Section -->
+                    <h5 class="card-title">Student and Company Details</h5>
+                    <p><strong>Student Name:</strong> {{ $student->profile->first_name }} {{ $student->profile->last_name }}</p>
+                    <p><strong>Course:</strong> {{ $student->course->course_name }}</p>
+                    @if($company)
+                        <p><strong>Company Name:</strong> {{ $company->name }}</p>
+                        <p><strong>Contact Person:</strong> {{ $company->profile->first_name }} {{ $company->profile->last_name }}</p>
+                        <p><strong>Email:</strong> {{ $company->email }}</p>
                     @endif
 
-                    <h5 class="card-title">Your Responses:</h5>
+                    <h5 class="card-title">Evaluation Responses:</h5>
 
                     @if ($responses->isNotEmpty())
                         @foreach ($responses as $response)
@@ -75,8 +73,10 @@
                     @else
                         <p>No detailed responses to display for this evaluation yet.</p>
                     @endif
-                        <a href="{{ route('evaluations.downloadResponsePDF', $evaluation->id) }}" class="btn btn-success btn-sm"><i class="bi bi-download"></i> PDF</a>
-                    </div>
+
+                    <a href="{{ route('admin.evaluations.downloadStudentScoresPDF', ['evaluation' => $evaluation->id, 'student' => $student->id]) }}" class="btn btn-success btn-sm">
+                        <i class="bi bi-download"></i> Download PDF
+                    </a>
                 </div>
             </div>
         </div>

@@ -74,8 +74,15 @@
         <p><strong>Company Name:</strong> {{ $user->name }}</p>
         <p><strong>Contact Person:</strong> {{ $user->profile->first_name }} {{ $user->profile->last_name }}</p>
     @endif
+
+
+    @if ($evaluation->evaluation_type === 'intern_student' && $evaluatee)
+        <p><strong>Intern Name:</strong> {{ $evaluatee->profile->first_name }} {{ $evaluatee->profile->last_name }}</p>
+        <p><strong>Intern's Course:</strong> {{ $evaluatee->course->course_code ?? 'N/A' }}</p>
+        <p><strong>Intern's Position:</strong> {{ $evaluatee->acceptedInternship->job->title ?? 'N/A' }}</p>
+        <p><strong>Company:</strong> {{ $user->name }}</p>
     <!-- Supervisor Details for Intern Company Evaluations -->
-    @if ($evaluation->evaluation_type === 'intern_company' && $evaluationResult)
+    @elseif ($evaluation->evaluation_type === 'intern_company' && $evaluationResult)
         <p><strong>Supervisor:</strong> {{ $evaluationResult->supervisor }}</p>
     @endif
 </div>

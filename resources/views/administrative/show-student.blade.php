@@ -295,7 +295,11 @@
                     <!-- Internship Section -->
                     <h5 class="card-title">Internship Details</h5>
                     @if ($student->acceptedInternship)
-                        <p><strong><i class="bi bi-hourglass-split"></i> Total Hours:</strong> {{ $student->totalWorkedHours }} / {{ $student->remainingHours }} hrs <strong>({{ round($student->completionPercentage, 2) }}%)</strong></p>
+                        @if($student->remainingHours > 0)
+                            <p><strong><i class="bi bi-hourglass-split"></i> Total Hours:</strong> {{ $student->totalWorkedHours }} / {{ $student->remainingHours }} hrs <strong>({{ round($student->completionPercentage, 2) }}%)</strong></p>
+                        @else
+                            <p><span class="badge bg-success"><strong><i class="bi bi-check-circle"></i> Internship Hours Completed</strong></span></p>
+                        @endif
                         <div class="progress mb-3">
                             <div class="progress-bar" role="progressbar" style="width: {{ $student->completionPercentage }}%; background-color: #B30600;" 
                                 aria-valuenow="{{ $student->completionPercentage }}" aria-valuemin="0" aria-valuemax="100">
@@ -404,6 +408,17 @@
                                 <a href="{{ route('students.dtr', $student->id) }}" class="btn btn-success me-2 btn-sm {{ $student->status_id != 1 ? 'd-none' : '' }}">
                                     <i class="bi bi bi-clock"></i> DTR
                                 </a>
+                                @if( Auth::user()->role_id == 1 || Auth::user()->role_id == 2)
+                                    @if ($evaluation)
+                                        <a href="{{ route('admin.evaluations.viewStudentScores', ['evaluation' => $evaluation->id, 'student' => $student->id]) }}" class="btn btn-info me-2 btn-sm">
+                                            <i class="bi bi-clipboard-data"></i> Evaluation Scores
+                                        </a>
+                                    @else
+                                        <button class="btn btn-secondary me-2 btn-sm" disabled>
+                                            <i class="bi bi-clipboard-data"></i> Evaluation Not Available
+                                        </button>
+                                    @endif
+                                @endif
                             </div>
                         </div>            
                     @else

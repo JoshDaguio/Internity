@@ -119,4 +119,19 @@ class User extends Authenticatable
         return $this->hasMany(MonthlyReport::class, 'student_id');
     }
 
+    // User.php
+
+    public function interns()
+    {
+        return $this->hasMany(AcceptedInternship::class, 'company_id', 'id')->whereHas('student', function ($query) {
+            $query->where('role_id', 5); 
+        });
+    }
+
+    public function dailyTimeRecords()
+    {
+        return $this->hasMany(DailyTimeRecord::class, 'student_id');
+    }
+
+
 }
