@@ -293,6 +293,15 @@ Route::middleware('auth')->group(function () {
     Route::post('/internship/remove-priority/{jobId}', [StudentController::class, 'removePriority'])->name('internship.removePriority');
 });
 
+// Priority Management for Admins
+// Admin Routes for Managing Student Priorities
+Route::middleware(['auth', 'administrative'])->group(function () {
+    Route::get('/admin/students/{studentId}/manage-priority', [StudentController::class, 'showManagePriorityPage'])->name('admin.students.managePriority'); // New GET route
+    Route::post('/admin/students/{studentId}/set-priority', [StudentController::class, 'adminSetPriority'])->name('admin.students.setPriority');
+    Route::post('/admin/students/{studentId}/remove-priority/{jobId}', [StudentController::class, 'adminRemovePriority'])->name('admin.students.removePriority');
+});
+
+
 //Requirements
 //Student Side
 Route::middleware(['auth'])->group(function () {

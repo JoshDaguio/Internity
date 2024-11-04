@@ -322,16 +322,29 @@ class DailyTimeRecordController extends Controller
         // Generate the range of months from the start date to the current date
         $monthsRange = collect();
         $monthIterator = $startDate->copy()->startOfMonth();
+
+        // Monthly hours calculation for the line chart
+        $monthlyHours = [];
+        $monthlyPenalties = [];
+
         while ($monthIterator->lte($currentDate)) {
-            $monthsRange->push([
-                'month' => $monthIterator->format('m'),
-                'monthName' => $monthIterator->format('F') // Full month name
-            ]);
+            $month = $monthIterator->format('m');
+            $year = $monthIterator->format('Y');
+            $monthName = $monthIterator->format('F');
+    
+            $monthlyHours[$monthName] = $dailyRecords->filter(function ($record) use ($month, $year) {
+                return Carbon::parse($record->log_date)->month == $month && Carbon::parse($record->log_date)->year == $year;
+            })->sum('total_hours_worked');
+
+            // Total penalties gained per month
+            $monthlyPenalties[$monthName] = $penaltiesAwarded->filter(function ($penalty) use ($month, $year) {
+                return Carbon::parse($penalty->awarded_date)->month == $month && Carbon::parse($penalty->awarded_date)->year == $year;
+            })->sum('penalty_hours');
+    
+            $monthsRange->push(['month' => $month, 'monthName' => $monthName]);
             $monthIterator->addMonth();
         }
-
-        // Only fetch the days of the selected month for display
-        // Filter the logs by the selected month
+    
         $filteredRecords = $dailyRecords->filter(function ($record) use ($selectedMonth) {
             return Carbon::parse($record->log_date)->month == $selectedMonth;
         });
@@ -368,7 +381,7 @@ class DailyTimeRecordController extends Controller
         $estimatedFinishDate = $this->calculateFinishDate($remainingHours, $currentDate, $scheduledDays);
 
         return view('daily_time_records.reports', compact(
-            'penaltiesAwarded', 'completionPercentage','totalWorkedHours', 'penalties', 'student', 'acceptedInternship', 'internshipHours', 'filteredRecords', 'schedule', 'currentDate', 'startDate', 'selectedMonth', 'scheduledDays', 'remainingHours', 'estimatedFinishDate', 'filteredDates', 'monthsRange'
+            'penaltiesAwarded', 'completionPercentage','totalWorkedHours', 'penalties', 'student', 'acceptedInternship', 'internshipHours', 'filteredRecords', 'schedule', 'currentDate', 'startDate', 'selectedMonth', 'scheduledDays', 'remainingHours', 'estimatedFinishDate', 'filteredDates', 'monthsRange', 'monthlyHours', 'monthlyPenalties'
         ));
     }
 
@@ -459,11 +472,27 @@ class DailyTimeRecordController extends Controller
         // Generate the range of months from the start date to the current date
         $monthsRange = collect();
         $monthIterator = $startDate->copy()->startOfMonth();
+
+        // Monthly hours and penalties calculation for the line chart
+        $monthlyHours = [];
+        $monthlyPenalties = [];
+
         while ($monthIterator->lte($currentDate)) {
-            $monthsRange->push([
-                'month' => $monthIterator->format('m'),
-                'monthName' => $monthIterator->format('F') // Full month name
-            ]);
+            $month = $monthIterator->format('m');
+            $year = $monthIterator->format('Y');
+            $monthName = $monthIterator->format('F');
+    
+            // Total hours worked per month
+            $monthlyHours[$monthName] = $dailyRecords->filter(function ($record) use ($month, $year) {
+                return Carbon::parse($record->log_date)->month == $month && Carbon::parse($record->log_date)->year == $year;
+            })->sum('total_hours_worked');
+    
+            // Total penalties gained per month
+            $monthlyPenalties[$monthName] = $penaltiesAwarded->filter(function ($penalty) use ($month, $year) {
+                return Carbon::parse($penalty->awarded_date)->month == $month && Carbon::parse($penalty->awarded_date)->year == $year;
+            })->sum('penalty_hours');
+    
+            $monthsRange->push(['month' => $month, 'monthName' => $monthName]);
             $monthIterator->addMonth();
         }
 
@@ -504,7 +533,7 @@ class DailyTimeRecordController extends Controller
         $estimatedFinishDate = $this->calculateFinishDate($remainingHours, $currentDate, $scheduledDays);
 
         return view('daily_time_records.student-dtr', compact(
-            'totalWorkedHours','completionPercentage', 'penaltiesAwarded', 'penalties', 'student', 'acceptedInternship', 'internshipHours', 'filteredRecords', 'schedule', 'currentDate', 'startDate', 'selectedMonth', 'scheduledDays', 'remainingHours', 'estimatedFinishDate', 'filteredDates', 'monthsRange'
+            'totalWorkedHours','completionPercentage', 'penaltiesAwarded', 'penalties', 'student', 'acceptedInternship', 'internshipHours', 'filteredRecords', 'schedule', 'currentDate', 'startDate', 'selectedMonth', 'scheduledDays', 'remainingHours', 'estimatedFinishDate', 'filteredDates', 'monthsRange', 'monthlyHours', 'monthlyPenalties'
         ));
     }
 

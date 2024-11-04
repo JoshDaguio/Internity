@@ -12,18 +12,19 @@
     </nav>
 </div>
 
+    @if(Auth::user()->role_id == 1 || Auth::user()->role_id == 2 || Auth::user()->role_id == 3)
+        <a href="{{ route('students.list') }}" class="btn btn-secondary mb-3 btn-sm">Back</a>
+    @else
+        <a href="{{ route('company.interns') }}" class="btn btn-secondary mb-3 btn-sm">Back</a>
+    @endif
+
+    
     @if(session('success'))
         <div class="alert alert-success">{{ session('success') }}</div>
     @endif
     
     @if(session('error'))
         <div class="alert alert-danger">{{ session('error') }}</div>
-    @endif
-
-    @if(Auth::user()->role_id == 1 || Auth::user()->role_id == 2 || Auth::user()->role_id == 3)
-        <a href="{{ route('students.list') }}" class="btn btn-secondary mb-3 btn-sm">Back</a>
-    @else
-        <a href="{{ route('company.interns') }}" class="btn btn-secondary mb-3 btn-sm">Back</a>
     @endif
 
     <div class="row mb-3">
@@ -422,6 +423,11 @@
                                     <li>{{ $priority->job->company->name }} - {{ $priority->job->title }} (Priority: {{ $priority->priority }})</li>
                                 @endforeach
                             </ul>
+                        @endif
+                        @if(Auth::user()->role_id == 1 || Auth::user()->role_id == 2)
+                            <a href="{{ route('admin.students.managePriority', $student->id) }}" class="btn btn-primary btn-sm">
+                                Manage Priority
+                            </a>
                         @endif
                     @endif
                 </div>

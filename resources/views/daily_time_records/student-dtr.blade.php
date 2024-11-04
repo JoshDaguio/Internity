@@ -18,7 +18,7 @@
     @if(isset($noInternship) && $noInternship)
         <div class="alert alert-danger text-center">
             <p><strong>Section is Locked</strong></p>
-            <p>No Internship Yet, Please Apply or Wait for Acceptance</p>
+            <p>No Internship Yet.</p>
         </div>
     @else
 
@@ -124,7 +124,7 @@
         <!-- Report Logs Filtered by Month -->
         <div class="row mb-2">
             <div class="col-md-7">
-                <div class="card mb-3" style="height: 400px;">
+                <div class="card mb-3" style="max-height: 500; min-height: 300px;">
                     <div class="card-body">
                         <h5 class="card-title">Logs for the Month</h5>
                         <!-- Filter by Month -->
@@ -187,6 +187,55 @@
             <div class="col-md-5">
                 <div class="card mb-3">
                     <div class="card-body">
+                        <h5 class="card-title">Total Hours Worked Per Month</h5>
+                        <canvas id="lineChart" style="max-height: 400px;"></canvas>
+                        <script>
+                            document.addEventListener("DOMContentLoaded", () => {
+                                new Chart(document.querySelector('#lineChart'), {
+                                    type: 'line',
+                                    data: {
+                                        labels: {!! json_encode(array_keys($monthlyHours)) !!},
+                                        datasets: [{
+                                            label: 'Total Hours Worked',
+                                            data: {!! json_encode(array_values($monthlyHours)) !!},
+                                            fill: false,
+                                            borderColor: 'rgb(75, 192, 192)',
+                                            tension: 0.1
+                                        }]
+                                    },
+                                    options: {
+                                        scales: {
+                                            y: {
+                                                beginAtZero: true,
+                                                title: {
+                                                    display: true,
+                                                    text: 'Hours Worked'
+                                                }
+                                            },
+                                            x: {
+                                                title: {
+                                                    display: true,
+                                                    text: 'Months'
+                                                }
+                                            }
+                                        }
+                                    }
+                                });
+                            });
+                        </script>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mb-2">
+        @if(Auth::user()->role_id == 1 || Auth::user()->role_id == 2)
+            <div class="col-md-4">
+        @else
+            <div class="col-md-7">
+        @endif
+                <div class="card mb-3">
+                    <div class="card-body">
                         <h5 class="card-title">Penalties Gained</h5>
                         <div class="table-responsive">
                             <table class="table" style="max-height: 400 px; overflow-y: auto;">
@@ -201,9 +250,9 @@
                                 <tbody>
                                     @foreach($penaltiesAwarded as $penalty)
                                         <tr>
-                                            <td>{{ \Carbon\Carbon::parse($penalty->awarded_date)->format('F d, Y') }}</td>
+                                            <td>{{ \Carbon\Carbon::parse($penalty->awarded_date)->format('M d, Y') }}</td>
                                             <td>{{ $penalty->penalty->violation }}</td>
-                                            <td>{{ $penalty->penalty_hours }} hours</td>
+                                            <td>{{ $penalty->penalty_hours }} hrs</td>
                                             <td>{{ $penalty->remarks ?? 'None' }}</td>
                                         </tr>
                                     @endforeach
@@ -213,12 +262,9 @@
                     </div>
                 </div>    
             </div>
-        </div>
-
-        <div class="row mb-2">
             @if(Auth::user()->role_id == 1 || Auth::user()->role_id == 2)
-            <div class="col-md-12">
-                <div class="card mb-3">
+            <div class="col-md-4">
+                <div class="card mb-2">
                     <div class="card-body">
                         <h5 class="card-title">Award Penalty</h5>
                         <form action="{{ route('penalties.award', $student->id) }}" method="POST">
@@ -247,6 +293,54 @@
             </div>
             @else
             @endif
+            
+            <!-- Line Chart for Total Penalties Gained Per Month -->
+            @if(Auth::user()->role_id == 1 || Auth::user()->role_id == 2)
+                <div class="col-md-4">
+            @else
+                <div class="col-md-5">
+            @endif
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title">Total Penalties Gained Per Month</h5>
+                        <canvas id="penaltyLineChart" style="max-height: 400px;"></canvas>
+                        <script>
+                            document.addEventListener("DOMContentLoaded", () => {
+                                new Chart(document.querySelector('#penaltyLineChart'), {
+                                    type: 'line',
+                                    data: {
+                                        labels: {!! json_encode(array_keys($monthlyPenalties)) !!},
+                                        datasets: [{
+                                            label: 'Total Penalties Gained (Hours)',
+                                            data: {!! json_encode(array_values($monthlyPenalties)) !!},
+                                            fill: false,
+                                            borderColor: 'rgb(255, 99, 132)',
+                                            tension: 0.1
+                                        }]
+                                    },
+                                    options: {
+                                        scales: {
+                                            y: {
+                                                beginAtZero: true,
+                                                title: {
+                                                    display: true,
+                                                    text: 'Penalty Hours'
+                                                }
+                                            },
+                                            x: {
+                                                title: {
+                                                    display: true,
+                                                    text: 'Months'
+                                                }
+                                            }
+                                        }
+                                    }
+                                });
+                            });
+                        </script>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <div class="row mb-2">

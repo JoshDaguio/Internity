@@ -187,4 +187,87 @@ class StudentController extends Controller
 
             return redirect()->back()->with('error', 'Priority removed successfully.');
         }
+
+        //Priority Management for Admins
+
+        public function adminSetPriority(Request $request, $studentId)
+        {
+            $request->validate([
+                'priority' => 'required|in:1,2',
+                'job_id' => 'required|exists:jobs,id',
+            ]);
+
+            $student = User::findOrFail($studentId);
+
+            // Check if the selected job is already prioritized by the student
+            $existingJobPriority = Priority::where('student_id', $student->id)
+                ->where('job_id', $request->job_id)
+                ->first();
+
+            if ($existingJobPriority) {
+                return redirect()->back()->with('error', 'This job is already set as a priority for the student.');
+            }
+
+            // Check if the selected priority level is already taken by another job
+            $existingPriorityLevel = Priority::where('student_id', $student->id)
+                ->where('priority', $request->priority)
+                ->first();
+
+            if ($existingPriorityLevel) {
+                return redirect()->back()->with('error', "The {$request->priority} priority level is already assigned to another job.");
+            }
+
+            // Create or update the priority
+            Priority::updateOrCreate(
+                [
+                    'student_id' => $student->id,
+                    'job_id' => $request->job_id
+                ],
+                [
+                    'priority' => $request->priority,
+                ]
+            );
+
+            return redirect()->back()->with('success', 'Priority set successfully for the student.');
+        }
+
+        // Remove Priority for Admins
+        public function adminRemovePriority($studentId, $jobId)
+        {
+            $student = User::findOrFail($studentId);
+
+            // Check if the application for this job has already been submitted
+            $submittedApplication = Application::where('student_id', $student->id)
+                ->where('job_id', $jobId)
+                ->first();
+
+            if ($submittedApplication) {
+                return redirect()->back()->with('error', 'Cannot remove priority for a job with a submitted application.');
+            }
+
+            // Remove priority if no application has been submitted
+            Priority::where('student_id', $student->id)
+                ->where('job_id', $jobId)
+                ->delete();
+
+            return redirect()->back()->with('success', 'Priority removed successfully.');
+        }
+
+        public function showManagePriorityPage($studentId)
+        {
+            $student = User::findOrFail($studentId);
+
+            // Fetch all jobs for the dropdown
+            $jobs = Job::where('positions_available', '>', 0)->get();
+
+            // Fetch the student's current priority listings
+            $priorityListings = Priority::where('student_id', $student->id)
+                ->with('job.company')
+                ->orderBy('priority')
+                ->get();
+
+            return view('administrative.admin-priority', compact('student', 'jobs', 'priorityListings'));
+        }
+
+
 }

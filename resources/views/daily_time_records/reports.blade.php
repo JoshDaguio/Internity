@@ -122,8 +122,8 @@
         
         <!-- Report Logs Filtered by Month -->
         <div class="row mb-2">
-            <div class="col-md-8">
-                <div class="card mb-3" style="height: 500px;">
+            <div class="col-md-7">
+                <div class="card mb-3" style="max-height: 500; min-height: 300px;">
                     <div class="card-body">
                         <h5 class="card-title">Logs for the Month</h5>
                         <!-- Filter by Month -->
@@ -173,10 +173,10 @@
 
                                             @if (in_array($dayOfWeek, $scheduledDays))
                                                 @if ($record)
-                                                    <td>{{ $logTimes['morning_in'] ?? 'Not Logged' }}</td>
-                                                    <td>{{ $logTimes['morning_out'] ?? 'Not Logged' }}</td>
-                                                    <td>{{ $logTimes['afternoon_in'] ?? 'Not Logged' }}</td>
-                                                    <td>{{ $logTimes['afternoon_out'] ?? 'Not Logged' }}</td>
+                                                    <td>{{ $logTimes['morning_in'] ?? 'No Logged' }}</td>
+                                                    <td>{{ $logTimes['morning_out'] ?? 'No Logged' }}</td>
+                                                    <td>{{ $logTimes['afternoon_in'] ?? 'No Logged' }}</td>
+                                                    <td>{{ $logTimes['afternoon_out'] ?? 'No Logged' }}</td>
                                                 @else
                                                     <td colspan="4" class="text-danger text-center">No Logs for This Day</td>
                                                 @endif
@@ -191,11 +191,53 @@
                     </div>
                 </div>
             </div>
+            <div class="col-md-5">
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title">Total Hours Worked Per Month</h5>
+                        <canvas id="lineChart" style="max-height: 400px;"></canvas>
+                        <script>
+                            document.addEventListener("DOMContentLoaded", () => {
+                                new Chart(document.querySelector('#lineChart'), {
+                                    type: 'line',
+                                    data: {
+                                        labels: {!! json_encode(array_keys($monthlyHours)) !!},
+                                        datasets: [{
+                                            label: 'Total Hours Worked',
+                                            data: {!! json_encode(array_values($monthlyHours)) !!},
+                                            fill: false,
+                                            borderColor: 'rgb(75, 192, 192)',
+                                            tension: 0.1
+                                        }]
+                                    },
+                                    options: {
+                                        scales: {
+                                            y: {
+                                                beginAtZero: true,
+                                                title: {
+                                                    display: true,
+                                                    text: 'Hours Worked'
+                                                }
+                                            },
+                                            x: {
+                                                title: {
+                                                    display: true,
+                                                    text: 'Months'
+                                                }
+                                            }
+                                        }
+                                    }
+                                });
+                            });
+                        </script>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- Penalties Gained Details -->
         <div class="row mb-2">
-            <div class="col-md-8">
+            <div class="col-md-7">
                 <div class="card mb-3">
                     <div class="card-body">
                         <h5 class="card-title">Penalties Gained</h5>
@@ -212,7 +254,7 @@
                                 <tbody>
                                     @foreach($penaltiesAwarded as $penalty)
                                         <tr>
-                                            <td>{{ \Carbon\Carbon::parse($penalty->awarded_date)->format('F d, Y') }}</td>
+                                            <td>{{ \Carbon\Carbon::parse($penalty->awarded_date)->format('M d, Y') }}</td>
                                             <td>{{ $penalty->penalty->violation }}</td>
                                             <td>{{ $penalty->penalty_hours }} hours</td>
                                             <td>{{ $penalty->remarks ?? 'None' }}</td>
@@ -224,6 +266,49 @@
                     </div>
                 </div>    
             </div> 
+            <!-- Line Chart for Total Penalties Gained Per Month -->
+            <div class="col-md-5">
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title">Total Penalties Gained Per Month</h5>
+                        <canvas id="penaltyLineChart" style="max-height: 400px;"></canvas>
+                        <script>
+                            document.addEventListener("DOMContentLoaded", () => {
+                                new Chart(document.querySelector('#penaltyLineChart'), {
+                                    type: 'line',
+                                    data: {
+                                        labels: {!! json_encode(array_keys($monthlyPenalties)) !!},
+                                        datasets: [{
+                                            label: 'Total Penalties Gained (Hours)',
+                                            data: {!! json_encode(array_values($monthlyPenalties)) !!},
+                                            fill: false,
+                                            borderColor: 'rgb(255, 99, 132)',
+                                            tension: 0.1
+                                        }]
+                                    },
+                                    options: {
+                                        scales: {
+                                            y: {
+                                                beginAtZero: true,
+                                                title: {
+                                                    display: true,
+                                                    text: 'Penalty Hours'
+                                                }
+                                            },
+                                            x: {
+                                                title: {
+                                                    display: true,
+                                                    text: 'Months'
+                                                }
+                                            }
+                                        }
+                                    }
+                                });
+                            });
+                        </script>
+                    </div>
+                </div>
+            </div>
         </div>
 
 

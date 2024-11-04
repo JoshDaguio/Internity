@@ -51,14 +51,7 @@
     </li><!-- End Intern Nav -->
 
     <li class="nav-item">
-        <a class="nav-link {{ request()->routeIs('pullouts.companyIndex') ? '' : 'collapsed' }}" href="{{ route('pullouts.companyIndex') }}">
-            <i class="bi bi-envelope"></i>
-            <span>Requests</span>  
-        </a>
-    </li><!-- End Request Nav -->
-
-    <li class="nav-item">
-        <a class="nav-link {{ request()->routeIs('requests.companyIndex') ? '' : 'collapsed' }}" data-bs-target="#request-nav" data-bs-toggle="collapse" href="#">
+        <a class="nav-link {{ request()->routeIs('pullouts.companyIndex', 'requests.companyIndex', 'requests.companyShow') ? '' : 'collapsed' }}" data-bs-target="#request-nav" data-bs-toggle="collapse" href="#">
             <i class="bi bi-envelope"></i><span>Requests</span><i class="bi bi-chevron-down ms-auto"></i>
         </a>
         <ul id="request-nav" class="nav-content {{ request()->routeIs('pullouts.companyIndex', 'requests.companyIndex', 'requests.companyShow') ? '' : 'collapse' }}" data-bs-parent="#sidebar-nav">
