@@ -33,9 +33,9 @@
                 @foreach($priorityListings as $priority)
                     <li>
                         {{ $priority->job->company->name }} - {{ $priority->job->title }} (Priority: {{ $priority->priority }})
-                        <form action="{{ route('admin.students.removePriority', [$student->id, $priority->job_id]) }}" method="POST" style="display:inline;">
+                        <form action="{{ route('admin.students.removePriority', [$student->id, $priority->job_id]) }}" method="POST" style="display:inline;" class="mb-3">
                             @csrf
-                            <button type="submit" class="btn btn-danger btn-sm">Remove Priority</button>
+                            <button type="submit" class="btn btn-danger btn-sm mb">Remove Priority</button>
                         </form>
                     </li>
                 @endforeach

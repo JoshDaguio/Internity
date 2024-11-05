@@ -176,6 +176,28 @@
     </div>
 </form>
 
+
+<!-- Profile Image Crop Modal -->
+<div class="modal fade" id="cropImageModal" tabindex="-1" aria-labelledby="cropImageLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="cropImageLabel">Crop Profile Image</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="img-container">
+                    <img id="cropImage" src="" alt="Profile Picture">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="cropAndSave">Crop and Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 <!-- Custom JS for handling links and previewing profile picture -->
 <script>
     function addNewLink() {
@@ -222,4 +244,61 @@
                 }, false)
             })
     })()
+
+    //Image Modification
+    let cropper;
+    const profilePictureInput = document.querySelector('input[name="profile_picture"]');
+    const profilePicturePreview = document.getElementById('profilePicturePreview');
+    const cropImage = document.getElementById('cropImage');
+
+    profilePictureInput.addEventListener('change', function(event) {
+        const file = event.target.files[0];
+        if (file && file.type.startsWith('image/')) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                cropImage.src = e.target.result;
+                $('#cropImageModal').modal('show');
+                if (cropper) cropper.destroy(); // Destroy previous cropper if it exists
+                cropper = new Cropper(cropImage, {
+                    aspectRatio: 1, // Lock the aspect ratio to a square
+                    viewMode: 1,
+                    minContainerWidth: 400,
+                    minContainerHeight: 400,
+                });
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+
+    // Handle the cropping and set the preview
+    document.getElementById('cropAndSave').addEventListener('click', function() {
+        const canvas = cropper.getCroppedCanvas({
+            width: 300,
+            height: 300,
+        });
+        profilePicturePreview.src = canvas.toDataURL();
+        
+        // Convert canvas to a blob for form submission
+        canvas.toBlob((blob) => {
+            const fileInputContainer = new DataTransfer();
+            const croppedFile = new File([blob], 'profile_picture.jpg', { type: 'image/jpeg' });
+            fileInputContainer.items.add(croppedFile);
+            profilePictureInput.files = fileInputContainer.files;
+        }, 'image/jpeg');
+        
+        $('#cropImageModal').modal('hide');
+    });
 </script>
+
+<style>
+    .img-container {
+    max-width: 100%;
+    display: flex;
+    justify-content: center;
+    }
+    #cropImage {
+        max-width: 100%;
+        height: auto;
+    }
+
+</style>
