@@ -13,7 +13,7 @@
         </nav>
     </div>
 
-    <a href="{{ route('end_of_day_reports.index') }}" class="btn btn-secondary mb-3">Back to Calendar</a>
+    <a href="{{ route('end_of_day_reports.index') }}" class="btn btn-secondary btn-sm mb-3">Back to Calendar</a>
 
 <div class="card">
     <div class="card-body">

@@ -6,21 +6,307 @@ use App\Models\Course;
 use App\Models\User;
 use App\Models\Profile;
 use App\Models\ActivityLog;
+use App\Models\AcademicYear;
 use App\Mail\FacultyApprovalMail;
 use App\Mail\FacultyUpdateNotificationMail;
+use App\Models\AcceptedInternship;
+use App\Models\InternshipHours;
+use App\Models\Job;
+use App\Models\DailyTimeRecord;
+use App\Models\EndOfDayReport;
+use App\Models\Evaluation;
+use App\Models\Application;
+use App\Models\EvaluationRecipient;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Http;
+
 
 class FacultyController extends Controller
 {
 
-    public function dashboard()
+    public function dashboard(Request $request)
     {
-        return view('faculty.dashboard');
+        $faculty = Auth::user(); // Assuming this is the logged-in faculty member
+        $currentAcademicYear = AcademicYear::where('is_current', true)->first();
+
+        // Set school year display message
+        $schoolYear = $currentAcademicYear ? $currentAcademicYear->start_year . '-' . $currentAcademicYear->end_year : 'Not Set';
+
+        // Only proceed with academic year queries if $currentAcademicYear exists
+        $totalStudents = 0;
+        $studentFilter = $request->query('student_filter', 'all');
+
+        if ($currentAcademicYear) {
+            $studentQuery = User::where('role_id', 5) // Assuming role_id 5 is for students
+                ->where('status_id', 1)
+                ->where('academic_year_id', $currentAcademicYear->id)
+                ->where('course_id', $faculty->course_id); // Filter by faculty's course
+
+            if ($studentFilter !== 'all') {
+                $studentQuery->where('course_id', $studentFilter);
+            }
+
+            $totalStudents = $studentQuery->count();
+        }
+
+        // Count active internships for students in the faculty's course
+        $activeInternshipsCount = AcceptedInternship::whereHas('student', function ($query) use ($faculty, $currentAcademicYear) {
+            $query->where('course_id', $faculty->course_id)
+                ->where('status_id', 1)
+                ->where('academic_year_id', $currentAcademicYear->id);
+        })->count();
+
+        // Fetch courses with student counts for the academic year, filtered by faculty's course
+        $courses = Course::withCount(['students' => function ($query) use ($currentAcademicYear, $faculty) {
+            if ($currentAcademicYear) {
+                $query->where('academic_year_id', $currentAcademicYear->id)
+                    ->where('status_id', 1)
+                    ->where('course_id', $faculty->course_id);
+            }
+        }])->get();
+
+        // Calculate percentages
+        $totalPopulation = $totalStudents;
+        $studentPercentage = $totalPopulation ? round(($totalStudents / $totalPopulation) * 100, 2) : 0;
+
+        // Set selected course name
+        $selectedStudentCourse = $studentFilter === 'all' ? 'All' : Course::find($studentFilter)->course_code;
+
+        // Fetch the list of approved students for faculty's course
+        $approvedStudents = User::with('profile', 'course')
+            ->where('role_id', 5) // Students
+            ->where('status_id', '!=', 3) // Exclude pending students (status_id = 3)
+            ->where('course_id', $faculty->course_id) // Only students in faculty's course
+            ->get();
+
+        // Attach progress details for each student
+        foreach ($approvedStudents as $student) {
+            $acceptedInternship = AcceptedInternship::where('student_id', $student->id)->first();
+
+            if ($acceptedInternship) {
+                $dailyRecords = DailyTimeRecord::where('student_id', $student->id)->get();
+                $latestDailyRecord = DailyTimeRecord::where('student_id', $student->id)
+                    ->orderBy('log_date', 'desc')
+                    ->first();
+
+                $internshipHours = InternshipHours::where('course_id', $student->course_id)->first();
+                $totalWorkedHours = $dailyRecords->sum('total_hours_worked');
+                $remainingHours = $latestDailyRecord ? $latestDailyRecord->remaining_hours : ($internshipHours->hours ?? 0);
+
+                $student->completionPercentage = $remainingHours > 0
+                    ? ($totalWorkedHours / $remainingHours) * 100
+                    : 100; // If remaining hours are 0, consider the internship completed
+
+                $student->totalWorkedHours = $totalWorkedHours;
+                $student->remainingHours = $remainingHours;
+                $student->hasInternship = true;
+
+                $application = Application::where('student_id', $student->id)->latest()->first();
+                if ($application) {
+                    switch ($application->status->status) {
+                        case 'Accepted':
+                            $student->applicationStatus = 'Accepted';
+                            break;
+                        case 'To Review':
+                            $student->applicationStatus = 'Pending';
+                            break;
+                        case 'Rejected':
+                            $student->applicationStatus = 'Rejected';
+                            break;
+                        case 'For Interview':
+                            $student->applicationStatus = 'For Interview';
+                            break;
+                        default:
+                            $student->applicationStatus = 'No Application';
+                            break;
+                    }
+                } else {
+                    $student->applicationStatus = 'No Application';
+                }
+
+            } else {
+                $student->completionPercentage = 0;
+                $student->totalWorkedHours = 0;
+                $student->remainingHours = 0;
+                $student->hasInternship = false;
+                $student->applicationStatus = 'No Application';
+            }
+        }
+
+        $studentsWithNoDTRToday = $this->getStudentsWithNoDTRToday();
+        $studentsWithNoEODToday = $this->getStudentsWithNoEODToday();
+
+        // Retrieve pending evaluations
+        $pendingEvaluations = $this->listPendingEvaluations();
+
+        return view('faculty.dashboard', compact(
+            'totalPopulation',
+            'studentPercentage',
+            'courses',
+            'selectedStudentCourse',
+            'schoolYear',
+            'approvedStudents',
+            'studentsWithNoDTRToday',
+            'studentsWithNoEODToday',
+            'faculty',
+            'activeInternshipsCount',
+            'pendingEvaluations'
+        ));
     }
+
+
+    public function getStudentsWithNoDTRToday()
+    {
+        $today = Carbon::now(new \DateTimeZone('Asia/Manila'))->format('l'); // e.g., 'Monday'
+        $todayDate = Carbon::now(new \DateTimeZone('Asia/Manila'))->toDateString(); // Format as 'YYYY-MM-DD'
+    
+        // Get all active students with accepted internships
+        $students = User::where('role_id', 5) // Assuming role_id 5 is for students
+                        ->where('status_id', 1) // Assuming status_id 1 is for active students
+                        ->whereHas('acceptedInternship')
+                        ->with(['acceptedInternship', 'profile', 'course'])
+                        ->get();
+    
+        $studentsWithNoDTRToday = [];
+    
+        foreach ($students as $student) {
+            $acceptedInternship = $student->acceptedInternship;
+    
+            // Determine schedule based on student type (regular or irregular)
+            if ($student->profile->is_irregular && $acceptedInternship->custom_schedule) {
+                $schedule = json_decode($acceptedInternship->custom_schedule, true);
+                $scheduledDays = array_keys($schedule); // Days are keys in custom schedules
+            } else {
+                $schedule = json_decode($acceptedInternship->schedule, true);
+                $scheduledDays = $acceptedInternship->work_type === 'Hybrid'
+                    ? array_merge($schedule['onsite_days'], $schedule['remote_days'])
+                    : $schedule['days'];
+            }
+    
+            // Check if today is a scheduled day for the student
+            if (in_array($today, $scheduledDays)) {
+                // Get the latest DTR record to check remaining hours
+                $latestDTR = DailyTimeRecord::where('student_id', $student->id)
+                                            ->latest('log_date')
+                                            ->first();
+    
+                // Ensure the student has remaining hours greater than 0 and they have not yet completed their internship
+                if ($latestDTR && $latestDTR->remaining_hours > 0) {
+                    // Check if there is a DTR entry for today with no log times
+                    $todayDTR = DailyTimeRecord::where('student_id', $student->id)
+                                ->whereDate('log_date', $todayDate)
+                                ->first();
+    
+                    // Add student to the list if there's no DTR for today or if `log_times` is null
+                    if (!$todayDTR || is_null($todayDTR->log_times)) {
+                        $studentsWithNoDTRToday[] = $student;
+                    }
+                }
+            }
+        }
+    
+        return $studentsWithNoDTRToday;
+    }
+
+    public function getStudentsWithNoEODToday()
+    {
+        $today = Carbon::now(new \DateTimeZone('Asia/Manila'))->format('l'); // e.g., 'Monday'
+        $todayDate = Carbon::now(new \DateTimeZone('Asia/Manila'))->toDateString(); // Format as 'YYYY-MM-DD'
+
+        // Get all active students with accepted internships
+        $students = User::where('role_id', 5) // Assuming role_id 5 is for students
+                        ->where('status_id', 1) // Assuming status_id 1 is for active students
+                        ->whereHas('acceptedInternship')
+                        ->with(['acceptedInternship', 'profile', 'course'])
+                        ->get();
+
+        $studentsWithNoEODToday = [];
+
+        foreach ($students as $student) {
+            $acceptedInternship = $student->acceptedInternship;
+
+            // Determine schedule based on student type (regular or irregular)
+            if ($student->profile->is_irregular && $acceptedInternship->custom_schedule) {
+                $schedule = json_decode($acceptedInternship->custom_schedule, true);
+                $scheduledDays = array_keys($schedule); // Days are keys in custom schedules
+            } else {
+                $schedule = json_decode($acceptedInternship->schedule, true);
+                $scheduledDays = $acceptedInternship->work_type === 'Hybrid'
+                    ? array_merge($schedule['onsite_days'], $schedule['remote_days'])
+                    : $schedule['days'];
+            }
+
+            // Check if today is a scheduled day for the student
+            if (in_array($today, $scheduledDays)) {
+                // Get the latest DTR record to check remaining hours
+                $latestDTR = DailyTimeRecord::where('student_id', $student->id)
+                                            ->latest('log_date')
+                                            ->first();
+
+                // Ensure the student has remaining hours greater than 0 and has not completed their internship
+                if ($latestDTR && $latestDTR->remaining_hours > 0) {
+                    // Check if there is an EOD report entry for today
+                    $eodToday = EndOfDayReport::where('student_id', $student->id)
+                                ->whereDate('created_at', $todayDate)
+                                ->exists();
+
+                    // Add student to the list if there's no EOD report for today
+                    if (!$eodToday) {
+                        $studentsWithNoEODToday[] = $student;
+                    }
+                }
+            }
+        }
+
+        return $studentsWithNoEODToday;
+    }
+
+    private function listPendingEvaluations()
+    {
+        $user = auth()->user();
+        $currentAcademicYear = AcademicYear::where('is_current', true)->first();
+
+        // Fetch evaluations that have been sent to the user based on role or specifically to the user
+        $evaluations = Evaluation::where('academic_year_id', $currentAcademicYear->id)
+            ->whereHas('recipients', function ($query) use ($user) {
+                $query->where('user_id', $user->id);
+            })
+            ->with('creator')
+            ->get()
+            ->filter(function ($evaluation) use ($user) {
+                $recipient = EvaluationRecipient::where('evaluation_id', $evaluation->id)
+                    ->where('user_id', $user->id)
+                    ->first();
+                return $recipient && !$recipient->is_answered; // Only include unanswered evaluations
+            })
+            ->map(function ($evaluation) {
+                $evaluation->type_label = $this->getEvaluationTypeLabel($evaluation->evaluation_type);
+                return $evaluation;
+            });
+
+        return $evaluations;
+    }
+
+    // Helper method for evaluation type labels
+    private function getEvaluationTypeLabel($type)
+    {
+        switch ($type) {
+            case 'program':
+                return 'Program';
+            case 'intern_student':
+                return 'Intern Performance';
+            case 'intern_company':
+                return 'Exit Form';
+            default:
+                return 'Evaluation';
+        }
+    }
+
 
     public function index(Request $request)
     {

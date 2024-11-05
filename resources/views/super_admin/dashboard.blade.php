@@ -222,7 +222,7 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="3" class="text-center">All scheduled students have DTR logs for today.</td>
+                                        <td colspan="3" class="text-center">No students to display.</td>
                                     </tr>
                                 @endforelse
                             </tbody>
@@ -274,7 +274,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="3" class="text-center">All scheduled students have submitted their EOD for today.</td>
+                                    <td colspan="3" class="text-center">No students to display.</td>
                                 </tr>
                             @endforelse
                         </tbody>
@@ -326,7 +326,18 @@
                                   <td>
                                       {{ $student->course->course_code }}
                                   </td>
-                                  <td>Add Status</td>
+                                  <td>
+                                        <span class="badge 
+                                            @if($student->applicationStatus == 'Accepted') bg-success
+                                            @elseif($student->applicationStatus == 'Pending') bg-warning
+                                            @elseif($student->applicationStatus == 'Rejected') bg-danger
+                                            @elseif($student->applicationStatus == 'For Interview') bg-primary
+                                            @else bg-secondary
+                                            @endif">
+                                            {{ $student->applicationStatus }}
+                                        </span>
+                                    </td>
+
                                   <td>
                                       @if ($student->hasInternship)
                                           @if($student->remainingHours > 0)

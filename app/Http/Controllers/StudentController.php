@@ -13,15 +13,19 @@ use App\Models\Application;
 use App\Models\ApplicationStatus;
 use App\Models\AcceptedInternship;
 use App\Models\DailyTimeRecord;
+use App\Models\EndOfDayReport;
 use App\Models\InternshipHours;
 use App\Models\Penalty;
 use App\Models\Evaluation;
 use App\Models\EvaluationRecipient;
 use App\Models\PenaltiesAwarded;
+use App\Models\Request as StudentRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Http;
+
 
 
 class StudentController extends Controller
@@ -30,172 +34,133 @@ class StudentController extends Controller
     {
         $student = Auth::user()->load('course', 'profile');
         $currentAcademicYear = AcademicYear::where('is_current', true)->first();
-
-        // Set school year display message
         $schoolYear = $currentAcademicYear ? $currentAcademicYear->start_year . '-' . $currentAcademicYear->end_year : 'Not Set';
 
-        // Fetch the student's accepted internship
         $acceptedInternship = AcceptedInternship::where('student_id', $student->id)->first();
 
-        // Check if there's no accepted internship and immediately return the view with a flag
         if (!$acceptedInternship) {
             return view('student.dashboard', compact('student', 'schoolYear'))->with('noInternship', true);
         }
 
-
-        // Fetch all penalties
-        $penalties = Penalty::all();
-        $penaltiesAwarded = PenaltiesAwarded::where('student_id', $student->id)->get();
-
         $dailyRecords = DailyTimeRecord::where('student_id', $student->id)->get();
-
         $internshipHours = InternshipHours::where('course_id', $student->course_id)->first();
-
-        // Fetch the latest Daily Time Record for this student (even if it's not today)
-        $latestDailyRecord = DailyTimeRecord::where('student_id', $student->id)
-            ->orderBy('log_date', 'desc')
-            ->first();
-
-        // Fallback for remaining hours if there is no DTR yet
+        $latestDailyRecord = DailyTimeRecord::where('student_id', $student->id)->latest('log_date')->first();
         $remainingHours = $latestDailyRecord ? $latestDailyRecord->remaining_hours : $internshipHours->hours;
-
-        // Get current date and start date for filtering
+        $totalWorkedHours = $dailyRecords->sum('total_hours_worked');
         $currentDate = Carbon::now();
         $startDate = Carbon::parse($acceptedInternship->start_date);
 
-        // Calculate total worked hours
-        $totalWorkedHours = $dailyRecords->sum('total_hours_worked');
-        $remainingHours = $latestDailyRecord ? $latestDailyRecord->remaining_hours : $internshipHours->hours;
-
-        // Fetch the schedule
+        // Schedule and Days Calculation
         $schedule = $acceptedInternship->schedule;
-
-        // Initialize $scheduledDays as an empty array in case it's not set later
-        $scheduledDays = [];
-
-        // If the schedule is not an array (i.e., it's stored as JSON), decode it
         if (!is_array($schedule)) {
             $schedule = json_decode($schedule, true);
         }
+        $scheduledDays = $this->getScheduledDays($student, $acceptedInternship, $schedule);
 
-        // Check if the student is irregular and if there is a custom schedule
-        if ($student->profile->is_irregular && $acceptedInternship->custom_schedule) {
-            $customSchedule = $acceptedInternship->custom_schedule;
+        // Reports for current month
+        $selectedMonth = $request->input('month', $currentDate->month);
+        $reports = EndOfDayReport::where('student_id', $student->id)
+            ->whereMonth('date_submitted', $selectedMonth)
+            ->get();
 
-            // If custom schedule is not an array, decode it
-            if (!is_array($customSchedule)) {
-                $schedule = json_decode($customSchedule, true);
-            } else {
-                $schedule = $customSchedule; // Use the custom schedule directly
-            }
+        // Missing dates calculation if remaining hours are above zero
+        $missingDates = $remainingHours > 0 ? $this->getMissingSubmissionDates($student->id, $scheduledDays, $startDate, $currentDate) : collect();
 
-            // Extract the days from the custom schedule
-            $scheduledDays = array_keys($schedule);
-
-        } else {
-            // Handle Hybrid schedules
-            if ($acceptedInternship->work_type === 'Hybrid') {
-                $scheduledDays = array_merge($schedule['onsite_days'], $schedule['remote_days']);
-            } else {
-                // For On-site or Remote, use the standard 'days' array
-                $scheduledDays = $schedule['days'] ?? [];
-            }
-        }
-
-        // Filter the logs by month based on the user's input or current month
-        $selectedMonth = $request->input('month', $currentDate->month); // Default to current month
-
-        // Generate the range of months from the start date to the current date
-        $monthsRange = collect();
-        $monthIterator = $startDate->copy()->startOfMonth();
-
-        // Monthly hours calculation for the line chart
+        // Monthly hours calculation for chart
         $monthlyHours = [];
-        $monthlyPenalties = [];
-
+        $monthIterator = $startDate->copy()->startOfMonth();
         while ($monthIterator->lte($currentDate)) {
             $month = $monthIterator->format('m');
             $year = $monthIterator->format('Y');
             $monthName = $monthIterator->format('F');
-    
             $monthlyHours[$monthName] = $dailyRecords->filter(function ($record) use ($month, $year) {
                 return Carbon::parse($record->log_date)->month == $month && Carbon::parse($record->log_date)->year == $year;
             })->sum('total_hours_worked');
-
-            // Total penalties gained per month
-            $monthlyPenalties[$monthName] = $penaltiesAwarded->filter(function ($penalty) use ($month, $year) {
-                return Carbon::parse($penalty->awarded_date)->month == $month && Carbon::parse($penalty->awarded_date)->year == $year;
-            })->sum('penalty_hours');
-    
-            $monthsRange->push(['month' => $month, 'monthName' => $monthName]);
             $monthIterator->addMonth();
         }
-        
-        $filteredRecords = $dailyRecords->filter(function ($record) use ($selectedMonth) {
-            return Carbon::parse($record->log_date)->month == $selectedMonth;
-        });
-        
-        // Get the days for the selected month for the whole month to display in the table
-        $filteredDates = collect();
-        $monthStart = Carbon::createFromDate($startDate->year, $selectedMonth, 1)->startOfMonth();
-        $monthEnd = $monthStart->copy()->endOfMonth();
 
-        // Adjust monthStart for the first month if it is the month of the start date
-        if ($selectedMonth == $startDate->month) {
-            $monthStart = $startDate;
-        }
-        
-        // Show only up to today for the current month
-        if ($selectedMonth == $currentDate->month) {
-            $monthEnd = $currentDate;
-        }
+        // Check if today is scheduled and if report submitted
+        $hasSubmittedToday = EndOfDayReport::where('student_id', $student->id)
+            ->whereDate('date_submitted', $currentDate->format('Y-m-d'))
+            ->exists();
+            
 
-        while ($monthStart->lte($monthEnd)) {
-            // Only include scheduled days
-            $dayOfWeek = $monthStart->format('l');
-            if (in_array($dayOfWeek, $scheduledDays)) {
-                $filteredDates->push($monthStart->copy());
-            }
-            $monthStart->addDay();
-        }
+        // Check if DTR has been submitted today (log_times is not null or no record for today)
+        $hasSubmittedDTRToday = DailyTimeRecord::where('student_id', $student->id)
+            ->whereDate('log_date', $currentDate->format('Y-m-d'))
+            ->whereNotNull('log_times')
+            ->exists();
 
-        // Calculate completion percentage
-        $completionPercentage = $remainingHours > 0 ? ($totalWorkedHours / $remainingHours) * 100 : 100;
+                    
+        $isScheduledDay = in_array($currentDate->format('l'), $scheduledDays) && $currentDate->gte($startDate);
 
-
-        // Estimate the finish date
-        $estimatedFinishDate = $this->calculateFinishDate($remainingHours, $currentDate, $scheduledDays);
-
+        // Estimate Finish Date
+        $estimatedFinishDate = $this->calculateFinishDate($remainingHours, $startDate, $scheduledDays);
 
         // Retrieve pending evaluations
         $pendingEvaluations = $this->listPendingEvaluations();
-    
+
+        $pendingRequests = StudentRequest::where('student_id', Auth::id())->get();
+
+        $penaltiesGained = PenaltiesAwarded::where('student_id', Auth::id())->get();
+
         return view('student.dashboard', compact(
             'student', 
-            'currentAcademicYear',
-            'schoolYear',
-            'acceptedInternship',
-            'penaltiesAwarded', 
-            'completionPercentage',
-            'totalWorkedHours', 
-            'penalties', 
+            'schoolYear', 
             'acceptedInternship', 
-            'internshipHours', 
-            'schedule', 
-            'currentDate', 
-            'startDate', 
-            'selectedMonth', 
-            'scheduledDays', 
+            'totalWorkedHours', 
             'remainingHours', 
-            'estimatedFinishDate', 
-            'filteredDates', 
-            'monthsRange', 
+            'scheduledDays', 
+            'startDate', 
+            'currentDate', 
+            'reports', 
+            'missingDates', 
             'monthlyHours', 
-            'monthlyPenalties',
-             'pendingEvaluations'
+            'hasSubmittedToday',
+            'hasSubmittedDTRToday', 
+            'isScheduledDay', 
+            'pendingEvaluations',
+            'pendingRequests',
+            'estimatedFinishDate',
+            'penaltiesGained'
         ));
     }
 
+
+    private function getScheduledDays($student, $acceptedInternship, $schedule)
+    {
+        if ($student->profile->is_irregular && $acceptedInternship->custom_schedule) {
+            $customSchedule = is_array($acceptedInternship->custom_schedule) ? $acceptedInternship->custom_schedule : json_decode($acceptedInternship->custom_schedule, true);
+            return array_keys($customSchedule);
+        } else {
+            return $acceptedInternship->work_type === 'Hybrid'
+                ? array_merge($schedule['onsite_days'] ?? [], $schedule['remote_days'] ?? [])
+                : $schedule['days'] ?? [];
+        }
+    }
+    
+    private function getMissingSubmissionDates($studentId, $scheduleDays, $startDate, $currentDate)
+    {
+        $allScheduledDays = collect();
+        for ($date = $startDate->copy(); $date->lte($currentDate); $date->addDay()) {
+            if (in_array($date->format('l'), $scheduleDays)) {
+                $allScheduledDays->push($date->copy()->format('Y-m-d'));
+            }
+        }
+    
+        $submissionDates = EndOfDayReport::where('student_id', $studentId)
+            ->whereDate('date_submitted', '>=', $startDate)
+            ->whereDate('date_submitted', '<=', $currentDate)
+            ->pluck('date_submitted')
+            ->map(function ($date) {
+                return Carbon::parse($date)->format('Y-m-d');
+            });
+    
+        return $allScheduledDays->diff($submissionDates);
+    }
+    
+
+    
     private function listPendingEvaluations()
     {
         $user = auth()->user();
@@ -227,11 +192,11 @@ class StudentController extends Controller
     {
         switch ($type) {
             case 'program':
-                return 'Program Evaluation';
+                return 'Program';
             case 'intern_student':
-                return 'Intern Performance Evaluation';
+                return 'Intern Performance';
             case 'intern_company':
-                return 'Intern Exit Form';
+                return 'Exit Form';
             default:
                 return 'Evaluation';
         }

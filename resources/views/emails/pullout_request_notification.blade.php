@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Pullout Request Notification</title>
+    <title>Leave Request Notification</title>
 </head>
 <body>
-    <h2>Pullout Request</h2>
-    <p>You have a new pullout request from {{ $pullout->creator->name }} for the following students:</p>
+    <h2>Leave Request</h2>
+    <p>You have a new leave request from {{ $pullout->creator->name }} for the following students:</p>
     <ul>
         @foreach ($pullout->students as $student)
             <li>{{ $student->profile->first_name }} {{ $student->profile->last_name }}</li>

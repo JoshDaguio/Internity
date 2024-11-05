@@ -143,7 +143,7 @@
                                     <!-- Morning In -->
                                     <form action="{{ route('dtr.logTime', ['type' => 'morning_in']) }}" method="POST" class="me-2">
                                         @csrf
-                                        <input type="hidden" name="test_time" value="09:10 AM">
+                                        <!-- <input type="hidden" name="test_time" value="09:10 AM"> -->
                                         <button type="submit" class="btn btn-primary" {{ !$isScheduledDay || isset($logTimes['morning_in']) ? 'disabled' : '' }}>
                                             <!-- <i class="bi bi-arrow-right-circle me-1"></i>  -->
                                             Mor. In
@@ -153,7 +153,7 @@
                                     <!-- Morning Out -->
                                     <form action="{{ route('dtr.logTime', ['type' => 'morning_out']) }}" method="POST">
                                         @csrf
-                                        <input type="hidden" name="test_time" value="12:00 PM">
+                                        <!-- <input type="hidden" name="test_time" value="12:00 PM"> -->
                                         <button type="submit" class="btn btn-danger" {{ !$isScheduledDay || isset($logTimes['morning_out']) ? 'disabled' : '' }}>
                                             <!-- <i class="bi bi-arrow-left-circle me-1"></i>  -->
                                             Mor. Out
@@ -169,7 +169,7 @@
                                     <!-- Afternoon In -->
                                     <form action="{{ route('dtr.logTime', ['type' => 'afternoon_in']) }}" method="POST" class="me-2">
                                         @csrf
-                                        <input type="hidden" name="test_time" value="01:00 PM">
+                                        <!-- <input type="hidden" name="test_time" value="01:00 PM"> -->
                                         <button type="submit" class="btn btn-primary" {{ !$isScheduledDay || isset($logTimes['afternoon_in']) ? 'disabled' : '' }}>
                                             <!-- <i class="bi bi-arrow-right-circle me-1"></i>  -->
                                             Aft. In
@@ -179,7 +179,7 @@
                                     <!-- Afternoon Out -->
                                     <form action="{{ route('dtr.logTime', ['type' => 'afternoon_out']) }}" method="POST">
                                         @csrf
-                                        <input type="hidden" name="test_time" value="05:00 PM">
+                                        <!-- <input type="hidden" name="test_time" value="05:00 PM"> -->
                                         <button type="submit" class="btn btn-danger" {{ !$isScheduledDay || isset($logTimes['afternoon_out']) ? 'disabled' : '' }}>
                                             <!-- <i class="bi bi-arrow-left-circle me-1"></i>  -->
                                             Aft. Out

@@ -161,7 +161,7 @@
                
             <!-- Reports -->
             <div class="col-6">
-              <div class="card" style="max-height: 500; min-height: 200px;">
+              <div class="card">
                 <div class="filter">
                   <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
                   <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
@@ -179,7 +179,7 @@
                     <h5 class="card-title">Students with no DTR for Today</h5>
 
                     <div class="table-responsive">
-                        <table class="table">
+                        <table class="table datatable">
                             <thead>
                                 <tr>
                                     <th>Student</th>
@@ -204,7 +204,7 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="3" class="text-center">All scheduled students have DTR logs for today.</td>
+                                        <td colspan="3" class="text-center">No students to display.</td>
                                     </tr>
                                 @endforelse
                             </tbody>
@@ -215,7 +215,7 @@
             </div><!-- End Reports -->
 
             <div class="col-6">
-              <div class="card" style="max-height: 500; min-height: 200px;">
+              <div class="card">
               <div class="filter">
                   <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
                   <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
@@ -231,7 +231,7 @@
 
                 <div class="card-body">
                     <h5 class="card-title">Students with No EOD for Today</h5>
-                    <table class="table">
+                    <table class="table datatable">
                         <thead>
                             <tr>
                                 <th>Student</th>
@@ -256,7 +256,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="3" class="text-center">All scheduled students have submitted their EOD for today.</td>
+                                    <td colspan="3" class="text-center">No students to display.</td>
                                 </tr>
                             @endforelse
                         </tbody>
@@ -307,7 +307,17 @@
                                   <td>
                                       {{ $student->course->course_code }}
                                   </td>
-                                  <td>Add Status</td>
+                                  <td>
+                                        <span class="badge 
+                                            @if($student->applicationStatus == 'Accepted') bg-success
+                                            @elseif($student->applicationStatus == 'Pending') bg-warning
+                                            @elseif($student->applicationStatus == 'Rejected') bg-danger
+                                            @elseif($student->applicationStatus == 'For Interview') bg-primary
+                                            @else bg-secondary
+                                            @endif">
+                                            {{ $student->applicationStatus }}
+                                        </span>
+                                    </td>
                                   <td>
                                       @if ($student->hasInternship)
                                           @if($student->remainingHours > 0)
@@ -368,7 +378,7 @@
 
               <div class="activity">
 
-            @foreach($pendingRequests as $request)
+            @forelse($pendingRequests as $request)
                 <div class="activity-item d-flex">
                     <div class="activite-label">
                         <a href="{{ route('requests.show', $request->id) }}" class="btn btn-light btn-sm">
@@ -383,7 +393,9 @@
                     </strong>
                   </div>
                 </div><!-- End activity item-->
-            @endforeach
+            @empty
+                <strong class="text-center">No pending request available at the moment</strong>
+            @endforelse
 
 
               </div>

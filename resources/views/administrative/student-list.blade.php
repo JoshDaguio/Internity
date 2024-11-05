@@ -29,7 +29,11 @@
 
     <div class="row">
         <!-- Filters and Progress Bar Row -->
+        @if(Auth::user()->role_id == 1 || Auth::user()->role_id == 2)
         <div class="col-lg-6">
+        @else
+        <div class="col-lg-12">
+        @endif
             <!-- Filters Section -->
             <div class="card mb-3">
                 <div class="card-body">
@@ -37,7 +41,7 @@
                     @if(Auth::user()->role_id == 1 || Auth::user()->role_id == 2)
                     <div class="filter-container">
                     @else
-                    <div class="filter-container" style="min-height: 72px; max-height: 72px;">
+                    <div class="filter-container">
                     @endif
                         <form method="GET" action="{{ route('students.list') }}">
 
@@ -83,6 +87,14 @@
                                     <option value="2" {{ request('status_id') == '2' ? 'selected' : '' }}>Inactive</option>
                                 </select>
                             </div>
+                            <div class="mb-3">
+                                <select name="internship_status" id="internship_status" class="form-select" onchange="this.form.submit()">
+                                    <option value="">All Internship Status</option>
+                                    <option value="ongoing" {{ request('internship_status') == 'ongoing' ? 'selected' : '' }}>Ongoing Internship</option>
+                                    <option value="no_internship" {{ request('internship_status') == 'no_internship' ? 'selected' : '' }}>No Internship</option>
+                                    <option value="complete" {{ request('internship_status') == 'complete' ? 'selected' : '' }}>Internship Hours Complete</option>
+                                </select>
+                            </div>
                             @endif
                         </form>
                     </div>
@@ -90,16 +102,13 @@
             </div>
         </div>
 
+        @if(Auth::user()->role_id == 1 || Auth::user()->role_id == 2)
         <!-- Progress Bar for Approved Students by Course -->
         <div class="col-lg-6">
             <div class="card mb-3">
                 <div class="card-body">
                     <h5 class="card-title">Approved Students by Course</h5>
-                    @if(Auth::user()->role_id == 1 || Auth::user()->role_id == 2)
                     <div class="filter-container" style="min-height: 214px; max-height: 214px; overflow-y: auto;">
-                    @else
-                    <div class="filter-container" style="min-height: 72px; max-height: 72px;">
-                    @endif
                         @php
                             $totalApproved = $approvedStudents->count();
                         @endphp
@@ -127,6 +136,7 @@
                 </div>
             </div>
         </div>
+        @endif
 
         <!-- Approved Students Table -->
         <div class="col-lg-12">

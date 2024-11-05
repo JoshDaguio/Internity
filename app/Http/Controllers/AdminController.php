@@ -16,6 +16,7 @@ use App\Models\DailyTimeRecord;
 use App\Models\EndOfDayReport;
 use App\Models\Evaluation;
 use App\Models\EvaluationRecipient;
+use App\Models\Application;
 use App\Mail\StudentApprovalMail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -163,6 +164,29 @@ class AdminController extends Controller
                 } else {
                     $student->evaluationStatus = 'Internship Ongoing';
                 }
+
+                $application = Application::where('student_id', $student->id)->latest()->first();
+                if ($application) {
+                    switch ($application->status->status) {
+                        case 'Accepted':
+                            $student->applicationStatus = 'Accepted';
+                            break;
+                        case 'To Review':
+                            $student->applicationStatus = 'Pending';
+                            break;
+                        case 'Rejected':
+                            $student->applicationStatus = 'Rejected';
+                            break;
+                        case 'For Interview':
+                            $student->applicationStatus = 'For Interview';
+                            break;
+                        default:
+                            $student->applicationStatus = 'No Application';
+                            break;
+                    }
+                } else {
+                    $student->applicationStatus = 'No Application';
+                }
             
             } else {
                 // If no internship is found
@@ -171,6 +195,7 @@ class AdminController extends Controller
                 $student->remainingHours = 0;
                 $student->hasInternship = false;
                 $student->evaluationStatus = 'No Internship';
+                $student->applicationStatus = 'No Application';
             }
         }
 

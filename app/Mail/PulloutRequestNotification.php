@@ -21,6 +21,6 @@ class PulloutRequestNotification extends Mailable
     public function build()
     {
         return $this->view('emails.pullout_request_notification')
-            ->subject('Pullout Request Notification');
+            ->subject('Leave Request Notification');
     }
 }
