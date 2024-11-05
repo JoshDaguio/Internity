@@ -16,9 +16,16 @@
     <div class="alert alert-success">{{ session('success') }}</div>
 @endif
 
-@if(session('error'))
-    <div class="alert alert-danger">{{ session('error') }}</div>
+@if($errors->any())
+    <div class="alert alert-danger">
+        <ul>
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
 @endif
+
 
 <!-- Internship Requirement Instructions -->
 <div class="card mb-4">
@@ -66,7 +73,7 @@
                 <tr>
                     <td>Waiver Form</td>
                     <td>
-                        @if($requirements->waiver_form)
+                        @if($requirements && $requirements->waiver_form)
                             @if($requirements->waiver_status_id == 1)
                                 <span class="badge bg-warning">To Review</span>
                             @elseif($requirements->waiver_status_id == 2)
@@ -79,22 +86,16 @@
                         @endif
                     </td>
                     <td>
-                        @if($requirements->waiver_status_id == 3 || !$requirements->waiver_form)
-                            <!-- Re-upload Waiver Form if Rejected or Not Submitted -->
-                            <form action="{{ route('submit.waiver') }}" method="POST" enctype="multipart/form-data">
-                                @csrf
-                                <div class="d-flex align-items-center">
-                                    <input type="file" name="waiver_form" class="form-control me-2" required>
-                                    <button type="submit" class="btn btn-primary">
-                                        <i class="bi bi-upload"></i>
-                                    </button>
-                                </div>
-                            </form>
-                        @elseif($requirements->waiver_form)
-                            <button class="btn btn-dark" onclick="showPreview('{{ route('preview.requirement', ['type' => 'waiver', 'id' => $requirements->id]) }}')">
-                                <i class="bi bi-folder"></i>
-                            </button>
-                        @endif
+                        <!-- Re-upload Waiver Form if Rejected, Not Submitted, or if there is no $requirements record yet -->
+                        <form action="{{ route('submit.waiver') }}" method="POST" enctype="multipart/form-data">
+                            @csrf
+                            <div class="d-flex align-items-center">
+                                <input type="file" name="waiver_form" class="form-control me-2" required>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-upload"></i>
+                                </button>
+                            </div>
+                        </form>
                     </td>
                 </tr>
 
@@ -102,7 +103,7 @@
                 <tr>
                     <td>Medical Certificate</td>
                     <td>
-                        @if($requirements->medical_certificate)
+                        @if($requirements && $requirements->medical_certificate)
                             @if($requirements->medical_status_id == 1)
                                 <span class="badge bg-warning">To Review</span>
                             @elseif($requirements->medical_status_id == 2)
@@ -115,26 +116,21 @@
                         @endif
                     </td>
                     <td>
-                        @if($requirements->medical_status_id == 3 || !$requirements->medical_certificate)
-                            <!-- Re-upload Medical Certificate if Rejected or Not Submitted -->
-                            <form action="{{ route('submit.medical') }}" method="POST" enctype="multipart/form-data">
-                                @csrf
-                                <div class="d-flex align-items-center">
-                                    <input type="file" name="medical_certificate" class="form-control me-2" required>
-                                    <button type="submit" class="btn btn-primary">
-                                        <i class="bi bi-upload"></i>
-                                    </button>
-                                </div>
-                            </form>
-                        @elseif($requirements->medical_certificate)
-                            <button class="btn btn-dark" onclick="showPreview('{{ route('preview.requirement', ['type' => 'medical', 'id' => $requirements->id]) }}')">
-                                <i class="bi bi-folder"></i>
-                            </button>
-                        @endif
+                        <!-- Re-upload Medical Certificate if Rejected, Not Submitted, or if there is no $requirements record yet -->
+                        <form action="{{ route('submit.medical') }}" method="POST" enctype="multipart/form-data">
+                            @csrf
+                            <div class="d-flex align-items-center">
+                                <input type="file" name="medical_certificate" class="form-control me-2" required>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-upload"></i>
+                                </button>
+                            </div>
+                        </form>
                     </td>
                 </tr>
             </tbody>
         </table>
+        <p><strong><code>Note: Allowed file types: PDF, DOC, DOCX. Maximum file size: 2MB.</code></strong></p>
     </div>
 </div>
 

@@ -22,19 +22,14 @@ class RequirementController extends Controller
     {
         $user = Auth::user();
 
-        // Fetch the student's requirements
-        $requirements = Requirement::firstOrCreate(
-            ['student_id' => $user->id],
-            ['status_id' => 1] // Default status: 'To Review'
-        );
+        $requirements = Requirement::where('student_id', $user->id)->first();
 
-        // Pass default values if not set yet
-        $waiverStatus = $requirements->waiver_form ? $requirements->status->status : 'Not Submitted';
-        $medicalStatus = $requirements->medical_certificate ? $requirements->status->status : 'Not Submitted';
-        // $consentStatus = $requirements->consent_form ? $requirements->status->status : 'Not Submitted';
+        // Set default values if requirements do not exist
+        $waiverStatus = $requirements && $requirements->waiver_form ? $requirements->status->status : 'Not Submitted';
+        $medicalStatus = $requirements && $requirements->medical_certificate ? $requirements->status->status : 'Not Submitted';
 
         // Check if Step 1 is completed
-        $step1Completed = $requirements->step1Completed();
+        $step1Completed = $requirements ? $requirements->step1Completed() : false;
 
         return view('requirements.index', compact('requirements', 'waiverStatus', 'medicalStatus', 'step1Completed'));
     }
@@ -43,50 +38,47 @@ class RequirementController extends Controller
     public function submitWaiver(Request $request)
     {
         $request->validate([
-            'waiver_form' => 'required|file|mimes:pdf,doc,docx|max:2048',
+            'waiver_form' => 'required|file|mimes:pdf,doc,docx|max:2048', // 2MB max file size
         ]);
 
         $student = Auth::user();
-
-        // Store the Waiver Form file
         $waiverFormPath = $request->file('waiver_form')->store('waiver_forms');
 
-        // Update or create the requirement record
         $requirement = Requirement::updateOrCreate(
             ['student_id' => $student->id],
             [
                 'waiver_form' => $waiverFormPath,
                 'waiver_status_id' => 1, // "To Review"
+                'status_id' => $requirement->status_id ?? 1, // Default to "To Review" if not set
             ]
         );
 
         return redirect()->route('requirements.index')->with('success', 'Waiver Form Uploaded.');
     }
 
-
     // Submit Medical Certificate
     public function submitMedical(Request $request)
     {
         $request->validate([
-            'medical_certificate' => 'required|file|mimes:pdf,doc,docx|max:2048',
+            'medical_certificate' => 'required|file|mimes:pdf,doc,docx|max:2048', // 2MB max file size
         ]);
 
         $student = Auth::user();
-
-        // Store the Medical Certificate file
         $medicalCertificatePath = $request->file('medical_certificate')->store('medical_certificates');
 
-        // Update or create the requirement record
         $requirement = Requirement::updateOrCreate(
             ['student_id' => $student->id],
             [
                 'medical_certificate' => $medicalCertificatePath,
                 'medical_status_id' => 1, // "To Review"
+                'status_id' => $requirement->status_id ?? 1, // Default to "To Review" if not set
             ]
         );
 
         return redirect()->route('requirements.index')->with('success', 'Medical Certificate Uploaded.');
     }
+
+
 
     // Method to review a student's requirement
     public function review($requirementId)
