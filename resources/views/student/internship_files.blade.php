@@ -205,10 +205,16 @@
 
         <hr class="my-4">
 
+
         <!-- Download All Files Button -->
         <div class="text-center mt-4">
-            <a href="{{ route('download.all.files') }}" class="btn btn-success btn-sm">Download All Files</a>
+            <a href="{{ route('download.all.files') }}" 
+            class="btn btn-success btn-sm {{ $hasFiles ? '' : 'disabled' }}" 
+            {{ $hasFiles ? '' : 'aria-disabled="true"' }}>
+                Download All Files
+            </a>
         </div>
+
     </div>
 </div>
 

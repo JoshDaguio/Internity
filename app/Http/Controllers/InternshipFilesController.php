@@ -71,8 +71,13 @@ class InternshipFilesController extends Controller
         $eodReports = $student->monthlyReports()->where('type', 'eod')->get();
         $dtrReports = $student->monthlyReports()->where('type', 'dtr')->get();
 
+        // Determine if any files are available for download
+        $hasFiles = collect($files)->contains(function ($file) {
+            return $file !== null;
+        }) || $eodReports->isNotEmpty() || $dtrReports->isNotEmpty();
+
         return view('student.internship_files', compact(
-            'files', 'hasAcceptedInternship', 'startDate', 'estimatedFinishDate', 'eodReports', 'dtrReports', 'student', 'requirements', 'completionReqs'
+            'files', 'hasAcceptedInternship', 'startDate', 'estimatedFinishDate', 'eodReports', 'dtrReports', 'student', 'requirements', 'completionReqs', 'hasFiles'
         ));
     }
 
@@ -238,6 +243,7 @@ class InternshipFilesController extends Controller
         $eodReports = $student->monthlyReports()->where('type', 'eod')->get();
         $dtrReports = $student->monthlyReports()->where('type', 'dtr')->get();
 
+        $hasFiles = false; // Flag to check if any file exists
         $zip = new ZipArchive;
         $fileName = storage_path('app/public/' . $student->profile->last_name . '_Internship-Files.zip');
 
@@ -285,7 +291,12 @@ class InternshipFilesController extends Controller
             $zip->close();
         }
 
-        return response()->download($fileName)->deleteFileAfterSend(true);
+        if ($hasFiles) {
+            return response()->download($fileName)->deleteFileAfterSend(true);
+        } else {
+            // If no files, redirect back with an error message
+            return redirect()->back()->with('error', 'No files available for download.');
+        }
     }
 
     private function getScheduledDays($internship, $student)
