@@ -12,7 +12,8 @@
     </nav>
 </div><!-- End Page Title -->
 
-@if(Auth::user()->role_id != 5) <!-- This condition hides the button for students -->
+@if(Auth::user()->role_id == 1 || Auth::user()->role_id == 2)
+<!-- This condition hides the button for students -->
     @if(session('success'))
         <div class="alert alert-success">{{ session('success') }}</div>
     @endif
@@ -52,7 +53,9 @@
                         <th>Description</th>
                         <th>Date</th>
                         <th>Uploader</th>
+                        @if(Auth::user()->role_id == 1 || Auth::user()->role_id == 2)
                         <th>Actions</th>
+                        @endif
                     </tr>
                 </thead>
                 <tbody>
@@ -68,6 +71,7 @@
                                     {{ $file->uploader->name }}
                                 @endif
                             </td>
+                            @if(Auth::user()->role_id == 1 || Auth::user()->role_id == 2)
                             <td>
                                 @if(!$file->trashed())
                                     <button class="btn btn-dark btn-sm" onclick="showPreview('{{ route('file_uploads.preview', $file->id) }}')"><i class="bi bi-folder"></i></button>
@@ -96,6 +100,7 @@
                                     @endif
                                 @endif
                             </td>
+                            @endif
                         </tr>
                     @endforeach
                 </tbody>

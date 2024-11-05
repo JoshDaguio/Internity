@@ -56,9 +56,9 @@
                     <div class="card-body">
                         <h5 class="card-title">Internship Progress</h5>
                             @if($student->remainingHours > 0)
-                                <p><strong><i class="bi bi-hourglass-split"></i> Total Hours:</strong> {{ $student->totalWorkedHours }} / {{ $student->remainingHours }} hrs <strong>({{ round($student->completionPercentage, 2) }}%)</strong></p>
-                            @else
                                 <p><span class="badge bg-success"><strong><i class="bi bi-check-circle"></i> Internship Hours Completed</strong></span></p>
+                            @else
+                                <p><strong><i class="bi bi-hourglass-split"></i> Total Hours:</strong> {{ $totalWorkedHours }} / {{ $remainingHours }} hrs <strong>({{ round($student->completionPercentage, 2) }}%)</strong></p>
                             @endif                        <div class="progress mb-3">
                             <div class="progress-bar" role="progressbar" style="width: {{ $completionPercentage }}%; background-color: #B30600;" 
                                 aria-valuenow="{{ $completionPercentage }}" aria-valuemin="0" aria-valuemax="100">

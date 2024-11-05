@@ -21,23 +21,12 @@
   </li><!-- End Profile Page Nav -->
 
   <li class="nav-heading">Internship Management</li>
-
+  
   <li class="nav-item">
-    <a class="nav-link {{ request()->routeIs('registrations.pending', 'students.list', 'students.create', 'students.show', 'students.edit', 'students.eod','students.dtr') ? '' : 'collapsed' }}" data-bs-target="#student-nav" data-bs-toggle="collapse" href="#">
-      <i class="bi bi-people"></i><span>Student</span><i class="bi bi-chevron-down ms-auto"></i>
+    <a class="nav-link {{ request()->routeIs('students.list', 'students.show', 'students.eod', 'students.dtr') ? '' : 'collapsed' }}" href="{{ route('students.list') }}">
+      <i class="bi bi-people"></i>
+      <span>Student</span>  
     </a>
-    <ul id="student-nav" class="nav-content {{ request()->routeIs('registrations.pending', 'students.list', 'students.create', 'students.show', 'students.edit', 'students.eod', 'students.dtr') ? '' : 'collapse' }} " data-bs-parent="#sidebar-nav">
-      <li>
-        <a href="{{ route('registrations.pending') }}" class="{{ Request::routeIs('registrations.pending') ? 'active' : '' }}">
-          <i class="bi bi-circle"></i><span>Student Registration</span>
-        </a>
-      </li>
-      <li>
-        <a href="{{ route('students.list') }}" class="{{ Request::routeIs('students.list', 'students.show', 'students.edit', 'students.eod', 'students.dtr') ? 'active' : '' }}">
-          <i class="bi bi-circle"></i><span>Student List</span>
-        </a>
-      </li>
-    </ul>
   </li><!-- End Student Nav -->
 
   <li class="nav-item">

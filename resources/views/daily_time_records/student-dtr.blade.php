@@ -50,16 +50,17 @@
             <div class="card mb-3 h-100">
                 <div class="card-body">
                     <h5 class="card-title">Internship Details</h5>
-                        @if($student->remainingHours > 0)
-                            <p><strong><i class="bi bi-hourglass-split"></i> Total Hours:</strong> {{ $student->totalWorkedHours }} / {{ $student->remainingHours }} hrs <strong>({{ round($student->completionPercentage, 2) }}%)</strong></p>
+                        @if($remainingHours > 0)
+                            <p><strong><i class="bi bi-hourglass-split"></i> Total Hours:</strong> {{ $totalWorkedHours }} / {{ $remainingHours }} hrs <strong>({{ round($student->completionPercentage, 2) }}%)</strong></p>
                         @else
                             <p><span class="badge bg-success"><strong><i class="bi bi-check-circle"></i> Internship Hours Completed</strong></span></p>
-                        @endif                    <div class="progress mb-3">
-                        <div class="progress-bar" role="progressbar" style="width: {{ $completionPercentage }}%; background-color: #B30600;" 
-                             aria-valuenow="{{ $completionPercentage }}" aria-valuemin="0" aria-valuemax="100">
-                             {{ round($completionPercentage, 2) }}%
+                        @endif                      
+                        <div class="progress mb-3">
+                            <div class="progress-bar" role="progressbar" style="width: {{ $completionPercentage }}%; background-color: #B30600;" 
+                                aria-valuenow="{{ $completionPercentage }}" aria-valuemin="0" aria-valuemax="100">
+                                {{ round($completionPercentage, 2) }}%
+                            </div>
                         </div>
-                    </div>
                     
                     <p><strong><i class="bi bi-hourglass-split"></i> Internship Hours:</strong> {{ $internshipHours->hours }} hrs <strong>({{ $internshipHours->course->course_code }})</strong></p>
                     <p><strong><i class="bi bi-stopwatch"></i> Remaining Hours:</strong> {{ $remainingHours }} hours</p>

@@ -122,7 +122,7 @@
     <ul id="request-nav" class="nav-content {{ request()->routeIs('pullouts.index', 'pullouts.create', 'requests.adminIndex', 'requests.show', 'requests.respond') ? '' : 'collapse' }} " data-bs-parent="#sidebar-nav">
       <li>
         <a href="{{ route('pullouts.index') }}" class="{{ Request::routeIs('pullouts.index', 'pullouts.create') ? 'active' : '' }}">
-          <i class="bi bi-circle"></i><span>Pullouts Request</span>
+          <i class="bi bi-circle"></i><span>Leave Request</span>
         </a>
       </li>
       <li>

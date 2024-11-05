@@ -415,7 +415,7 @@
                                         </a>
                                     @else
                                         <button class="btn btn-secondary me-2 btn-sm" disabled>
-                                            <i class="bi bi-clipboard-data"></i> Evaluation Not Available
+                                            <i class="bi bi-clipboard-data"></i> Eval Not Available
                                         </button>
                                     @endif
                                 @endif

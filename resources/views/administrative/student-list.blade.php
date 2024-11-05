@@ -20,10 +20,10 @@
         <div class="alert alert-danger">{{ session('error') }}</div>
     @endif
 
-    <!-- Add Student Button -->
-    <a href="{{ route('students.create') }}" class="btn btn-primary mb-3 btn-sm">Add Student</a>
-
     @if(Auth::user()->role_id == 1 || Auth::user()->role_id == 2)
+        <!-- Add Student Button -->
+        <a href="{{ route('students.create') }}" class="btn btn-primary mb-3 btn-sm">Add Student</a>
+
         <a href="{{ route('students.import') }}" class="btn btn-success mb-3 ms-2 btn-sm">Import Students</a>
     @endif
 
@@ -35,7 +35,7 @@
                 <div class="card-body">
                     <h5 class="card-title">Filter</h5>
                     @if(Auth::user()->role_id == 1 || Auth::user()->role_id == 2)
-                    <div class="filter-container" style="min-height: 163px; max-height: 163px; overflow-y: auto;">
+                    <div class="filter-container">
                     @else
                     <div class="filter-container" style="min-height: 72px; max-height: 72px;">
                     @endif
@@ -96,7 +96,7 @@
                 <div class="card-body">
                     <h5 class="card-title">Approved Students by Course</h5>
                     @if(Auth::user()->role_id == 1 || Auth::user()->role_id == 2)
-                    <div class="filter-container" style="min-height: 163px; max-height: 163px; overflow-y: auto;">
+                    <div class="filter-container" style="min-height: 214px; max-height: 214px; overflow-y: auto;">
                     @else
                     <div class="filter-container" style="min-height: 72px; max-height: 72px;">
                     @endif
@@ -140,8 +140,8 @@
                                     <th>Full Name</th>
                                     <th>Course</th>
                                     <th>Progress</th>
-                                    <th>Evaluation</th>
                                     @if(Auth::user()->role_id == 1 || Auth::user()->role_id == 2)
+                                    <th>Evaluation</th>
                                     <th>Requirements</th>
                                     @endif
                                     <th>Status</th>
@@ -178,6 +178,7 @@
                                                 <span class="badge bg-warning">No Internship Yet</span>
                                             @endif
                                         </td>
+                                    @if(Auth::user()->role_id == 1 || Auth::user()->role_id == 2)
                                         <td>
                                             @if ($student->evaluationStatus == 'No Internship')
                                                 <span class="badge bg-secondary">{{ $student->evaluationStatus }}</span>
@@ -197,7 +198,6 @@
                                                 </a>
                                             @endif
                                         </td>
-                                    @if(Auth::user()->role_id == 1 || Auth::user()->role_id == 2)
                                         <td>
                                             @if($student->requirements)
                                                 <a href="{{ route('requirements.review', $student->requirements->id) }}" class="btn btn-light btn-sm">

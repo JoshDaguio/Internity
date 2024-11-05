@@ -3,11 +3,12 @@
 @section('body')
 
 <div class="pagetitle">
-    <h1>Pullout Requests Respond</h1>
+    <h1>Leave Requests Respond</h1>
     <nav>
         <ol class="breadcrumb">
             <li class="breadcrumb-item">Home</li>
             <li class="breadcrumb-item">Requests</li>
+            <li class="breadcrumb-item">Leave Requests</li>
             <li class="breadcrumb-item active">Respond</li>
         </ol>
     </nav>
@@ -15,7 +16,7 @@
 
 <div class="card mb-4">
     <div class="card-body">
-        <h5 class="card-title">Respond to Pullout Request</h5>
+        <h5 class="card-title">Respond to Leave Request</h5>
 
         <!-- Display details in the specified order -->
         <div class="mb-3">

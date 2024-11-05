@@ -3,11 +3,12 @@
 @section('body')
 
     <div class="pagetitle">
-        <h1>Pullout Requests</h1>
+        <h1>Leave Requests</h1>
         <nav>
             <ol class="breadcrumb">
                 <li class="breadcrumb-item">Home</li>
-                <li class="breadcrumb-item active">Pullout Requests</li>
+                <li class="breadcrumb-item">Requests</li>
+                <li class="breadcrumb-item active">Leave Requests</li>
             </ol>
         </nav>
     </div>
@@ -41,7 +42,7 @@
 
     <div class="card mb-4">
         <div class="card-body">
-            <h5 class="card-title">Pullout Requests</h5>
+            <h5 class="card-title">Leave Requests Details</h5>
 
             <a href="{{ route('pullouts.create') }}" class="btn btn-success btn-sm mb-3"><i class="bi bi-plus-circle"></i> Create</a>
 

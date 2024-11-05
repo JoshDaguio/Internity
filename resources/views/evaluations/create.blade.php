@@ -23,8 +23,8 @@
                             <div class="form-floating mb-3">
                                 <select id="evaluation_type" name="evaluation_type" class="form-control" required>
                                     <option value="program">Internship Program</option>
-                                    <option value="intern_student">Intern Evaluation by Company</option>
-                                    <option value="intern_company">Company Evaluation by Intern</option>
+                                    <option value="intern_student">Intern Performance Evaluation</option>
+                                    <option value="intern_company">Intern Exit Form</option>
                                 </select>
                                 <label for="evaluation_type">Evaluation Type</label>
                             </div>

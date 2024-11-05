@@ -2,19 +2,20 @@
 
 @section('body')
     <div class="pagetitle">
-        <h1>Create Pullout Request</h1>
+        <h1>Create Leave Request</h1>
         <nav>
             <ol class="breadcrumb">
                 <li class="breadcrumb-item">Home</li>
-                <li class="breadcrumb-item active">Requests</li>
-                <li class="breadcrumb-item active">Create</li>
+                <li class="breadcrumb-item">Requests</li>
+                <li class="breadcrumb-item">Leave Requests</li>
+                <li class="breadcrumb-item active">Creates</li>
             </ol>
         </nav>
     </div>
 
     <div class="card mb-3">
         <div class="card-body">
-            <h5 class="card-title">Create New Pullout Request</h5>
+            <h5 class="card-title">Create New Leave Request</h5>
             <form method="POST" action="{{ route('pullouts.store') }}">
                 @csrf
 

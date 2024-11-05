@@ -7,6 +7,20 @@ use App\Models\User;
 use App\Models\Course;
 use App\Models\AcademicYear;
 use App\Models\AcceptedInternship;
+use App\Models\Profile;
+use App\Models\Requirement;
+use App\Models\ActivityLog;
+use App\Models\Job;
+use App\Models\Priority;
+use App\Models\InternshipHours;
+use App\Models\DailyTimeRecord;
+use App\Models\EndOfDayReport;
+use App\Models\Evaluation;
+use App\Models\EvaluationRecipient;
+use App\Models\Request as StudReq;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Http;
+
 
 
 class SuperAdminController extends Controller
@@ -15,6 +29,9 @@ class SuperAdminController extends Controller
     {
         // Get the current academic year
         $currentAcademicYear = AcademicYear::where('is_current', true)->first();
+        $availableJobsCount = Job::where('positions_available', '>', 0)->count();
+
+        $pendingRequests = StudReq::where('status', 'pending')->get();
 
         // Set school year display message
         $schoolYear = $currentAcademicYear ? $currentAcademicYear->start_year . '-' . $currentAcademicYear->end_year : 'Not Set';
@@ -90,6 +107,70 @@ class SuperAdminController extends Controller
             ]);
         }
 
+        $query = User::with('profile', 'course')
+            ->where('role_id', 5) // Students
+            ->where('status_id', '!=', 3); // Exclude pending students (status_id = 3).
+
+        $approvedStudents = $query->get();
+
+        $evaluation = Evaluation::where('evaluation_type', 'intern_company')->first();
+
+        // Attach progress details for each student
+        foreach ($approvedStudents as $student) {
+            $acceptedInternship = AcceptedInternship::where('student_id', $student->id)->first();
+
+            if ($acceptedInternship) {
+                // Fetch all daily records and latest daily record
+                $dailyRecords = DailyTimeRecord::where('student_id', $student->id)->get();
+                $latestDailyRecord = DailyTimeRecord::where('student_id', $student->id)
+                    ->orderBy('log_date', 'desc')
+                    ->first();
+
+                // Fetch total internship hours for the student's course
+                $internshipHours = InternshipHours::where('course_id', $student->course_id)->first();
+
+                // Calculate total worked hours
+                $totalWorkedHours = $dailyRecords->sum('total_hours_worked');
+
+                // Determine remaining hours based on the latest DTR or fallback to the total internship hours
+                $remainingHours = $latestDailyRecord ? $latestDailyRecord->remaining_hours : ($internshipHours->hours ?? 0);
+
+                if ($remainingHours > 0) {
+                    $student->completionPercentage = ($totalWorkedHours / $remainingHours) * 100;
+                } else {
+                    // If remaining hours are 0, consider the internship completed
+                    $student->completionPercentage = 100;
+                }
+
+                $student->totalWorkedHours = $totalWorkedHours;
+                $student->remainingHours = $remainingHours;
+                $student->hasInternship = true;
+
+                // Determine evaluation status based on `EvaluationRecipient`
+                if ($remainingHours == 0) { // Internship completed
+                    $evaluationSent = EvaluationRecipient::where('evaluation_id', 1) // Replace with actual evaluation ID
+                        ->where('user_id', $student->id)
+                        ->exists();
+
+                    $student->evaluationStatus = $evaluationSent ? 'Sent' : 'Not Sent';
+                } else {
+                    $student->evaluationStatus = 'Internship Ongoing';
+                }
+            
+            } else {
+                // If no internship is found
+                $student->completionPercentage = 0;
+                $student->totalWorkedHours = 0;
+                $student->remainingHours = 0;
+                $student->hasInternship = false;
+                $student->evaluationStatus = 'No Internship';
+            }
+        }
+
+        $studentsWithNoDTRToday = $this->getStudentsWithNoDTRToday();
+
+        $studentsWithNoEODToday = $this->getStudentsWithNoEODToday();
+
         return view('super_admin.dashboard', compact(
             'totalAdmins',
             'adminPercentage',
@@ -104,8 +185,120 @@ class SuperAdminController extends Controller
             'selectedFacultyCourse',
             'schoolYear',
             'totalActiveUsers',
-            'totalAcceptedInternships'
+            'totalAcceptedInternships',
+            'approvedStudents',
+            'evaluation',
+            'availableJobsCount',
+            'pendingRequests',
+            'studentsWithNoDTRToday',
+            'studentsWithNoEODToday'
         ));
+    }
+
+    public function getStudentsWithNoDTRToday()
+    {
+        $today = Carbon::now(new \DateTimeZone('Asia/Manila'))->format('l'); // e.g., 'Monday'
+        $todayDate = Carbon::now(new \DateTimeZone('Asia/Manila'))->toDateString(); // Format as 'YYYY-MM-DD'
+    
+        // Get all active students with accepted internships
+        $students = User::where('role_id', 5) // Assuming role_id 5 is for students
+                        ->where('status_id', 1) // Assuming status_id 1 is for active students
+                        ->whereHas('acceptedInternship')
+                        ->with(['acceptedInternship', 'profile', 'course'])
+                        ->get();
+    
+        $studentsWithNoDTRToday = [];
+    
+        foreach ($students as $student) {
+            $acceptedInternship = $student->acceptedInternship;
+    
+            // Determine schedule based on student type (regular or irregular)
+            if ($student->profile->is_irregular && $acceptedInternship->custom_schedule) {
+                $schedule = json_decode($acceptedInternship->custom_schedule, true);
+                $scheduledDays = array_keys($schedule); // Days are keys in custom schedules
+            } else {
+                $schedule = json_decode($acceptedInternship->schedule, true);
+                $scheduledDays = $acceptedInternship->work_type === 'Hybrid'
+                    ? array_merge($schedule['onsite_days'], $schedule['remote_days'])
+                    : $schedule['days'];
+            }
+    
+            // Check if today is a scheduled day for the student
+            if (in_array($today, $scheduledDays)) {
+                // Get the latest DTR record to check remaining hours
+                $latestDTR = DailyTimeRecord::where('student_id', $student->id)
+                                            ->latest('log_date')
+                                            ->first();
+    
+                // Ensure the student has remaining hours greater than 0 and they have not yet completed their internship
+                if ($latestDTR && $latestDTR->remaining_hours > 0) {
+                    // Check if there is a DTR entry for today with no log times
+                    $todayDTR = DailyTimeRecord::where('student_id', $student->id)
+                                ->whereDate('log_date', $todayDate)
+                                ->first();
+    
+                    // Add student to the list if there's no DTR for today or if `log_times` is null
+                    if (!$todayDTR || is_null($todayDTR->log_times)) {
+                        $studentsWithNoDTRToday[] = $student;
+                    }
+                }
+            }
+        }
+    
+        return $studentsWithNoDTRToday;
+    }
+    
+    public function getStudentsWithNoEODToday()
+    {
+        $today = Carbon::now(new \DateTimeZone('Asia/Manila'))->format('l'); // e.g., 'Monday'
+        $todayDate = Carbon::now(new \DateTimeZone('Asia/Manila'))->toDateString(); // Format as 'YYYY-MM-DD'
+
+        // Get all active students with accepted internships
+        $students = User::where('role_id', 5) // Assuming role_id 5 is for students
+                        ->where('status_id', 1) // Assuming status_id 1 is for active students
+                        ->whereHas('acceptedInternship')
+                        ->with(['acceptedInternship', 'profile', 'course'])
+                        ->get();
+
+        $studentsWithNoEODToday = [];
+
+        foreach ($students as $student) {
+            $acceptedInternship = $student->acceptedInternship;
+
+            // Determine schedule based on student type (regular or irregular)
+            if ($student->profile->is_irregular && $acceptedInternship->custom_schedule) {
+                $schedule = json_decode($acceptedInternship->custom_schedule, true);
+                $scheduledDays = array_keys($schedule); // Days are keys in custom schedules
+            } else {
+                $schedule = json_decode($acceptedInternship->schedule, true);
+                $scheduledDays = $acceptedInternship->work_type === 'Hybrid'
+                    ? array_merge($schedule['onsite_days'], $schedule['remote_days'])
+                    : $schedule['days'];
+            }
+
+            // Check if today is a scheduled day for the student
+            if (in_array($today, $scheduledDays)) {
+                // Get the latest DTR record to check remaining hours
+                $latestDTR = DailyTimeRecord::where('student_id', $student->id)
+                                            ->latest('log_date')
+                                            ->first();
+
+                // Ensure the student has remaining hours greater than 0 and has not completed their internship
+                if ($latestDTR && $latestDTR->remaining_hours > 0) {
+                    // Check if there is an EOD report entry for today
+                    $eodToday = EndOfDayReport::where('student_id', $student->id)
+                                ->whereDate('created_at', $todayDate)
+                                ->exists();
+
+                    // Add student to the list if there's no EOD report for today
+                    if (!$eodToday) {
+                        $studentsWithNoEODToday[] = $student;
+                    }
+                }
+            }
+        }
+
+        return $studentsWithNoEODToday;
     }
 
 }

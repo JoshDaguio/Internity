@@ -90,9 +90,9 @@
                                     @if ($evaluation->evaluation_type == 'program')
                                         Program Evaluation
                                     @elseif ($evaluation->evaluation_type == 'intern_student')
-                                        Intern Evaluation by Company
+                                        Intern Performance Evaluation
                                     @elseif ($evaluation->evaluation_type == 'intern_company')
-                                        Company Evaluation by Intern
+                                        Intern Exit Form
                                     @endif
                                 </td>
                                 <td>{{ $evaluation->creator->profile->first_name}} {{ $evaluation->creator->profile->last_name }}</td>

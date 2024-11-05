@@ -3,11 +3,12 @@
 @section('body')
 
     <div class="pagetitle">
-        <h1>Pullout Requests</h1>
+        <h1>Leave Requests</h1>
         <nav>
             <ol class="breadcrumb">
                 <li class="breadcrumb-item">Home</li>
-                <li class="breadcrumb-item active">Requests</li>
+                <li class="breadcrumb-item">Requests</li>
+                <li class="breadcrumb-item active">Leave Requests</li>
             </ol>
         </nav>
     </div>
@@ -40,9 +41,9 @@
     
     <div class="card mb-4">
         <div class="card-body">
-            <h5 class="card-title">Pullout Requests Recieved</h5>
+            <h5 class="card-title">Pullout Leave Recieved</h5>
             @if($pullouts->isEmpty())
-                <p class="text-center">No pullout requests found.</p>
+                <p class="text-center">No pullout Leave found.</p>
             @else
                 <div class="table-responsive">
                     <table class="table datatable">
