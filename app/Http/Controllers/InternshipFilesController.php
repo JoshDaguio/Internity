@@ -253,15 +253,19 @@ class InternshipFilesController extends Controller
             //Initial Requirements
             if ($requirements->endorsement_letter) {
                 $zip->addFile(storage_path('app/' . $requirements->endorsement_letter), 'Endorsement_Letter.pdf');
+                $hasFiles = true;
             }
             if ($requirements->waiver_form && $requirements->waiver_status_id == 2) {
                 $zip->addFile(storage_path('app/' . $requirements->waiver_form), 'Waiver_Form.pdf');
+                $hasFiles = true;
             }
             if ($requirements->medical_certificate && $requirements->medical_status_id == 2) {
                 $zip->addFile(storage_path('app/' . $requirements->medical_certificate), 'Medical_Certificate.pdf');
+                $hasFiles = true;
             }
             if ($profile->cv_file_path) {
                 $zip->addFile(storage_path('app/' . $profile->cv_file_path), 'Resume.pdf');
+                $hasFiles = true;
             }
 
             //Completion Requirements
@@ -269,12 +273,15 @@ class InternshipFilesController extends Controller
             if ($completionRequirements) {
                 if ($completionRequirements->intern_evaluation) {
                     $zip->addFile(storage_path('app/' . $completionRequirements->intern_evaluation), 'Intern_Evaluation_Form.pdf');
+                    $hasFiles = true;
                 }
                 if ($completionRequirements->exit_form) {
                     $zip->addFile(storage_path('app/' . $completionRequirements->exit_form), 'Intern_Exit_Form.pdf');
+                    $hasFiles = true;
                 }
                 if ($completionRequirements->certificate_completion) {
                     $zip->addFile(storage_path('app/' . $completionRequirements->certificate_completion), 'Certificate_of_Completion.pdf');
+                    $hasFiles = true;
                 }
             }
 
@@ -282,15 +289,16 @@ class InternshipFilesController extends Controller
             foreach ($eodReports as $report) {
                 $formattedMonthYear = Carbon::parse($report->month_year)->format('Y_m');
                 $zip->addFile(storage_path('app/' . $report->file_path), "EOD_Report_{$formattedMonthYear}.pdf");
+                $hasFiles = true;
             }
             foreach ($dtrReports as $report) {
                 $formattedMonthYear = Carbon::parse($report->month_year)->format('Y_m');
                 $zip->addFile(storage_path('app/' . $report->file_path), "DTR_Report_{$formattedMonthYear}.pdf");
+                $hasFiles = true;
             }
     
             $zip->close();
 
-            $hasFiles = true;
         }
 
         if ($hasFiles) {
