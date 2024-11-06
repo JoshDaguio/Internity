@@ -289,6 +289,8 @@ class InternshipFilesController extends Controller
             }
     
             $zip->close();
+
+            $hasFiles = true;
         }
 
         if ($hasFiles) {
