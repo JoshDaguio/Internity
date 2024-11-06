@@ -243,7 +243,7 @@ class InternshipFilesController extends Controller
         $eodReports = $student->monthlyReports()->where('type', 'eod')->get();
         $dtrReports = $student->monthlyReports()->where('type', 'dtr')->get();
 
-        $hasFiles = false; // Flag to check if any file exists
+        // $hasFiles = false;  Flag to check if any file exists
         $zip = new ZipArchive;
         $fileName = storage_path('app/public/' . $student->profile->last_name . '_Internship-Files.zip');
 
@@ -253,19 +253,19 @@ class InternshipFilesController extends Controller
             //Initial Requirements
             if ($requirements->endorsement_letter) {
                 $zip->addFile(storage_path('app/' . $requirements->endorsement_letter), 'Endorsement_Letter.pdf');
-                $hasFiles = true;
+                // $hasFiles = true;
             }
             if ($requirements->waiver_form && $requirements->waiver_status_id == 2) {
                 $zip->addFile(storage_path('app/' . $requirements->waiver_form), 'Waiver_Form.pdf');
-                $hasFiles = true;
+                // $hasFiles = true;
             }
             if ($requirements->medical_certificate && $requirements->medical_status_id == 2) {
                 $zip->addFile(storage_path('app/' . $requirements->medical_certificate), 'Medical_Certificate.pdf');
-                $hasFiles = true;
+                // $hasFiles = true;
             }
             if ($profile->cv_file_path) {
                 $zip->addFile(storage_path('app/' . $profile->cv_file_path), 'Resume.pdf');
-                $hasFiles = true;
+                // $hasFiles = true;
             }
 
             //Completion Requirements
@@ -273,15 +273,15 @@ class InternshipFilesController extends Controller
             if ($completionRequirements) {
                 if ($completionRequirements->intern_evaluation) {
                     $zip->addFile(storage_path('app/' . $completionRequirements->intern_evaluation), 'Intern_Evaluation_Form.pdf');
-                    $hasFiles = true;
+                    // $hasFiles = true;
                 }
                 if ($completionRequirements->exit_form) {
                     $zip->addFile(storage_path('app/' . $completionRequirements->exit_form), 'Intern_Exit_Form.pdf');
-                    $hasFiles = true;
+                    // $hasFiles = true;
                 }
                 if ($completionRequirements->certificate_completion) {
                     $zip->addFile(storage_path('app/' . $completionRequirements->certificate_completion), 'Certificate_of_Completion.pdf');
-                    $hasFiles = true;
+                    // $hasFiles = true;
                 }
             }
 
@@ -289,24 +289,26 @@ class InternshipFilesController extends Controller
             foreach ($eodReports as $report) {
                 $formattedMonthYear = Carbon::parse($report->month_year)->format('Y_m');
                 $zip->addFile(storage_path('app/' . $report->file_path), "EOD_Report_{$formattedMonthYear}.pdf");
-                $hasFiles = true;
+                // $hasFiles = true;
             }
             foreach ($dtrReports as $report) {
                 $formattedMonthYear = Carbon::parse($report->month_year)->format('Y_m');
                 $zip->addFile(storage_path('app/' . $report->file_path), "DTR_Report_{$formattedMonthYear}.pdf");
-                $hasFiles = true;
+                // $hasFiles = true;
             }
     
             $zip->close();
 
         }
+        // if ($hasFiles) {
+        //     return response()->download($fileName)->deleteFileAfterSend(true);
+        // } else {
+        //     // If no files, redirect back with an error message
+        //     return redirect()->back()->with('error', 'No files available for download.');
+        // }
 
-        if ($hasFiles) {
-            return response()->download($fileName)->deleteFileAfterSend(true);
-        } else {
-            // If no files, redirect back with an error message
-            return redirect()->back()->with('error', 'No files available for download.');
-        }
+        return response()->download($fileName)->deleteFileAfterSend(true);
+
     }
 
     private function getScheduledDays($internship, $student)
