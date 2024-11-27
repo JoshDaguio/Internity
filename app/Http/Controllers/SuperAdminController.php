@@ -110,6 +110,7 @@ class SuperAdminController extends Controller
 
         $query = User::with('profile', 'course')
             ->where('role_id', 5) // Students
+            ->where('academic_year_id', $currentAcademicYear->id) // Get Student in the Academic Year
             ->where('status_id', '!=', 3); // Exclude pending students (status_id = 3).
 
         $approvedStudents = $query->get();
@@ -222,6 +223,9 @@ class SuperAdminController extends Controller
 
     public function getStudentsWithNoDTRToday()
     {
+        // Get the current academic year
+        $currentAcademicYear = AcademicYear::where('is_current', true)->first();
+
         $today = Carbon::now(new \DateTimeZone('Asia/Manila'))->format('l'); // e.g., 'Monday'
         $todayDate = Carbon::now(new \DateTimeZone('Asia/Manila'))->toDateString(); // Format as 'YYYY-MM-DD'
     
@@ -230,6 +234,7 @@ class SuperAdminController extends Controller
                         ->where('status_id', 1) // Assuming status_id 1 is for active students
                         ->whereHas('acceptedInternship')
                         ->with(['acceptedInternship', 'profile', 'course'])
+                        ->where('academic_year_id', $currentAcademicYear->id)
                         ->get();
     
         $studentsWithNoDTRToday = [];
@@ -239,13 +244,23 @@ class SuperAdminController extends Controller
     
             // Determine schedule based on student type (regular or irregular)
             if ($student->profile->is_irregular && $acceptedInternship->custom_schedule) {
-                $schedule = json_decode($acceptedInternship->custom_schedule, true);
-                $scheduledDays = array_keys($schedule); // Days are keys in custom schedules
+                // Ensure custom_schedule is decoded only if it is a JSON string
+                $schedule = is_array($acceptedInternship->custom_schedule) 
+                    ? $acceptedInternship->custom_schedule 
+                    : json_decode($acceptedInternship->custom_schedule, true);
+    
+                $scheduledDays = is_array($schedule) ? array_keys($schedule) : []; // Days are keys in custom schedules
             } else {
-                $schedule = json_decode($acceptedInternship->schedule, true);
-                $scheduledDays = $acceptedInternship->work_type === 'Hybrid'
-                    ? array_merge($schedule['onsite_days'], $schedule['remote_days'])
-                    : $schedule['days'];
+                // Decode the schedule only if it’s a JSON string
+                $schedule = is_array($acceptedInternship->schedule)
+                    ? $acceptedInternship->schedule
+                    : json_decode($acceptedInternship->schedule, true);
+    
+                $scheduledDays = is_array($schedule) ? (
+                    $acceptedInternship->work_type === 'Hybrid'
+                        ? array_merge($schedule['onsite_days'] ?? [], $schedule['remote_days'] ?? [])
+                        : ($schedule['days'] ?? [])
+                ) : [];
             }
     
             // Check if today is a scheduled day for the student
@@ -273,48 +288,53 @@ class SuperAdminController extends Controller
         return $studentsWithNoDTRToday;
     }
     
+    
     public function getStudentsWithNoEODToday()
     {
+        // Get the current academic year
+        $currentAcademicYear = AcademicYear::where('is_current', true)->first();
+
         $today = Carbon::now(new \DateTimeZone('Asia/Manila'))->format('l'); // e.g., 'Monday'
         $todayDate = Carbon::now(new \DateTimeZone('Asia/Manila'))->toDateString(); // Format as 'YYYY-MM-DD'
-
+    
         // Get all active students with accepted internships
         $students = User::where('role_id', 5) // Assuming role_id 5 is for students
                         ->where('status_id', 1) // Assuming status_id 1 is for active students
                         ->whereHas('acceptedInternship')
                         ->with(['acceptedInternship', 'profile', 'course'])
+                        ->where('academic_year_id', $currentAcademicYear->id)
                         ->get();
-
+    
         $studentsWithNoEODToday = [];
-
+    
         foreach ($students as $student) {
             $acceptedInternship = $student->acceptedInternship;
-
+    
             // Determine schedule based on student type (regular or irregular)
-            if ($student->profile->is_irregular && $acceptedInternship->custom_schedule) {
-                $schedule = json_decode($acceptedInternship->custom_schedule, true);
+            if ($student->profile->is_irregular && isset($acceptedInternship->custom_schedule)) {
+                $schedule = is_string($acceptedInternship->custom_schedule) ? json_decode($acceptedInternship->custom_schedule, true) : $acceptedInternship->custom_schedule;
                 $scheduledDays = array_keys($schedule); // Days are keys in custom schedules
             } else {
-                $schedule = json_decode($acceptedInternship->schedule, true);
+                $schedule = is_string($acceptedInternship->schedule) ? json_decode($acceptedInternship->schedule, true) : $acceptedInternship->schedule;
                 $scheduledDays = $acceptedInternship->work_type === 'Hybrid'
-                    ? array_merge($schedule['onsite_days'], $schedule['remote_days'])
-                    : $schedule['days'];
+                    ? array_merge($schedule['onsite_days'] ?? [], $schedule['remote_days'] ?? [])
+                    : ($schedule['days'] ?? []);
             }
-
+    
             // Check if today is a scheduled day for the student
             if (in_array($today, $scheduledDays)) {
                 // Get the latest DTR record to check remaining hours
                 $latestDTR = DailyTimeRecord::where('student_id', $student->id)
                                             ->latest('log_date')
                                             ->first();
-
+    
                 // Ensure the student has remaining hours greater than 0 and has not completed their internship
                 if ($latestDTR && $latestDTR->remaining_hours > 0) {
                     // Check if there is an EOD report entry for today
                     $eodToday = EndOfDayReport::where('student_id', $student->id)
                                 ->whereDate('created_at', $todayDate)
                                 ->exists();
-
+    
                     // Add student to the list if there's no EOD report for today
                     if (!$eodToday) {
                         $studentsWithNoEODToday[] = $student;
@@ -322,8 +342,9 @@ class SuperAdminController extends Controller
                 }
             }
         }
-
+    
         return $studentsWithNoEODToday;
     }
+    
 
 }

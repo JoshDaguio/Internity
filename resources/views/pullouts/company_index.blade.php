@@ -41,9 +41,9 @@
     
     <div class="card mb-4">
         <div class="card-body">
-            <h5 class="card-title">Pullout Leave Recieved</h5>
+            <h5 class="card-title">Leave Requests Recieved</h5>
             @if($pullouts->isEmpty())
-                <p class="text-center">No pullout Leave found.</p>
+                <p class="text-center">No leave request found.</p>
             @else
                 <div class="table-responsive">
                     <table class="table datatable">

@@ -232,7 +232,7 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="7">No students found.</td>
+                                        <td colspan="7" class="text-center">No students available for the current academic year.</td>
                                     </tr>
                                 @endforelse
                             </tbody>

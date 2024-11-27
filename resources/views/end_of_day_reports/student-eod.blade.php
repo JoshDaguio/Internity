@@ -71,17 +71,20 @@
                     <table class="table">
                         <thead>
                             <tr>
+                                <th>Submission For</th>
                                 <th>Date Submitted</th>
                                 <th>Daily Tasks</th>
                                 <th>Key Successes</th>
                                 <th>Main Challenges</th>
                                 <th>Plans for Tomorrow</th>
+                                <th>Submission</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach($reports as $report)
                                 <tr>
-                                    <td>{{ \Carbon\Carbon::parse($report->date_submitted)->format('F d, Y') }}</td>
+                                    <td>{{ \Carbon\Carbon::parse($report->submission_for_date)->format('M d, Y') }}</td>
+                                    <td>{{ \Carbon\Carbon::parse($report->date_submitted)->format('M d, Y') }}</td>
                                     <td>
                                         @foreach($report->tasks as $task)
                                             @php
@@ -94,6 +97,13 @@
                                     <td>{{ $report->key_successes }}</td>
                                     <td>{{ $report->main_challenges }}</td>
                                     <td>{{ $report->plans_for_tomorrow }}</td>
+                                    <td>
+                                        @if($report->is_late)
+                                            <span class="badge bg-danger">Late</span>
+                                        @else
+                                            <span class="badge bg-success">On-Time</span>
+                                        @endif
+                                    </td>
                                 </tr>
                             @endforeach
                         </tbody>

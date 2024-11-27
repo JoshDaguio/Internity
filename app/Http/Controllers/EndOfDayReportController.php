@@ -79,6 +79,9 @@ class EndOfDayReportController extends Controller
             ->whereMonth('date_submitted', $selectedMonth)
             ->get();
 
+        // Count late submissions
+        $lateSubmissions = $reports->where('is_late', true)->count();
+
         // Calculate missing dates, only start calculating from the Start Date
         $missingDates = $this->getMissingSubmissionDates($user->id, $selectedMonth, $currentDateTime, $scheduleDays, $startDate);
         
@@ -87,7 +90,7 @@ class EndOfDayReportController extends Controller
 
         // Check if a report has already been submitted today
         $hasSubmittedToday = EndOfDayReport::where('student_id', $user->id)
-            ->whereDate('date_submitted', $currentDateTime->format('Y-m-d'))
+            ->whereDate('submission_for_date', $currentDateTime->format('Y-m-d'))
             ->exists();
 
         // Set $noInternship to false as there is an internship
@@ -106,7 +109,8 @@ class EndOfDayReportController extends Controller
             'scheduleDays',
             'acceptedInternship',
             'currentDateTime',
-            'noInternship'
+            'noInternship',
+            'lateSubmissions'
         ));
     }
 
@@ -180,12 +184,22 @@ class EndOfDayReportController extends Controller
             $currentDateTime = Carbon::now(new \DateTimeZone('Asia/Manila'));
         }
 
+        // Use the provided submission date or fallback to the current date
+        $submissionForDate = $request->input('submission_date') 
+            ? Carbon::parse($request->input('submission_date'))->toDateString()
+            : $currentDateTime->toDateString();
+            
+        // Determine if the submission is late
+        $isLate = $submissionForDate !== $currentDateTime->toDateString();
+
         $report = EndOfDayReport::create([
             'student_id' => Auth::id(),
             'key_successes' => $request->key_successes,
             'main_challenges' => $request->main_challenges,
             'plans_for_tomorrow' => $request->plans_for_tomorrow,
             'date_submitted' => $currentDateTime,
+            'submission_for_date' => $submissionForDate,                
+            'is_late' => $isLate,
         ]);
 
         foreach ($request->tasks as $task) {
@@ -285,9 +299,15 @@ class EndOfDayReportController extends Controller
 
         // Fetch all reports submitted in the selected month
         $reports = EndOfDayReport::where('student_id', $student->id)
-            ->whereBetween('date_submitted', [$startOfMonth->format('Y-m-d'), $endOfMonth->format('Y-m-d')])
-            ->orderBy('date_submitted', 'asc')
+            ->whereBetween('submission_for_date', [$startOfMonth->format('Y-m-d'), $endOfMonth->format('Y-m-d')])
+            ->orderBy('submission_for_date', 'asc')
             ->get();
+
+
+        // Label late submissions
+        foreach ($reports as $report) {
+            $report->is_late = $report->submission_for_date !== $report->date_submitted->toDateString();
+        }
 
         // Get missing submission dates for the selected month
         $missingDates = $this->getMissingMonthlySubmissionDates($student->id, $startOfMonth, $endOfMonth, $scheduleDays);
@@ -395,9 +415,15 @@ class EndOfDayReportController extends Controller
 
         // Fetch all reports submitted in the selected month
         $reports = EndOfDayReport::where('student_id', $user->id)
-            ->whereBetween('date_submitted', [$startOfMonth->format('Y-m-d'), $endOfMonth->format('Y-m-d')])
-            ->orderBy('date_submitted', 'asc')
+            ->whereBetween('submission_for_date', [$startOfMonth->format('Y-m-d'), $endOfMonth->format('Y-m-d')])
+            ->orderBy('submission_for_date', 'asc')
             ->get();
+
+            
+        // Label late submissions
+        foreach ($reports as $report) {
+            $report->is_late = $report->submission_for_date !== $report->date_submitted->toDateString();
+        }
 
         // Get missing submission dates for the selected month
         $missingDates = $this->getMissingMonthlySubmissionDates($user->id, $startOfMonth, $endOfMonth, $scheduleDays);
@@ -476,9 +502,14 @@ class EndOfDayReportController extends Controller
 
         // Fetch all reports submitted in the selected month
         $reports = EndOfDayReport::where('student_id', $user->id)
-            ->whereBetween('date_submitted', [$startOfMonth->format('Y-m-d'), $endOfMonth->format('Y-m-d')])
-            ->orderBy('date_submitted', 'asc')
+            ->whereBetween('submission_for_date', [$startOfMonth->format('Y-m-d'), $endOfMonth->format('Y-m-d')])
+            ->orderBy('submission_for_date', 'asc')
             ->get();
+
+        // Label late submissions
+        foreach ($reports as $report) {
+            $report->is_late = $report->submission_for_date !== $report->date_submitted->toDateString();
+        }
 
         // Get missing submission dates for the selected month
         $missingDates = $this->getMissingMonthlySubmissionDates($user->id, $startOfMonth, $endOfMonth, $scheduleDays);
@@ -569,9 +600,14 @@ class EndOfDayReportController extends Controller
     
         // Fetch all reports submitted in the last 7 days
         $reports = EndOfDayReport::where('student_id', $user->id)
-            ->whereBetween('date_submitted', [$startOfWeek->format('Y-m-d'), $endOfWeek->format('Y-m-d')])
-            ->orderBy('date_submitted', 'asc')
+            ->whereBetween('submission_for_date', [$startOfWeek->format('Y-m-d'), $endOfWeek->format('Y-m-d')])
+            ->orderBy('submission_for_date', 'asc')
             ->get();
+
+        // Label late submissions
+        foreach ($reports as $report) {
+            $report->is_late = $report->submission_for_date !== $report->date_submitted->toDateString();
+        }
 
         // Get missing submission dates within this week (last 7 days)
         $missingDates = $this->getMissingWeeklySubmissionDates($user->id, $startOfWeek, $endOfWeek, $scheduleDays);
@@ -623,9 +659,16 @@ class EndOfDayReportController extends Controller
     
         // Fetch all reports submitted in the last 7 days
         $reports = EndOfDayReport::where('student_id', $user->id)
-            ->whereBetween('date_submitted', [$startOfWeek->format('Y-m-d'), $endOfWeek->format('Y-m-d')])
-            ->orderBy('date_submitted', 'asc')
+            ->whereBetween('submission_for_date', [$startOfWeek->format('Y-m-d'), $endOfWeek->format('Y-m-d')])
+            ->orderBy('submission_for_date', 'asc')
             ->get();
+
+
+        // Label late submissions
+        foreach ($reports as $report) {
+            $report->is_late = $report->submission_for_date !== $report->date_submitted->toDateString();
+        }
+
 
         // Get missing submission dates within this week (last 7 days)
         $missingDates = $this->getMissingWeeklySubmissionDates($user->id, $startOfWeek, $endOfWeek, $scheduleDays);

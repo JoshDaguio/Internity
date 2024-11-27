@@ -38,6 +38,16 @@
         <form action="{{ route('end_of_day_reports.store') }}" method="POST" class="row g-3">
             @csrf
 
+            <div class="form-floating mb-3">
+                <input type="text" 
+                    class="form-control" 
+                    id="submission_for_date" 
+                    value="{{ request('submission_date') ? \Carbon\Carbon::parse(request('submission_date'))->format('F d, Y') : \Carbon\Carbon::now()->format('F d, Y') }}" 
+                    disabled>
+                <label for="submission_for_date">Submission for Date</label>
+            </div>
+            <input type="hidden" name="submission_date" value="{{ request('submission_date') }}">
+
             <div id="tasks-container" class="col-md-12">
                 <h3>Daily Tasks</h3>
                 <div class="task">

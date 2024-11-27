@@ -96,15 +96,24 @@ class AcademicYearController extends Controller
     // Set the current academic year
     public function setCurrent($id)
     {
-        // Reset current academic year
-        AcademicYear::where('is_current', true)->update(['is_current' => false]);
+        // Find the currently active academic year
+        $currentAcademicYear = AcademicYear::where('is_current', true)->first();
 
-        // Set new current academic year
-        $academicYear = AcademicYear::findOrFail($id);
-        $academicYear->update(['is_current' => true]);
+        if ($currentAcademicYear) {
+            // Deactivate the current academic year
+            $currentAcademicYear->update(['is_current' => false]);
 
-        // Reactivate student accounts associated with this academic year
-        $reactivatedAccounts = User::where('academic_year_id', $academicYear->id)
+            // Deactivate all student accounts associated with this academic year
+            User::where('academic_year_id', $currentAcademicYear->id)
+                ->update(['status_id' => 2]); // Status 2 = Inactive
+        }
+
+        // Set the selected academic year as current
+        $newAcademicYear = AcademicYear::findOrFail($id);
+        $newAcademicYear->update(['is_current' => true]);
+
+        // Reactivate student accounts associated with the new current academic year
+        User::where('academic_year_id', $newAcademicYear->id)
             ->update(['status_id' => 1]); // Status 1 = Active
 
         return redirect()->back()->with('success', 'Current academic year set successfully.');

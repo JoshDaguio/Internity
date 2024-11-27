@@ -18,6 +18,14 @@
 <div class="card">
     <div class="card-body">
         <h5 class="card-title">End of Day Report</h5>
+
+        @if($report->is_late)
+            <div class="mb-3">
+                <strong>
+                    <span class="badge bg-danger"><i class="bi bi-exclamation-octagon me-1"></i>Late Submission</span>
+                </strong>
+            </div>
+        @endif
         
         <!-- Tasks Completed Table -->
         <div class="table-responsive">
@@ -58,6 +66,10 @@
             <tr>
                 <th class="table-secondary">Plans for Tomorrow:</th>
                 <td>{{ $report->plans_for_tomorrow }}</td>
+            </tr>
+            <tr>
+                <th class="table-secondary">Submission For:</th>
+                <td>{{ \Carbon\Carbon::parse($report->submission_for_date)->format('F d, Y') }}</td>
             </tr>
             <tr>
                 <th class="table-secondary">Date Submitted:</th>

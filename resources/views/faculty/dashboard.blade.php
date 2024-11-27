@@ -71,40 +71,34 @@
 
         <div class="row">
                
-            <!-- Reports -->
-            <div class="col-6">
-              <div class="card">
-                <div class="filter">
-                  <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
-                  <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
-                    <li class="dropdown-header text-start">
-                      <h6>Filter</h6>
-                    </li>
-
-                    <li><a class="dropdown-item" href="#">Today</a></li>
-                    <li><a class="dropdown-item" href="#">This Month</a></li>
-                    <li><a class="dropdown-item" href="#">This Year</a></li>
-                  </ul>
-                </div>
-
+        <div class="col-12 col-md-6">
+            <div class="card">
                 <div class="card-body">
                     <h5 class="card-title">Students with no DTR for Today</h5>
-
+                    <div class="mb-3">
+                        <select id="dtr-entries-select" class="form-select form-select-sm" style="width: auto; display: inline-block;">
+                            <option value="5">5</option>
+                            <option value="10">10</option>
+                            <option value="15">15</option>
+                            <option value="all">All</option>
+                        </select>
+                        <label for="eod-entries-select">entries per page</label>
+                    </div>
                     <div class="table-responsive">
-                        <table class="table datatable">
+                        <table class="table">
                             <thead>
                                 <tr>
                                     <th>Student</th>
                                     <th>Course</th>
-                                    <th>DTR </th>
+                                    <th>DTR</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody id="dtr-table-body">
                                 @forelse ($studentsWithNoDTRToday as $student)
                                     <tr>
                                         <td>
                                             <a href="{{ route('students.show', $student->id) }}" class="btn btn-light btn-sm">
-                                            {{ $student->profile->last_name }}, {{ $student->profile->first_name }}
+                                                {{ $student->profile->last_name }}, {{ $student->profile->first_name }}
                                             </a>
                                         </td>
                                         <td>{{ $student->course->course_code ?? 'N/A' }}</td>
@@ -121,61 +115,64 @@
                                 @endforelse
                             </tbody>
                         </table>
+                        <div id="dtr-pagination" class="pagination-container"></div>
                     </div>
                 </div>
-              </div>
-            </div><!-- End Reports -->
-
-            <div class="col-6">
-              <div class="card">
-              <div class="filter">
-                  <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
-                  <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
-                    <li class="dropdown-header text-start">
-                      <h6>Filter</h6>
-                    </li>
-
-                    <li><a class="dropdown-item" href="#">Today</a></li>
-                    <li><a class="dropdown-item" href="#">This Month</a></li>
-                    <li><a class="dropdown-item" href="#">This Year</a></li>
-                  </ul>
-                </div>
-
+            </div>
+        </div>
+        <!-- End Reports Card -->
+        
+        <!-- EOD Reports Card -->
+        <div class="col-12 col-md-6">
+            <div class="card">
                 <div class="card-body">
                     <h5 class="card-title">Students with No EOD for Today</h5>
-                    <table class="table datatable">
-                        <thead>
-                            <tr>
-                                <th>Student</th>
-                                <th>Course</th>
-                                <th>EOD</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse ($studentsWithNoEODToday as $student)
+                    <div class="mb-3">
+                        <select id="eod-entries-select" class="form-select form-select-sm" style="width: auto; display: inline-block;">
+                            <option value="5">5</option>
+                            <option value="10">10</option>
+                            <option value="15">15</option>
+                            <option value="all">All</option>
+                        </select>
+                        <label for="eod-entries-select">entries per page</label>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
                                 <tr>
-                                    <td>
-                                        <a href="{{ route('students.show', $student->id) }}" class="btn btn-light btn-sm">
-                                            {{ $student->profile->last_name }}, {{ $student->profile->first_name }}
-                                        </a>
-                                    </td>
-                                    <td>{{ $student->course->course_code }}</td>
-                                    <td>
-                                        <a href="{{ route('students.eod', $student->id) }}" class="btn btn-primary me-2 btn-sm {{ $student->status_id != 1 ? 'd-none' : '' }}">
-                                            View
-                                        </a>
-                                    </td>
+                                    <th>Student</th>
+                                    <th>Course</th>
+                                    <th>EOD</th>
                                 </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="3" class="text-center">No students to display.</td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody id="eod-table-body">
+                                @forelse ($studentsWithNoEODToday as $student)
+                                    <tr>
+                                        <td>
+                                            <a href="{{ route('students.show', $student->id) }}" class="btn btn-light btn-sm">
+                                                {{ $student->profile->last_name }}, {{ $student->profile->first_name }}
+                                            </a>
+                                        </td>
+                                        <td>{{ $student->course->course_code ?? 'N/A' }}</td>
+                                        <td>
+                                            <a href="{{ route('students.eod', $student->id) }}" class="btn btn-primary me-2 btn-sm {{ $student->status_id != 1 ? 'd-none' : '' }}">
+                                                View
+                                            </a>
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="3" class="text-center">No students to display.</td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                        <div id="eod-pagination" class="pagination-container"></div>
+                    </div>
                 </div>
-              </div>
-            </div><!-- EOD Reports -->
+            </div>
+        </div>
+        <!-- End EOD Reports Card -->
 
             <!-- Recent Sales -->
             <div class="col-12">
@@ -368,6 +365,54 @@
                 }
             });
             calendar.render();
+        });
+        
+        document.addEventListener('DOMContentLoaded', function () {
+            function paginateTable(tableBodyId, paginationContainerId, entriesSelectId) {
+                const tableBody = document.getElementById(tableBodyId);
+                const paginationContainer = document.getElementById(paginationContainerId);
+                const entriesSelect = document.getElementById(entriesSelectId);
+                const rows = Array.from(tableBody.querySelectorAll('tr'));
+                let currentPage = 1;
+                let rowsPerPage = parseInt(entriesSelect.value);
+    
+                entriesSelect.addEventListener('change', () => {
+                    rowsPerPage = entriesSelect.value === 'all' ? rows.length : parseInt(entriesSelect.value);
+                    currentPage = 1;
+                    renderTable();
+                });
+    
+                function renderTable() {
+                    tableBody.innerHTML = '';
+                    const start = (currentPage - 1) * rowsPerPage;
+                    const end = rowsPerPage === rows.length ? rows.length : start + rowsPerPage;
+                    rows.slice(start, end).forEach(row => tableBody.appendChild(row));
+                    updatePagination();
+                }
+    
+                function updatePagination() {
+                    paginationContainer.innerHTML = '';
+                    const pageCount = Math.ceil(rows.length / rowsPerPage);
+                    for (let i = 1; i <= pageCount; i++) {
+                        const pageButton = document.createElement('button');
+                        pageButton.textContent = i;
+                        pageButton.classList.add('btn', 'btn-sm', 'btn-light', 'me-1');
+                        if (i === currentPage) {
+                            pageButton.classList.add('active');
+                        }
+                        pageButton.addEventListener('click', () => {
+                            currentPage = i;
+                            renderTable();
+                        });
+                        paginationContainer.appendChild(pageButton);
+                    }
+                }
+    
+                renderTable();
+            }
+    
+            paginateTable('dtr-table-body', 'dtr-pagination', 'dtr-entries-select');
+            paginateTable('eod-table-body', 'eod-pagination', 'eod-entries-select');
         });
 
     </script>

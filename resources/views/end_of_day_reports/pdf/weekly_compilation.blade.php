@@ -45,7 +45,8 @@
 
     @if($reports->isNotEmpty())
         @foreach($reports as $report)
-            <h4>Date Submitted: {{ \Carbon\Carbon::parse($report->date_submitted)->format('F d, Y') }}</h4>
+            <h4>{{ \Carbon\Carbon::parse($report->submission_for_date)->format('F d, Y') }} Report</h4>
+            <h4>Date Submitted: {{ \Carbon\Carbon::parse($report->date_submitted)->format('F d, Y') }} | Late: {{ $report->is_late ? 'Yes' : 'No' }}</h4>
             <table class="report-table">
                 <thead>
                     <tr>
@@ -70,7 +71,11 @@
                     @endforeach
                 </tbody>
             </table>
+
+            <br>
+
         @endforeach
+
     @else
         <p>No reports submitted for this week.</p>
     @endif

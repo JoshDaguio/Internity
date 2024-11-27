@@ -169,6 +169,21 @@ class ProfileController extends Controller
         ]);
     }
 
+    public function previewMOA($id)
+    {
+        $profile = Profile::findOrFail($id);
+
+        if ($profile->moa_file_path) {
+            $filePath = storage_path('app/public/' . $profile->moa_file_path);
+            return response()->file($filePath, [
+                'Content-Type' => mime_content_type($filePath),
+            ]);
+        }
+
+        abort(404, 'MOA file not found.');
+    }
+
+
     /**
      * Delete the user's account.
      */

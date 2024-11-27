@@ -20,6 +20,7 @@ class Profile extends Model
         'cv_file_path',
         'profile_picture',
         'is_irregular',
+        'moa_file_path'
     ];
 
     public function user()

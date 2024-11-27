@@ -29,6 +29,7 @@ return new class extends Migration
             $table->string('address')->nullable();
             $table->string('contact_number')->nullable();
             $table->string('cv_file_path')->nullable(); // For Curriculum Vitae file upload
+            $table->string('moa_file_path')->nullable(); // For MOA file upload
             $table->string('profile_picture')->nullable(); // For Profile Picture upload
             $table->boolean('is_irregular')->default(false); // Mark irregular students
             $table->timestamps();

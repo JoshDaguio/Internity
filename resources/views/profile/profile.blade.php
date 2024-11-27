@@ -69,6 +69,18 @@
                                     <div class="col-lg-3 col-md-4 label">Address</div>
                                     <div class="col-lg-9 col-md-8">{{ $profile->address ?? 'N/A' }}</div>
                                 </div>
+
+                                <div class="row">
+                                    <div class="col-lg-3 col-md-4 label">Memorandum of Agreement</div>
+                                    <div class="col-lg-9 col-md-8">
+                                        @if ($profile->moa_file_path)
+                                            <button class="btn btn-primary" onclick="showPreview('{{ route('profile.previewMOA', $profile->id) }}')"><i class="bi bi-folder"></i></button>
+                                        @else
+                                            N/A
+                                        @endif
+                                    </div>
+                                </div>
+
                             @else
                                 <!-- Common User Details -->
                                 <div class="row">
@@ -161,7 +173,7 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="cvPreviewLabel">CV Preview</h5>
+                <h5 class="modal-title" id="cvPreviewLabel">File Preview</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">

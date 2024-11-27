@@ -53,9 +53,7 @@
                         <th>Description</th>
                         <th>Date</th>
                         <th>Uploader</th>
-                        @if(Auth::user()->role_id == 1 || Auth::user()->role_id == 2)
                         <th>Actions</th>
-                        @endif
                     </tr>
                 </thead>
                 <tbody>
@@ -71,11 +69,11 @@
                                     {{ $file->uploader->name }}
                                 @endif
                             </td>
-                            @if(Auth::user()->role_id == 1 || Auth::user()->role_id == 2)
                             <td>
+                                <button class="btn btn-dark btn-sm" onclick="showPreview('{{ route('file_uploads.preview', $file->id) }}')"><i class="bi bi-folder"></i></button>
+                                <a href="{{ route('file_uploads.download', $file->id) }}" class="btn btn-success btn-sm"><i class="bi bi-download"></i></a>
+                            @if(Auth::user()->role_id == 1 || Auth::user()->role_id == 2)
                                 @if(!$file->trashed())
-                                    <button class="btn btn-dark btn-sm" onclick="showPreview('{{ route('file_uploads.preview', $file->id) }}')"><i class="bi bi-folder"></i></button>
-                                    <a href="{{ route('file_uploads.download', $file->id) }}" class="btn btn-success btn-sm"><i class="bi bi-download"></i></a>
                                     @if(Auth::id() == $file->uploaded_by || in_array(Auth::user()->role_id, [1, 2]))
                                         <a href="{{ route('file_uploads.edit', $file->id) }}" class="btn btn-warning btn-sm">
                                             <i class="bi bi-pencil"></i>
@@ -99,8 +97,8 @@
                                         </form>
                                     @endif
                                 @endif
-                            </td>
                             @endif
+                            </td>
                         </tr>
                     @endforeach
                 </tbody>

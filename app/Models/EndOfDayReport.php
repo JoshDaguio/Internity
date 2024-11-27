@@ -15,6 +15,8 @@ class EndOfDayReport extends Model
         'main_challenges',
         'plans_for_tomorrow',
         'date_submitted',
+        'is_late',
+        'submission_for_date',
     ];
 
     protected $casts = [

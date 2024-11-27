@@ -14,10 +14,12 @@ return new class extends Migration
         Schema::create('end_of_day_reports', function (Blueprint $table) {
             $table->id();
             $table->foreignId('student_id')->constrained('users');
+            $table->date('submission_for_date');
             $table->text('key_successes');
             $table->text('main_challenges');
             $table->text('plans_for_tomorrow');
             $table->timestamp('date_submitted');
+            $table->boolean('is_late')->default(false);
             $table->timestamps();
         });
 

@@ -67,203 +67,201 @@
     <!-- End First Row -->
 
 
-    <!-- Second Row -->
-    <div class="row">
+<!-- Second Row -->
+<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3">
 
-        <!-- Faculty Card -->
-        <div class="col-4">
-            <div class="card info-card faculty-card" style="min-height: 100px;">
-                <div class="filter">
-                    <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
-                    <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
-                        <li class="dropdown-header text-start">
-                            <h6>Filter</h6>
-                        </li>
-                        <li><a class="dropdown-item filter-faculty-item" data-filter="all">All</a></li>
-                        @foreach($courses as $course)
-                            <li><a class="dropdown-item filter-faculty-item" data-filter="{{ $course->id }}">{{ $course->course_code }}</a></li>
-                        @endforeach
-                    </ul>
-                </div>
-                <div class="card-body">
-                    <h5 class="card-title">Faculty <span id="selected-faculty-course">| {{ $selectedFacultyCourse }}</span></h5>
-                    <div class="d-flex align-items-center">
-                        <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
-                            <i class="bi bi-person-badge"></i>
-                        </div>
-                        <div class="ps-3">
-                            <h6 id="total-faculty">{{ $totalFaculty }}</h6>
-                            <span id="faculty-percentage" class="text-primary small pt-1 fw-bold">{{ $facultyPercentage }}%</span>
-                        </div>
+    <!-- Faculty Card -->
+    <div class="col">
+        <div class="card info-card faculty-card" style="min-height: 100px;">
+            <div class="filter">
+                <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
+                <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+                    <li class="dropdown-header text-start">
+                        <h6>Filter</h6>
+                    </li>
+                    <li><a class="dropdown-item filter-faculty-item" data-filter="all">All</a></li>
+                    @foreach($courses as $course)
+                        <li><a class="dropdown-item filter-faculty-item" data-filter="{{ $course->id }}">{{ $course->course_code }}</a></li>
+                    @endforeach
+                </ul>
+            </div>
+            <div class="card-body">
+                <h5 class="card-title">Faculty <span id="selected-faculty-course">| {{ $selectedFacultyCourse }}</span></h5>
+                <div class="d-flex align-items-center">
+                    <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                        <i class="bi bi-person-badge"></i>
+                    </div>
+                    <div class="ps-3">
+                        <h6 id="total-faculty">{{ $totalFaculty }}</h6>
+                        <span id="faculty-percentage" class="text-primary small pt-1 fw-bold">{{ $facultyPercentage }}%</span>
                     </div>
                 </div>
             </div>
         </div>
-        <!-- End Faculty Card -->
-
-        <!-- Company Card -->
-        <div class="col-4">
-            <div class="card info-card company-card" style="min-height: 100px;">
-                <div class="card-body">
-                    <h5 class="card-title">Company</h5>
-                    <div class="d-flex align-items-center">
-                        <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
-                            <i class="bi bi-building"></i>
-                        </div>
-                        <div class="ps-3">
-                            <h6>{{ $totalCompanies }}</h6>
-                            <span class="text-primary small pt-1 fw-bold">{{ $companyPercentage }}%</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- End Company Card -->
-
-        <!-- Student Card -->
-        <div class="col-4">
-            <div class="card info-card student-card" style="min-height: 100px;">
-                <div class="filter">
-                    <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
-                    <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
-                        <li class="dropdown-header text-start">
-                            <h6>Filter</h6>
-                        </li>
-                        <li><a class="dropdown-item filter-item" data-filter="all">All</a></li>
-                        @foreach($courses as $course)
-                            <li><a class="dropdown-item filter-item" data-filter="{{ $course->id }}">{{ $course->course_code }}</a></li>
-                        @endforeach
-                    </ul>
-                </div>
-                <div class="card-body">
-                    <h5 class="card-title">Student <span id="selected-course">| {{ $selectedStudentCourse }}</span></h5>
-                    <div class="d-flex align-items-center">
-                        <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
-                            <i class="bi bi-mortarboard"></i>
-                        </div>
-                        <div class="ps-3">
-                            <h6 id="total-students">{{ $totalStudents }}</h6>
-                            <span id="student-percentage" class="text-primary small pt-1 fw-bold">{{ $studentPercentage }}%</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- End Student Card -->
     </div>
-    <!-- End Second Row -->
+    <!-- End Faculty Card -->
+
+    <!-- Company Card -->
+    <div class="col">
+        <div class="card info-card company-card" style="min-height: 100px;">
+            <div class="card-body">
+                <h5 class="card-title">Company</h5>
+                <div class="d-flex align-items-center">
+                    <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                        <i class="bi bi-building"></i>
+                    </div>
+                    <div class="ps-3">
+                        <h6>{{ $totalCompanies }}</h6>
+                        <span class="text-primary small pt-1 fw-bold">{{ $companyPercentage }}%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- End Company Card -->
+
+    <!-- Student Card -->
+    <div class="col">
+        <div class="card info-card student-card" style="min-height: 100px;">
+            <div class="filter">
+                <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
+                <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+                    <li class="dropdown-header text-start">
+                        <h6>Filter</h6>
+                    </li>
+                    <li><a class="dropdown-item filter-item" data-filter="all">All</a></li>
+                    @foreach($courses as $course)
+                        <li><a class="dropdown-item filter-item" data-filter="{{ $course->id }}">{{ $course->course_code }}</a></li>
+                    @endforeach
+                </ul>
+            </div>
+            <div class="card-body">
+                <h5 class="card-title">Student <span id="selected-course">| {{ $selectedStudentCourse }}</span></h5>
+                <div class="d-flex align-items-center">
+                    <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                        <i class="bi bi-mortarboard"></i>
+                    </div>
+                    <div class="ps-3">
+                        <h6 id="total-students">{{ $totalStudents }}</h6>
+                        <span id="student-percentage" class="text-primary small pt-1 fw-bold">{{ $studentPercentage }}%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- End Student Card -->
+</div>
+<!-- End Second Row -->
+
      
-  <div class="row">
-        <!-- Left side columns -->
-        <div class="col-lg-8">
+    <div class="row">
+    <!-- Left side columns -->
+    <div class="col-lg-8">
 
         <div class="row">
                
-            <!-- Reports -->
-            <div class="col-6">
-              <div class="card">
-                <div class="filter">
-                  <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
-                  <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
-                    <li class="dropdown-header text-start">
-                      <h6>Filter</h6>
-                    </li>
-
-                    <li><a class="dropdown-item" href="#">Today</a></li>
-                    <li><a class="dropdown-item" href="#">This Month</a></li>
-                    <li><a class="dropdown-item" href="#">This Year</a></li>
-                  </ul>
-                </div>
-
-                <div class="card-body">
-                    <h5 class="card-title">Students with no DTR for Today</h5>
-
-                    <div class="table-responsive">
-                        <table class="table datatable">
-                            <thead>
-                                <tr>
-                                    <th>Student</th>
-                                    <th>Course</th>
-                                    <th>DTR </th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @forelse ($studentsWithNoDTRToday as $student)
+            <div class="col-12 col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Students with no DTR for Today</h5>
+                        <div class="mb-3">
+                            <select id="dtr-entries-select" class="form-select form-select-sm" style="width: auto; display: inline-block;">
+                                <option value="5">5</option>
+                                <option value="10">10</option>
+                                <option value="15">15</option>
+                                <option value="all">All</option>
+                            </select>
+                            <label for="eod-entries-select">entries per page</label>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
                                     <tr>
-                                        <td>
-                                            <a href="{{ route('students.show', $student->id) }}" class="btn btn-light btn-sm">
-                                            {{ $student->profile->last_name }}, {{ $student->profile->first_name }}
-                                            </a>
-                                        </td>
-                                        <td>{{ $student->course->course_code ?? 'N/A' }}</td>
-                                        <td>
-                                            <a href="{{ route('students.dtr', $student->id) }}" class="btn btn-success me-2 btn-sm {{ $student->status_id != 1 ? 'd-none' : '' }}">
-                                                View
-                                            </a>
-                                        </td>
+                                        <th>Student</th>
+                                        <th>Course</th>
+                                        <th>DTR</th>
                                     </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="3" class="text-center">No students to display.</td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody id="dtr-table-body">
+                                    @forelse ($studentsWithNoDTRToday as $student)
+                                        <tr>
+                                            <td>
+                                                <a href="{{ route('students.show', $student->id) }}" class="btn btn-light btn-sm">
+                                                    {{ $student->profile->last_name }}, {{ $student->profile->first_name }}
+                                                </a>
+                                            </td>
+                                            <td>{{ $student->course->course_code ?? 'N/A' }}</td>
+                                            <td>
+                                                <a href="{{ route('students.dtr', $student->id) }}" class="btn btn-success me-2 btn-sm {{ $student->status_id != 1 ? 'd-none' : '' }}">
+                                                    View
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td colspan="3" class="text-center">No students to display.</td>
+                                        </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                            <div id="dtr-pagination" class="pagination-container"></div>
+                        </div>
                     </div>
                 </div>
-              </div>
-            </div><!-- End Reports -->
-
-            <div class="col-6">
-              <div class="card">
-              <div class="filter">
-                  <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
-                  <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
-                    <li class="dropdown-header text-start">
-                      <h6>Filter</h6>
-                    </li>
-
-                    <li><a class="dropdown-item" href="#">Today</a></li>
-                    <li><a class="dropdown-item" href="#">This Month</a></li>
-                    <li><a class="dropdown-item" href="#">This Year</a></li>
-                  </ul>
+            </div>
+            <!-- End Reports Card -->
+            
+            <!-- EOD Reports Card -->
+            <div class="col-12 col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Students with No EOD for Today</h5>
+                        <div class="mb-3">
+                            <select id="eod-entries-select" class="form-select form-select-sm" style="width: auto; display: inline-block;">
+                                <option value="5">5</option>
+                                <option value="10">10</option>
+                                <option value="15">15</option>
+                                <option value="all">All</option>
+                            </select>
+                            <label for="eod-entries-select">entries per page</label>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Student</th>
+                                        <th>Course</th>
+                                        <th>EOD</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="eod-table-body">
+                                    @forelse ($studentsWithNoEODToday as $student)
+                                        <tr>
+                                            <td>
+                                                <a href="{{ route('students.show', $student->id) }}" class="btn btn-light btn-sm">
+                                                    {{ $student->profile->last_name }}, {{ $student->profile->first_name }}
+                                                </a>
+                                            </td>
+                                            <td>{{ $student->course->course_code ?? 'N/A' }}</td>
+                                            <td>
+                                                <a href="{{ route('students.eod', $student->id) }}" class="btn btn-primary me-2 btn-sm {{ $student->status_id != 1 ? 'd-none' : '' }}">
+                                                    View
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td colspan="3" class="text-center">No students to display.</td>
+                                        </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                            <div id="eod-pagination" class="pagination-container"></div>
+                        </div>
+                    </div>
                 </div>
-
-                <div class="card-body">
-                    <h5 class="card-title">Students with No EOD for Today</h5>
-                    <table class="table datatable">
-                        <thead>
-                            <tr>
-                                <th>Student</th>
-                                <th>Course</th>
-                                <th>EOD</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse ($studentsWithNoEODToday as $student)
-                                <tr>
-                                    <td>
-                                        <a href="{{ route('students.show', $student->id) }}" class="btn btn-light btn-sm">
-                                            {{ $student->profile->last_name }}, {{ $student->profile->first_name }}
-                                        </a>
-                                    </td>
-                                    <td>{{ $student->course->course_code }}</td>
-                                    <td>
-                                        <a href="{{ route('students.eod', $student->id) }}" class="btn btn-primary me-2 btn-sm {{ $student->status_id != 1 ? 'd-none' : '' }}">
-                                            View
-                                        </a>
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="3" class="text-center">No students to display.</td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
-              </div>
-            </div><!-- EOD Reports -->
+            </div>
+            <!-- End EOD Reports Card -->
 
             <!-- Recent Sales -->
             <div class="col-12">
@@ -482,6 +480,55 @@
             });
             calendar.render();
         });
+        
+         document.addEventListener('DOMContentLoaded', function () {
+            function paginateTable(tableBodyId, paginationContainerId, entriesSelectId) {
+                const tableBody = document.getElementById(tableBodyId);
+                const paginationContainer = document.getElementById(paginationContainerId);
+                const entriesSelect = document.getElementById(entriesSelectId);
+                const rows = Array.from(tableBody.querySelectorAll('tr'));
+                let currentPage = 1;
+                let rowsPerPage = parseInt(entriesSelect.value);
+    
+                entriesSelect.addEventListener('change', () => {
+                    rowsPerPage = entriesSelect.value === 'all' ? rows.length : parseInt(entriesSelect.value);
+                    currentPage = 1;
+                    renderTable();
+                });
+    
+                function renderTable() {
+                    tableBody.innerHTML = '';
+                    const start = (currentPage - 1) * rowsPerPage;
+                    const end = rowsPerPage === rows.length ? rows.length : start + rowsPerPage;
+                    rows.slice(start, end).forEach(row => tableBody.appendChild(row));
+                    updatePagination();
+                }
+    
+                function updatePagination() {
+                    paginationContainer.innerHTML = '';
+                    const pageCount = Math.ceil(rows.length / rowsPerPage);
+                    for (let i = 1; i <= pageCount; i++) {
+                        const pageButton = document.createElement('button');
+                        pageButton.textContent = i;
+                        pageButton.classList.add('btn', 'btn-sm', 'btn-light', 'me-1');
+                        if (i === currentPage) {
+                            pageButton.classList.add('active');
+                        }
+                        pageButton.addEventListener('click', () => {
+                            currentPage = i;
+                            renderTable();
+                        });
+                        paginationContainer.appendChild(pageButton);
+                    }
+                }
+    
+                renderTable();
+            }
+    
+            paginateTable('dtr-table-body', 'dtr-pagination', 'dtr-entries-select');
+            paginateTable('eod-table-body', 'eod-pagination', 'eod-entries-select');
+        });
+
 
     </script>
     <style>

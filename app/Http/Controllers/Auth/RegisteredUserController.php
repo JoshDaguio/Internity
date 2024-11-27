@@ -46,13 +46,14 @@ class RegisteredUserController extends Controller
                 'required', 
                 'string', 
                 'max:255', 
-                'unique:profiles',
+                'unique:profiles,id_number',
                 'regex:/^\d{2}-\d{4}-\d{3}$/', // Regex for format 00-0000-000
             ],
             'course_id' => ['required', 'exists:courses,id'],
         ], [
             'email_username.regex' => 'Email must be in the format lastname.firstname',
             'id_number.regex' => 'The ID number must follow the format 00-0000-000.', // Custom error message
+            'id_number.unique' => 'This ID number is already registered.', // Custom error message for duplicate ID
         ]);
 
         // Append @auf.edu.ph to the email username

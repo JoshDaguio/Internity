@@ -96,15 +96,21 @@
                     <p class="mb-1"><strong><i class="bi bi-calendar"></i> Current Date:</strong> {{ $currentDateTime->format('F d, Y') }}</p>
                     <p class="mb-1">
                         <strong>
-                            <span class="badge bg-danger"><i class="bi bi-exclamation-octagon me-1"></i> Missing Reports:</span>
-                        </strong>
-                        {{ $missingDates->count() }}
-                    </p>
-                    <p class="mb-1">
-                        <strong>
                             <span class="badge bg-success"><i class="bi bi-check-circle"></i> Created Reports:</span>
                         </strong>
                         {{ $reports->count() }}
+                    </p>
+                    <p class="mb-1">
+                        <strong>
+                            <span class="badge bg-warning"><i class="bi bi-clock-history me-1"></i> Late Submissions:</span>
+                        </strong>
+                        {{ $lateSubmissions }}
+                    </p>
+                    <p class="mb-1">
+                        <strong>
+                            <span class="badge bg-danger"><i class="bi bi-exclamation-octagon me-1"></i> Missing Reports:</span>
+                        </strong>
+                        {{ $missingDates->count() }}
                     </p>
                 </div>
             </div>
@@ -172,84 +178,89 @@
         }
     </style>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            var calendarEl = document.getElementById('calendar');
-            var calendar = new FullCalendar.Calendar(calendarEl, {
-                initialView: 'dayGridMonth',
-                headerToolbar: {
-                    left: 'title',
-                    center: '',
-                    right: 'prev,next'
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var calendarEl = document.getElementById('calendar');
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'dayGridMonth',
+            headerToolbar: {
+                left: 'title',
+                center: '',
+                right: 'prev,next'
+            },
+            events: [
+                // Display submitted reports as blue or orange
+                @if(!$reports->isEmpty())
+                @foreach($reports as $report)
+                {
+                    title: 'View Report',
+                    start: '{{ $report->submission_for_date }}', // Use the correct submission date
+                    backgroundColor: '{{ $report->is_late ? "orange" : "blue" }}',
+                    url: '{{ route("end_of_day_reports.show", $report->id) }}'
                 },
-                events: [
-                    // Display submitted reports as blue
-                    @if(!$reports->isEmpty())
-                    @foreach($reports as $report)
-                    {
-                        title: 'View Report',
-                        start: '{{ $report->date_submitted->format("Y-m-d") }}',
-                        backgroundColor: 'blue',
-                        url: '{{ route("end_of_day_reports.show", $report->id) }}'
-                    },
-                    @endforeach
-                    @endif
-                    
-                    // Display missing submissions as red
-                    @if(!$missingDates->isEmpty())
-                    @foreach($missingDates as $missingDate)
+                @endforeach
+                @endif
+
+                // Display missing submissions as red only if no report exists for the date
+                @if(!$missingDates->isEmpty())
+                @foreach($missingDates as $missingDate)
+                    @if(!$reports->pluck('submission_for_date')->contains(\Carbon\Carbon::parse($missingDate)->format('Y-m-d')))
                     {
                         title: 'Missing Submission',
                         start: '{{ \Carbon\Carbon::parse($missingDate)->format("Y-m-d") }}',
-                        backgroundColor: '#B30600'
+                        backgroundColor: '#B30600',
+                        url: '{{ route("end_of_day_reports.create") }}?submission_date={{ \Carbon\Carbon::parse($missingDate)->format("Y-m-d") }}'
                     },
-                    @endforeach
                     @endif
+                @endforeach
+                @endif
 
-                    // Mark the start date in green
-                    {
-                        title: 'Internship Start Date',
-                        start: '{{ $startDate->format("Y-m-d") }}',
-                        backgroundColor: 'green'
-                    },
-
-                    // Today's submission (yellow) if scheduled and not yet submitted
-                    @if(!$hasSubmittedToday && $isScheduledDay)
-                    {
-                        title: 'Submit Today',
-                        start: '{{ \Carbon\Carbon::now("Asia/Manila")->format("Y-m-d") }}',
-                        backgroundColor: '#FFD700',
-                        url: '{{ route("end_of_day_reports.create") }}'
-                    }
-                    @endif
-                ],
-                validRange: {
-                    start: '{{ \Carbon\Carbon::now()->subYear(1)->startOfMonth()->format("Y-m-d") }}',
-                    end: '{{ \Carbon\Carbon::now()->addMonth(1)->startOfMonth()->format("Y-m-d") }}' // Up to the start of next month
+                // Mark the start date in green
+                {
+                    title: 'Internship Start Date',
+                    start: '{{ $startDate->format("Y-m-d") }}',
+                    backgroundColor: 'green'
                 },
-                dateClick: function(info) {
-                    var currentDate = '{{ \Carbon\Carbon::now("Asia/Manila")->format("Y-m-d") }}';
-                    
-                    // Disable clicks on future dates or dates before the start date
-                    if (info.dateStr > currentDate || info.dateStr < '{{ $startDate->format("Y-m-d") }}') {
-                        return false;
+
+                // Today's submission (yellow) if scheduled and not yet submitted
+                @if(!$hasSubmittedToday && $isScheduledDay)
+                {
+                    title: 'Submit Today',
+                    start: '{{ \Carbon\Carbon::now("Asia/Manila")->format("Y-m-d") }}',
+                    backgroundColor: '#FFC107',
+                    url: '{{ route("end_of_day_reports.create") }}'
+                }
+                @endif
+            ],
+            validRange: {
+                start: '{{ \Carbon\Carbon::now()->subYear(1)->startOfMonth()->format("Y-m-d") }}',
+                end: '{{ \Carbon\Carbon::now()->addMonth(1)->startOfMonth()->format("Y-m-d") }}'
+            },
+            dateClick: function(info) {
+                var currentDate = '{{ \Carbon\Carbon::now("Asia/Manila")->format("Y-m-d") }}';
+                
+                // Disable clicks on future dates or dates before the start date
+                if (info.dateStr > currentDate || info.dateStr < '{{ $startDate->format("Y-m-d") }}') {
+                    return false;
+                }
+
+                // Allow submission only on scheduled days
+                const allowedDays = {!! json_encode($scheduleDays) !!};
+                const clickedDay = new Date(info.dateStr).toLocaleDateString('en-US', { weekday: 'long' });
+
+                if (!allowedDays.includes(clickedDay)) {
+                    if (confirm("This is a late submission. Proceed to submit?")) {
+                        window.location.href = '{{ route("end_of_day_reports.create") }}?submission_date=' + info.dateStr;
                     }
-
-                    // Allow submission only on scheduled days
-                    const allowedDays = {!! json_encode($scheduleDays) !!};
-                    const clickedDay = new Date(info.dateStr).toLocaleDateString('en-US', { weekday: 'long' });
-
-                    if (!allowedDays.includes(clickedDay)) {
-                        alert("You can only submit reports on your scheduled days.");
-                        return false;
-                    }
-                },
-                nowIndicator: true, // Show the current date
-                now: '{{ \Carbon\Carbon::now("Asia/Manila")->format("Y-m-d") }}'
-            });
-
-            calendar.render();
+                }
+            },
+            nowIndicator: true, // Show the current date
+            now: '{{ \Carbon\Carbon::now("Asia/Manila")->format("Y-m-d") }}'
         });
-    </script>
+
+        calendar.render();
+    });
+</script>
+
     @endif
 @endsection

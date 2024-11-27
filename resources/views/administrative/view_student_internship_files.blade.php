@@ -92,6 +92,27 @@
                 </tr>
             </tbody>
         </table>
+        
+        @if(Auth::user()->role_id == 1 || Auth::user()->role_id == 2)
+            <!-- Requirements Section -->
+            <div class="row">
+                <div class="col-md-8">
+                    <strong><i class="bi bi-card-checklist"></i> Requirements Status:</strong>
+
+                    @if($student->requirements)
+                        <a href="{{ route('requirements.review', $student->requirements->id) }}" class="btn btn-light btn-sm">
+                            @if($student->requirements->status_id == 2) <!-- Accepted -->
+                                <span class="badge bg-success">Complete</span>
+                            @else
+                                <span class="badge bg-warning">To Complete</span>
+                            @endif
+                        </a>
+                    @else
+                        <span class="badge bg-secondary">No Submission Yet</span>
+                    @endif
+                </div>
+            </div>
+        @endif
 
         <hr class="my-4">
 

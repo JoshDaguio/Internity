@@ -25,7 +25,7 @@
         <h5 class="card-title">Create Company Account Form</h5>
 
         <!-- Floating Labels Form -->
-        <form action="{{ route('company.store') }}" method="POST" class="row g-3 needs-validation" novalidate>
+        <form action="{{ route('company.store') }}" method="POST" class="row g-3 needs-validation" novalidate enctype="multipart/form-data">
             @csrf
 
             <!-- Company Name -->
@@ -67,6 +67,14 @@
                 </div>
                 <x-input-error :messages="$errors->get('last_name')" class="mt-2" />
             </div>
+
+            <!-- MOA File Upload -->
+            <div class="col-md-12">
+                <label for="moa_file" class="form-label">Upload MOA</label>
+                <input type="file" name="moa_file" class="form-control" id="moa_file" accept=".pdf,.doc,.docx">
+                <x-input-error :messages="$errors->get('moa_file')" class="mt-2" />
+            </div>
+
 
             <!-- Expiry Date -->
             <div class="col-md-12">

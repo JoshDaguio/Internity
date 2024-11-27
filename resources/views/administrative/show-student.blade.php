@@ -112,6 +112,30 @@
                             <i class="bi bi-file-earmark-zip"></i> Internship Files
                         </a>
                     @endif
+                    
+                    @if(Auth::user()->role_id == 1 || Auth::user()->role_id == 2)
+                    <hr class="my-4">
+
+                        <!-- Requirements Section -->
+                        <div class="row">
+                            <div class="col-md-4">
+                                <strong><i class="bi bi-card-checklist"></i> Initial Requirements:</strong>
+                            </div>
+                            <div class="col-md-8">
+                                @if($student->requirements)
+                                    <a href="{{ route('requirements.review', $student->requirements->id) }}" class="btn btn-light btn-sm">
+                                        @if($student->requirements->status_id == 2) <!-- Accepted -->
+                                            <span class="badge bg-success">Complete</span>
+                                        @else
+                                            <span class="badge bg-warning">To Complete</span>
+                                        @endif
+                                    </a>
+                                @else
+                                    <span class="badge bg-secondary">No Submission Yet</span>
+                                @endif
+                            </div>
+                        </div>
+                    @endif
 
                     <hr class="my-4">
 

@@ -26,8 +26,7 @@ use App\Http\Controllers\EvaluationController;
 use App\Http\Controllers\PulloutController;
 use App\Http\Controllers\InternshipFilesController;
 use App\Http\Controllers\RequestController;
-
-
+use App\Http\Controllers\Auth\RegisteredUserController;
 
 
 Route::get('/', function () {
@@ -71,6 +70,8 @@ Route::post('reset-password', [NewPasswordController::class, 'store'])
     ->middleware('guest')
     ->name('password.store');
 
+Route::post('/validate-registration', [RegisteredUserController::class, 'validateRegistration'])->name('validate.registration');
+
 //Profile
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'profile'])->name('profile.profile');
@@ -78,6 +79,7 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile/destroy', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::get('/profile/previewCV/{id}', [ProfileController::class, 'previewCV'])->name('profile.previewCV');
+    Route::get('/profile/moa/preview/{id}', [ProfileController::class, 'previewMOA'])->name('profile.previewMOA');
 });
 
 require __DIR__.'/auth.php';

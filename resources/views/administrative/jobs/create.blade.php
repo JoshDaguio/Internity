@@ -170,6 +170,12 @@
         const hybridPicker = document.getElementById('hybrid_picker');
         const daysPicker = document.getElementById('days_picker');
 
+        const onsiteCheckboxes = document.querySelectorAll("input[name='onsite_days[]']");
+        const remoteCheckboxes = document.querySelectorAll("input[name='remote_days[]']");
+
+        const startTimeInput = document.getElementById('start_time');
+        const endTimeInput = document.getElementById('end_time');
+
         workType.addEventListener('change', function () {
             if (this.value === 'Hybrid') {
                 hybridPicker.style.display = 'block';
@@ -182,12 +188,93 @@
 
         // Trigger the change event on load to handle default value
         workType.dispatchEvent(new Event('change'));
-    });
 
-    $(document).ready(function() {
-        $('#skill_tags').select2({
-            placeholder: "Select preferred skills (Optional)",
-            allowClear: true
+        function syncCheckboxes(checkedDay, isOnsite) {
+            if (isOnsite) {
+                remoteCheckboxes.forEach(checkbox => {
+                    if (checkbox.value === checkedDay) {
+                        checkbox.disabled = true;
+                        checkbox.checked = false;
+                    }
+                });
+            } else {
+                onsiteCheckboxes.forEach(checkbox => {
+                    if (checkbox.value === checkedDay) {
+                        checkbox.disabled = true;
+                        checkbox.checked = false;
+                    }
+                });
+            }
+        }
+
+        function resetCheckboxes(isOnsite) {
+            if (isOnsite) {
+                remoteCheckboxes.forEach(checkbox => {
+                    checkbox.disabled = false;
+                });
+            } else {
+                onsiteCheckboxes.forEach(checkbox => {
+                    checkbox.disabled = false;
+                });
+            }
+        }
+
+        onsiteCheckboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', function () {
+                if (this.checked) {
+                    syncCheckboxes(this.value, true);
+                } else {
+                    resetCheckboxes(true);
+                }
+            });
+        });
+
+        remoteCheckboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', function () {
+                if (this.checked) {
+                    syncCheckboxes(this.value, false);
+                } else {
+                    resetCheckboxes(false);
+                }
+            });
+        });
+
+        // Time picker validation
+        startTimeInput.addEventListener('change', function () {
+            validateTimeInputs();
+        });
+
+        endTimeInput.addEventListener('change', function () {
+            validateTimeInputs();
+        });
+
+        function validateTimeInputs() {
+            const startTime = startTimeInput.value;
+            const endTime = endTimeInput.value;
+
+            if (startTime && endTime) {
+                const startHour = parseInt(startTime.split(':')[0], 10);
+                const startMinute = parseInt(startTime.split(':')[1], 10);
+                const endHour = parseInt(endTime.split(':')[0], 10);
+                const endMinute = parseInt(endTime.split(':')[1], 10);
+
+                if ((endHour < startHour) || (endHour === startHour && endMinute <= startMinute) || startHour >= 12 || endHour < 12) {
+                    // Set custom validation messages to indicate an invalid time range
+                    startTimeInput.setCustomValidity('Start time must be in the AM, end time must be in the PM, and end time must be after start time.');
+                    endTimeInput.setCustomValidity('Start time must be in the AM, end time must be in the PM, and end time must be after start time.');
+                } else {
+                    // Clear custom validation messages if the time range is valid
+                    startTimeInput.setCustomValidity('');
+                    endTimeInput.setCustomValidity('');
+                }
+            }
+        }
+
+        $(document).ready(function() {
+            $('#skill_tags').select2({
+                placeholder: "Select preferred skills (Optional)",
+                allowClear: true
+            });
         });
     });
 </script>

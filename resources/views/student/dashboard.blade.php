@@ -62,26 +62,24 @@
                 <h5 class="card-title">Internship Prerequisite Requirements</h5>
                 <div class="mb-3">
                   <div class="form-text">
-                  Before proceeding with the Application and Internship Process please submit the following in <strong>Requirements</strong> tab. 
+                  Before proceeding with the <strong>Internship Program</strong> please submit the following in <strong>Requirements</strong> tab. 
                         <br> 
-                        <br>       
+                        <br>
                   <strong>Step 1:</strong>
                         <ul>
-                            <li>Submit <strong>Waiver Form:</strong> (See <strong>Files</strong> Section)</li>      
-                            <li>Submit <strong>Medical Certificate</strong></li>
-                        </ul>
+                            <li>Upload your <strong>Curriculum Vitae</strong> on your <strong>Profile</strong></li>      
+                        </ul>       
                   <strong>Step 2:</strong>
                         <ul>
-                            <li><strong>Prerequisite:</strong> Accomplish <strong>Step 1</strong> Requirements</li>      
-                            <li><strong>Endorsement Letters:</strong> To be uploaded by <strong>Coordinators</strong></li>
+                            <li><strong>Endorsement Letter:</strong> To be uploaded by <strong>Coordinators</strong></li>
                         </ul>
                   <strong>Step 3:</strong>
                         <ul>
-                            <li>Upload your <strong>Curriculum Vitae (Resume)</strong> on your <strong>profile</strong></li>      
+                            <li>Submit <strong>Waiver Form</strong>: (See <strong>Files</strong> Section)</li>      
+                            <li>Submit <strong>Medical Certificate</strong></li>
                         </ul>
                         <br>
-                        <br>
-                        If <strong>Requirements</strong> are already accepted, please apply on the <strong>Internship</strong> tab, and wait for your application to be processed.                 
+                        If <strong>Requirements</strong> are already complete, please apply on the <strong>Internship</strong> tab, and wait for your application to be processed.                 
                   </div>
                 </div>
               </div>
@@ -101,7 +99,7 @@
       <div class="row">
                
           <!-- Reports (DTR) -->
-          <div class="col-6">
+          <div class="col-12 col-md-6">
               <div class="card" style="max-height: 500px; min-height: 290px;">
                   <div class="card-body">
                       @if($hasSubmittedDTRToday)
@@ -122,7 +120,7 @@
           </div>
 
           <!-- EOD Reports -->
-          <div class="col-6">
+          <div class="col-12 col-md-6">
               <div class="card" style="max-height: 500px; min-height: 290px;">
                   <div class="card-body">
                       @if($hasSubmittedToday)

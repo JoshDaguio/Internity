@@ -12,6 +12,7 @@ use App\Models\AcademicYear;
 use App\Models\StudentRejected;
 use App\Models\Interview;
 use App\Models\User;
+use App\Models\Pullout;
 use App\Models\Profile;
 use App\Models\EndOfDayReport;
 use App\Models\Evaluation;
@@ -101,6 +102,16 @@ class CompanyController extends Controller
 
         // Retrieve pending evaluations
         $pendingEvaluations = $this->listPendingEvaluations();
+        
+        // Retrieve pending pullout requests
+        $pendingPullouts = Pullout::where('company_id', $company->id)
+            ->where('academic_year_id', $currentAcademicYear->id)
+            ->where('status', 'Pending') // Assuming "Pending" is the status for pending pullouts
+            ->with(['students.profile', 'creator'])
+            ->orderBy('created_at', 'desc')
+            ->get();
+    
+    
     
         return view('company.dashboard', compact(
             'students',
@@ -110,13 +121,17 @@ class CompanyController extends Controller
             'activeInternsCount',
             'studentsWithNoDTRToday',
             'studentsWithNoEODToday',
-            'pendingEvaluations'
+            'pendingEvaluations',
+            'pendingPullouts'
         ));
     }
     
 
     public function getStudentsWithNoDTRToday()
     {
+        // Get the current academic year
+        $currentAcademicYear = AcademicYear::where('is_current', true)->first();
+
         $today = Carbon::now(new \DateTimeZone('Asia/Manila'))->format('l'); // e.g., 'Monday'
         $todayDate = Carbon::now(new \DateTimeZone('Asia/Manila'))->toDateString(); // Format as 'YYYY-MM-DD'
     
@@ -125,6 +140,7 @@ class CompanyController extends Controller
                         ->where('status_id', 1) // Assuming status_id 1 is for active students
                         ->whereHas('acceptedInternship')
                         ->with(['acceptedInternship', 'profile', 'course'])
+                        ->where('academic_year_id', $currentAcademicYear->id) // Students under the current Academic Year
                         ->get();
     
         $studentsWithNoDTRToday = [];
@@ -134,13 +150,23 @@ class CompanyController extends Controller
     
             // Determine schedule based on student type (regular or irregular)
             if ($student->profile->is_irregular && $acceptedInternship->custom_schedule) {
-                $schedule = json_decode($acceptedInternship->custom_schedule, true);
-                $scheduledDays = array_keys($schedule); // Days are keys in custom schedules
+                // Handle custom schedule (decode if stored as JSON)
+                $schedule = is_string($acceptedInternship->custom_schedule)
+                    ? json_decode($acceptedInternship->custom_schedule, true)
+                    : $acceptedInternship->custom_schedule;
+                
+                $scheduledDays = is_array($schedule) ? array_keys($schedule) : [];
             } else {
-                $schedule = json_decode($acceptedInternship->schedule, true);
-                $scheduledDays = $acceptedInternship->work_type === 'Hybrid'
-                    ? array_merge($schedule['onsite_days'], $schedule['remote_days'])
-                    : $schedule['days'];
+                // Handle standard schedule (decode if stored as JSON)
+                $schedule = is_string($acceptedInternship->schedule)
+                    ? json_decode($acceptedInternship->schedule, true)
+                    : $acceptedInternship->schedule;
+    
+                $scheduledDays = is_array($schedule) 
+                    ? ($acceptedInternship->work_type === 'Hybrid'
+                        ? array_merge($schedule['onsite_days'] ?? [], $schedule['remote_days'] ?? [])
+                        : ($schedule['days'] ?? []))
+                    : [];
             }
     
             // Check if today is a scheduled day for the student
@@ -168,48 +194,54 @@ class CompanyController extends Controller
         return $studentsWithNoDTRToday;
     }
 
+
+    
     public function getStudentsWithNoEODToday()
     {
+        // Get the current academic year
+        $currentAcademicYear = AcademicYear::where('is_current', true)->first();
+
         $today = Carbon::now(new \DateTimeZone('Asia/Manila'))->format('l'); // e.g., 'Monday'
         $todayDate = Carbon::now(new \DateTimeZone('Asia/Manila'))->toDateString(); // Format as 'YYYY-MM-DD'
-
+    
         // Get all active students with accepted internships
         $students = User::where('role_id', 5) // Assuming role_id 5 is for students
                         ->where('status_id', 1) // Assuming status_id 1 is for active students
                         ->whereHas('acceptedInternship')
                         ->with(['acceptedInternship', 'profile', 'course'])
+                        ->where('academic_year_id', $currentAcademicYear->id) // Students under the current Academic Year
                         ->get();
-
+    
         $studentsWithNoEODToday = [];
-
+    
         foreach ($students as $student) {
             $acceptedInternship = $student->acceptedInternship;
-
+    
             // Determine schedule based on student type (regular or irregular)
-            if ($student->profile->is_irregular && $acceptedInternship->custom_schedule) {
-                $schedule = json_decode($acceptedInternship->custom_schedule, true);
+            if ($student->profile->is_irregular && isset($acceptedInternship->custom_schedule)) {
+                $schedule = is_string($acceptedInternship->custom_schedule) ? json_decode($acceptedInternship->custom_schedule, true) : $acceptedInternship->custom_schedule;
                 $scheduledDays = array_keys($schedule); // Days are keys in custom schedules
             } else {
-                $schedule = json_decode($acceptedInternship->schedule, true);
+                $schedule = is_string($acceptedInternship->schedule) ? json_decode($acceptedInternship->schedule, true) : $acceptedInternship->schedule;
                 $scheduledDays = $acceptedInternship->work_type === 'Hybrid'
-                    ? array_merge($schedule['onsite_days'], $schedule['remote_days'])
-                    : $schedule['days'];
+                    ? array_merge($schedule['onsite_days'] ?? [], $schedule['remote_days'] ?? [])
+                    : ($schedule['days'] ?? []);
             }
-
+    
             // Check if today is a scheduled day for the student
             if (in_array($today, $scheduledDays)) {
                 // Get the latest DTR record to check remaining hours
                 $latestDTR = DailyTimeRecord::where('student_id', $student->id)
                                             ->latest('log_date')
                                             ->first();
-
+    
                 // Ensure the student has remaining hours greater than 0 and has not completed their internship
                 if ($latestDTR && $latestDTR->remaining_hours > 0) {
                     // Check if there is an EOD report entry for today
                     $eodToday = EndOfDayReport::where('student_id', $student->id)
                                 ->whereDate('created_at', $todayDate)
                                 ->exists();
-
+    
                     // Add student to the list if there's no EOD report for today
                     if (!$eodToday) {
                         $studentsWithNoEODToday[] = $student;
@@ -217,7 +249,7 @@ class CompanyController extends Controller
                 }
             }
         }
-
+    
         return $studentsWithNoEODToday;
     }
 
@@ -284,14 +316,25 @@ class CompanyController extends Controller
             'email' => 'required|email|unique:users',
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
+            'contact_number' => 'nullable|string|max:20',
             'expiry_date' => 'required|date|after_or_equal:today', 
+            'moa_file' => 'nullable|file|mimes:pdf,doc,docx|max:2048',
         ]);
+
+
+        // Handle MOA file upload
+        $moaPath = null;
+        if ($request->hasFile('moa_file')) {
+            $moaPath = $request->file('moa_file')->store('moa_files', 'public'); // Save file in the public disk
+        }
 
         // Create profile for the contact person
         $profile = Profile::create([
             'first_name' => $request->first_name,
             'last_name' => $request->last_name,
             'id_number' => null, // No ID number for companies
+            'contact_number' => $request->contact_number,
+            'moa_file_path' => $moaPath, // Save the MOA file path
         ]);
 
         // Generate a random password with "aufCCSInternshipCompany" + 5 random characters
@@ -361,7 +404,9 @@ class CompanyController extends Controller
             'first_name' => 'required|string|max:255',
             'password' => ['nullable', 'string', 'min:8'],
             'last_name' => 'required|string|max:255',
+            'contact_number' => 'nullable|string|max:20',
             'expiry_date' => 'required|date|after_or_equal:today', 
+            'moa_file' => 'nullable|file|mimes:pdf,doc,docx|max:2048',
         ]);
 
         $updatedFields = [];
@@ -381,12 +426,28 @@ class CompanyController extends Controller
         if ($company->profile->last_name != $request->last_name) {
             $updatedFields['Last Name'] = ['old' => $company->profile->last_name, 'new' => $request->last_name];
         }
+        if ($company->profile->contact_number != $request->contact_number) {
+            $updatedFields['Contact Number'] = ['old' => $company->profile->contact_number, 'new' => $request->contact_number];
+        }
 
         // Update profile for the contact person
         $company->profile->update([
             'first_name' => $request->first_name,
             'last_name' => $request->last_name,
+            'contact_number' => $request->contact_number,
         ]);
+
+        // Handle MOA file upload
+        if ($request->hasFile('moa_file')) {
+            // Delete the old MOA file if it exists
+            if ($company->profile->moa_file_path) {
+                Storage::disk('public')->delete($company->profile->moa_file_path);
+            }
+
+            $moaPath = $request->file('moa_file')->store('moa_files', 'public');
+            $company->profile->update(['moa_file_path' => $moaPath]);
+            $updatedFields['MOA File'] = 'Updated';
+        }
 
         // Check if email is updated
         if ($request->email != $company->email) {

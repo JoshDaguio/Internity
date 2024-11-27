@@ -41,10 +41,10 @@
     <h2>{{ $studentName }}</h2>
     <h1>{{ \Carbon\Carbon::create()->month($selectedMonth)->format('F') }} {{ $currentYear }} - Monthly Report</h1>
 
-    <!-- If reports exist, display them -->
     @if(!$reports->isEmpty())
         @foreach($reports as $report)
-            <h4>Date Submitted: {{ \Carbon\Carbon::parse($report->date_submitted)->format('F d, Y') }}</h4>
+            <h4>{{ \Carbon\Carbon::parse($report->submission_for_date)->format('F d, Y') }} Report</h4>
+            <h4>Date Submitted: {{ \Carbon\Carbon::parse($report->date_submitted)->format('F d, Y') }} | Late: {{ $report->is_late ? 'Yes' : 'No' }}</h4>
             <table class="report-table">
                 <thead>
                     <tr>
@@ -59,7 +59,7 @@
                     @foreach($report->tasks as $index => $task)
                         <tr>
                             <td>{{ $task->task_description }}</td>
-                            <td>{{ $task->time_spent }} {{ $task->time_unit }}</td>
+                            <td>{{ intdiv($task->time_spent, 60) }} hrs {{ $task->time_spent % 60 }} mins</td>
                             @if($index === 0)
                                 <td rowspan="{{ count($report->tasks) }}">{{ $report->key_successes }}</td>
                                 <td rowspan="{{ count($report->tasks) }}">{{ $report->main_challenges }}</td>
@@ -69,9 +69,9 @@
                     @endforeach
                 </tbody>
             </table>
+            <br>
         @endforeach
     @else
-        <!-- If no reports, just show missing dates -->
         <p>No reports submitted for this month.</p>
     @endif
 

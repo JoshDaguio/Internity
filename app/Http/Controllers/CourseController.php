@@ -6,6 +6,7 @@ use App\Models\Course;
 use App\Models\User;
 use App\Models\Profile;
 use App\Models\ActivityLog;
+use App\Models\AcademicYear;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 
@@ -88,38 +89,62 @@ class CourseController extends Controller
      */
     public function show(string $id)
     {
-        // Only count students and faculty who are Active (status_id 1) or Inactive (status_id 2)
+        // Get the current academic year
+        $currentAcademicYear = AcademicYear::where('is_current', true)->first();
+    
+        if (!$currentAcademicYear) {
+            return view('courses.show', [
+                'course' => Course::findOrFail($id),
+                'students' => collect([]), // Empty collection
+                'studentsChartData' => [],
+                'facultyChartData' => [],
+            ])->withErrors(['msg' => 'Current academic year is not set. No students available.']);
+        }
+    
+        // Fetch the course with filtered student and faculty counts
         $course = Course::withCount([
-            'students' => function ($query) {
-                $query->whereIn('status_id', [1, 2]); // Active and Inactive
+            'students' => function ($query) use ($currentAcademicYear) {
+                $query->whereIn('status_id', [1, 2]) // Active and Inactive
+                      ->where('academic_year_id', $currentAcademicYear->id); // Current academic year
             },
             'faculty' => function ($query) {
                 $query->whereIn('status_id', [1, 2]); // Active and Inactive
             }
         ])->findOrFail($id);
-
+    
+        // Fetch students for the course in the current academic year
+        $students = User::where('role_id', 5) // Role ID 5 for students
+            ->whereIn('status_id', [1, 2]) // Active and Inactive students
+            ->where('academic_year_id', $currentAcademicYear->id) // Current academic year
+            ->where('course_id', $course->id)
+            ->with('profile')
+            ->get();
+    
         // Total students with Active and Inactive status
         $totalStudents = User::where('role_id', 5)
-            ->whereIn('status_id', [1, 2]) // Only active and inactive students
+            ->whereIn('status_id', [1, 2])
+            ->where('academic_year_id', $currentAcademicYear->id)
             ->count();
-
+    
         $studentsChartData = [
-            ['name' => $course->course_code, 'value' => $course->students_count], // This will now only count active and inactive
-            ['name' => 'Other Courses', 'value' => $totalStudents - $course->students_count],
+            ['name' => $course->course_code, 'value' => $students->count()],
+            ['name' => 'Other Courses', 'value' => $totalStudents - $students->count()],
         ];
-
+    
         // Total faculty with Active and Inactive status
-        $totalFaculty = User::where('role_id', 3)
-            ->whereIn('status_id', [1, 2]) // Only active and inactive faculty
+        $totalFaculty = User::where('role_id', 3) // Role ID 3 for faculty
+            ->whereIn('status_id', [1, 2]) // Active and Inactive
             ->count();
-
+    
         $facultyChartData = [
-            ['name' => $course->course_code, 'value' => $course->faculty_count], // This will now only count active and inactive
+            ['name' => $course->course_code, 'value' => $course->faculty_count],
             ['name' => 'Other Courses', 'value' => $totalFaculty - $course->faculty_count],
         ];
-
-            return view('courses.show', compact('course', 'studentsChartData', 'facultyChartData'));
-        }
+    
+        return view('courses.show', compact('course', 'students', 'studentsChartData', 'facultyChartData'));
+    }
+    
+    
 
     /**
      * Show the form for editing the specified resource.

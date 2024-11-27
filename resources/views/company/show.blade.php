@@ -39,6 +39,45 @@
                 </div>
             </div>
 
+
+            <hr class="my-4">
+
+            <!-- MOA Section -->
+            <div class="row">
+                <div class="col-md-3">
+                    <strong><i class="bi bi-file-earmark-text me-2"></i> MOA File:</strong>
+                </div>
+                <div class="col-md-9">
+                    @if($company->profile->moa_file_path)
+                        <!-- Button to trigger modal -->
+                        <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#moaModal">
+                            <i class="bi bi-folder"></i>
+                        </button>
+
+                        <!-- MOA Modal -->
+                        <div class="modal fade" id="moaModal" tabindex="-1" aria-labelledby="moaModalLabel" aria-hidden="true">
+                            <div class="modal-dialog modal-lg">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="moaModalLabel">Memorandum of Agreement (MOA)</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <iframe 
+                                            src="{{ asset('storage/' . $company->profile->moa_file_path) }}" 
+                                            style="width: 100%; height: 500px;" 
+                                            frameborder="0">
+                                        </iframe>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    @else
+                        <span class="badge bg-warning">No MOA Uploaded</span>
+                    @endif
+                </div>
+            </div>
+
             <hr class="my-4">
 
             <!-- About Section -->

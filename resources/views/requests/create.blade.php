@@ -35,7 +35,7 @@
                 </div>
 
                 <button type="submit" class="btn btn-primary btn-sm">Submit Request</button>
-                <a href="{{ route('requests.adminIndex') }}" class="btn btn-secondary btn-sm">Cancel</a>
+                <a href="{{ route('requests.studentIndex') }}" class="btn btn-secondary btn-sm">Cancel</a>
 
             </form>
         </div>

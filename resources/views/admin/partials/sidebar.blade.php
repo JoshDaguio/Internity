@@ -55,12 +55,12 @@
     </a>
   </li><!-- End Faculty Page Nav -->
   
-  <li class="nav-heading">Course Management</li>
+  <li class="nav-heading">Program Management</li>
 
   <li class="nav-item">
     <a class="nav-link {{ request()->routeIs('courses.index', 'courses.create', 'courses.show', 'courses.edit') ? '' : 'collapsed' }}" href="{{ route('courses.index') }}">
       <i class="bi bi-book"></i>
-      <span>Courses</span>  
+      <span>Programs</span>  
     </a>
   </li><!-- End Courses Nav -->
 
