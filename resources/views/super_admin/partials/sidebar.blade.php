@@ -119,7 +119,7 @@
     <a class="nav-link {{ request()->routeIs('pullouts.index', 'pullouts.create') ? '' : 'collapsed' }}" data-bs-target="#request-nav" data-bs-toggle="collapse" href="#">
       <i class="bi bi-envelope"></i><span>Requests</span><i class="bi bi-chevron-down ms-auto"></i>
     </a>
-    <ul id="request-nav" class="nav-content {{ request()->routeIs('pullouts.index', 'pullouts.create', 'requests.adminIndex', 'requests.show', 'requests.respond') ? '' : 'collapse' }} " data-bs-parent="#sidebar-nav">
+    <ul id="request-nav" class="nav-content {{ request()->routeIs('pullouts.index', 'pullouts.create', 'requests.adminIndex', 'requests.show', 'requests.respond', 'admin.log-requests.index','admin.ot-requests.index') ? '' : 'collapse' }} " data-bs-parent="#sidebar-nav">
       <li>
         <a href="{{ route('pullouts.index') }}" class="{{ Request::routeIs('pullouts.index', 'pullouts.create') ? 'active' : '' }}">
           <i class="bi bi-circle"></i><span>Leave Request</span>
@@ -128,6 +128,16 @@
       <li>
         <a href="{{ route('requests.adminIndex') }}" class="{{ Request::routeIs('requests.adminIndex', 'requests.show', 'requests.respond') ? 'active' : '' }}">
           <i class="bi bi-circle"></i><span>Student Request</span>
+        </a>
+      </li>
+      <li>
+        <a href="{{ route('admin.log-requests.index') }}" class="{{ Request::routeIs('admin.log-requests.index') ? 'active' : '' }}">
+          <i class="bi bi-circle"></i><span>Log Request</span>
+        </a>
+      </li>
+      <li>
+        <a href="{{ route('admin.ot-requests.index') }}" class="{{ Request::routeIs('admin.ot-requests.index') ? 'active' : '' }}">
+          <i class="bi bi-circle"></i><span>Overtime Request</span>
         </a>
       </li>
     </ul>

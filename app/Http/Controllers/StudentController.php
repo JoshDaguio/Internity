@@ -95,7 +95,7 @@ class StudentController extends Controller
         $isScheduledDay = in_array($currentDate->format('l'), $scheduledDays) && $currentDate->gte($startDate);
 
         // Estimate Finish Date
-        $estimatedFinishDate = $this->calculateFinishDate($remainingHours, $startDate, $scheduledDays);
+        // $estimatedFinishDate = $this->calculateFinishDate($remainingHours, $startDate, $scheduledDays);
 
         // Retrieve pending evaluations
         $pendingEvaluations = $this->listPendingEvaluations();
@@ -121,7 +121,6 @@ class StudentController extends Controller
             'isScheduledDay', 
             'pendingEvaluations',
             'pendingRequests',
-            'estimatedFinishDate',
             'penaltiesGained'
         ));
     }
@@ -203,22 +202,22 @@ class StudentController extends Controller
     }
 
 
-    private function calculateFinishDate($remainingHours, $startDate, $scheduledDays)
-    {
-        $estimatedDays = ceil($remainingHours / 8);
-        // $date = Carbon::parse($startDate);
-        $date = Carbon::now();  // Start from today
-        $daysWorked = 0;
+    // private function calculateFinishDate($remainingHours, $startDate, $scheduledDays)
+    // {
+    //     $estimatedDays = ceil($remainingHours / 8);
+    //     // $date = Carbon::parse($startDate);
+    //     $date = Carbon::now();  // Start from today
+    //     $daysWorked = 0;
     
-        while ($daysWorked < $estimatedDays) {
-            if (in_array($date->format('l'), $scheduledDays)) {
-                $daysWorked++;
-            }
-            $date->addDay();
-        }
+    //     while ($daysWorked < $estimatedDays) {
+    //         if (in_array($date->format('l'), $scheduledDays)) {
+    //             $daysWorked++;
+    //         }
+    //         $date->addDay();
+    //     }
     
-        return $date;
-    }
+    //     return $date;
+    // }
 
 
     // Internship Listings Page

@@ -16,6 +16,8 @@ use Illuminate\Support\Facades\Log;
 
 class StudentsImport implements ToModel, WithHeadingRow // Implement WithHeadingRow
 {
+    protected $skippedRows = 0; // Track skipped rows
+    
     public function model(array $row)
     {
         // Ensure all keys are lowercase for consistency
@@ -52,7 +54,7 @@ class StudentsImport implements ToModel, WithHeadingRow // Implement WithHeading
         $existingProfile = Profile::where('id_number', $row['id_number'])->first();
         if ($existingProfile) {
             Log::warning('Profile with ID number already exists: ', $row);
-            // Skip this row without stopping the entire process
+            $this->skippedRows++; // Increment skipped count
             return null;
         }
 
@@ -90,5 +92,10 @@ class StudentsImport implements ToModel, WithHeadingRow // Implement WithHeading
         ));
 
         return $student;
+    }
+
+    public function getSkippedRows()
+    {
+        return $this->skippedRows;
     }
 }

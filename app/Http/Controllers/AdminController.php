@@ -623,9 +623,18 @@ class AdminController extends Controller
         if ($acceptedInternship) {
             $startDate = Carbon::parse($acceptedInternship->start_date);
     
-            // Check if student is irregular and has a custom schedule
-            if ($student->profile->is_irregular && $acceptedInternship->custom_schedule) {
-                $schedule = $acceptedInternship->custom_schedule;
+            $isIrregular = $student->profile->is_irregular && $acceptedInternship->custom_schedule;
+
+            // Check if student is irregular
+            if ($isIrregular) {
+                $schedule = is_string($acceptedInternship->custom_schedule)
+                    ? json_decode($acceptedInternship->custom_schedule, true)
+                    : $acceptedInternship->custom_schedule;
+        
+                if (!is_array($schedule)) {
+                    throw new \Exception("Invalid custom_schedule format");
+                }
+    
                 $scheduledDays = array_keys($schedule); // Extract the days based on keys
             } else {
                 // Use regular schedule for regular students
@@ -633,8 +642,10 @@ class AdminController extends Controller
     
                 // Determine scheduled days based on work type
                 if ($acceptedInternship->work_type === 'Hybrid') {
+                    // Combine onsite and remote days for hybrid schedules
                     $scheduledDays = array_merge($schedule['onsite_days'], $schedule['remote_days']);
                 } else {
+                    // For On-site or Remote, use the standard 'days' array
                     $scheduledDays = $schedule['days'];
                 }
             }
@@ -660,7 +671,7 @@ class AdminController extends Controller
             $student->completionPercentage = $remainingHours > 0 ? ($totalWorkedHours / $remainingHours) * 100 : 100;
             $student->totalWorkedHours = $totalWorkedHours;
             $student->remainingHours = $remainingHours;
-            $student->estimatedFinishDate = $this->calculateFinishDate($remainingHours, $startDate, $scheduledDays);
+            $student->estimatedFinishDate = $this->calculateFinishDate($remainingHours, $startDate, $schedule, $isIrregular);
             $student->hasInternship = true;
         } else {
             // Default values if no internship is found
@@ -681,21 +692,59 @@ class AdminController extends Controller
         return view('administrative.show-student', compact('student', 'priorityListings','evaluation'));
     }
 
-    private function calculateFinishDate($remainingHours, $startDate, $scheduledDays)
+    private function calculateFinishDate($remainingHours, $startDate, $schedule, $isIrregular = false)
     {
-        $estimatedDays = ceil($remainingHours / 8);
-        // $date = Carbon::parse($startDate);
-        $date = Carbon::now();  // Start from today
-        $daysWorked = 0;
+        $date = $startDate; // Start calculation from the provided start date
+        $hoursRemaining = $remainingHours;
     
-        while ($daysWorked < $estimatedDays) {
-            if (in_array($date->format('l'), $scheduledDays)) {
-                $daysWorked++;
+        $dailyWorkHours = [];
+    
+        if ($isIrregular) {
+            // Irregular student: Use custom_schedule for daily hours
+            foreach ($schedule as $day => $times) {
+                // Validate format for each day's schedule
+                if (is_array($times) && isset($times['start'], $times['end'])) {
+                    try {
+                        $start = Carbon::createFromTimeString($times['start']);
+                        $end = Carbon::createFromTimeString($times['end']);
+                        $dailyWorkHours[$day] = abs($end->diffInHours($start)); // Calculate daily work hours
+                    } catch (\Exception $e) {
+                        throw new \Exception("Invalid time format for day: $day");
+                    }
+                } else {
+                    throw new \Exception("Invalid custom_schedule format for day: $day");
+                }
             }
+        } else {
+            // Regular student: Use standard schedule with start_time and end_time
+            if (!isset($schedule['onsite_days'], $schedule['remote_days'], $schedule['start_time'], $schedule['end_time'])) {
+                throw new \Exception("Invalid regular schedule format");
+            }
+    
+            $start = Carbon::createFromTimeString($schedule['start_time']);
+            $end = Carbon::createFromTimeString($schedule['end_time']);
+            $dailyHours = abs($end->diffInHours($start));
+    
+            // Combine onsite and remote days into one list of working days
+            $workingDays = array_merge($schedule['onsite_days'], $schedule['remote_days']);
+            $dailyWorkHours = array_fill_keys($workingDays, $dailyHours);
+        }
+    
+        // Loop through days to decrement hoursRemaining
+        while ($hoursRemaining > 0) {
+            $dayOfWeek = $date->format('l'); // Get the current day of the week
+    
+            if (isset($dailyWorkHours[$dayOfWeek])) {
+                // Deduct hours worked for the current day
+                $hoursToday = $dailyWorkHours[$dayOfWeek];
+                $hoursRemaining -= $hoursToday;
+            }
+    
+            // Move to the next day
             $date->addDay();
         }
     
-        return $date;
+        return $date; // Return the Carbon object
     }
 
     // Method to show the form for creating a new student
@@ -912,9 +961,17 @@ class AdminController extends Controller
         ]);
 
         try {
-            Excel::import(new StudentsImport, $request->file('file'));
-
-            return redirect()->route('students.list')->with('success', 'Students imported successfully.');
+            $import = new StudentsImport();
+            Excel::import($import, $request->file('file'));
+    
+            $skippedCount = $import->getSkippedRows();
+    
+            $successMessage = 'Students imported successfully.';
+            if ($skippedCount > 0) {
+                $successMessage .= " Skipped $skippedCount rows, accounts already exist.";
+            }
+    
+            return redirect()->route('students.list')->with('success', $successMessage);
         } catch (\Exception $e) {
             return back()->with('error', 'Error importing students: ' . $e->getMessage());
         }

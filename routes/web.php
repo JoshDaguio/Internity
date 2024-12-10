@@ -26,6 +26,8 @@ use App\Http\Controllers\EvaluationController;
 use App\Http\Controllers\PulloutController;
 use App\Http\Controllers\InternshipFilesController;
 use App\Http\Controllers\RequestController;
+use App\Http\Controllers\LogRequestController;
+use App\Http\Controllers\OTRequestController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 
 
@@ -489,4 +491,38 @@ Route::middleware(['auth'])->group(function () {
     });
 
     Route::get('/requests/{request}/preview', [RequestController::class, 'preview'])->name('requests.preview');
+});
+
+
+// Log Requests
+Route::middleware(['auth'])->group(function () {
+    // Student routes
+    Route::get('/log-requests', [LogRequestController::class, 'studentLogRequests'])->name('log-requests.index');
+    Route::post('/log-requests', [LogRequestController::class, 'submitRequest'])->name('log-requests.submit');
+    Route::get('/log-requests/create', [LogRequestController::class, 'create'])->name('log-requests.create');
+    Route::post('/log-requests/store', [LogRequestController::class, 'store'])->name('log-requests.store');
+});
+
+Route::middleware(['auth', 'administrative'])->group(function () {
+    // Admin routes
+    Route::post('/admin/log-time/{studentId}', [LogRequestController::class, 'adminLogTime'])->name('admin.logTime');
+    Route::get('/admin/log-requests', [LogRequestController::class, 'viewRequests'])->name('admin.log-requests.index');
+    Route::post('/admin/log-requests/{id}/approve', [LogRequestController::class, 'approveRequest'])->name('admin.log-requests.approve');
+    Route::post('/admin/log-requests/{id}/reject', [LogRequestController::class, 'rejectRequest'])->name('admin.log-requests.reject');
+});
+
+
+// OT Requests
+Route::middleware(['auth'])->group(function () {
+    // Student routes
+    Route::get('/ot-requests', [OTRequestController::class, 'studentOTRequests'])->name('ot-requests.index');
+    Route::post('/ot-requests', [OTRequestController::class, 'store'])->name('ot-requests.store');
+    Route::get('/ot-requests/create', [OTRequestController::class, 'create'])->name('ot-requests.create');
+});
+
+Route::middleware(['auth', 'administrative'])->group(function () {
+    // Admin routes
+    Route::get('/admin/ot-requests', [OTRequestController::class, 'viewRequests'])->name('admin.ot-requests.index');
+    Route::post('/admin/ot-requests/{id}/approve', [OTRequestController::class, 'approveRequest'])->name('admin.ot-requests.approve');
+    Route::post('/admin/ot-requests/{id}/reject', [OTRequestController::class, 'rejectRequest'])->name('admin.ot-requests.reject');
 });

@@ -74,12 +74,35 @@
 
   @endif
 
-  <li class="nav-item">
+  <!-- <li class="nav-item">
     <a class="nav-link {{ request()->routeIs('requests.studentIndex','requests.create','requests.studentShow') ? '' : 'collapsed' }}" href="{{ route('requests.studentIndex') }}">
       <i class="bi bi-envelope"></i>
       <span>Requests</span>  
     </a>
-  </li><!-- End Request Nav -->
+  </li> -->
+
+  <li class="nav-item">
+    <a class="nav-link {{ request()->routeIs('requests.studentIndex','requests.create','requests.studentShow', 'log-requests.index', 'log-requests.submit', 'ot-requests.index', 'ot-requests.create') ? '' : 'collapsed' }}" data-bs-target="#request-nav" data-bs-toggle="collapse" href="#">
+      <i class="bi bi-envelope"></i><span>Requests</span><i class="bi bi-chevron-down ms-auto"></i>
+    </a>
+    <ul id="request-nav" class="nav-content {{ request()->routeIs('requests.studentIndex','requests.create','requests.studentShow', 'log-requests.index', 'log-requests.create', 'ot-requests.index', 'ot-requests.create') ? 'show' : 'collapse' }}" data-bs-parent="#sidebar-nav">
+        <li>
+            <a href="{{ route('requests.studentIndex') }}" class="{{ request()->routeIs('requests.studentIndex') ? 'active' : '' }}">
+                <i class="bi bi-circle"></i><span>Absence Request</span>
+            </a>
+        </li>
+        <li>
+            <a href="{{ route('log-requests.index') }}" class="{{ request()->routeIs('log-requests.index', 'log-requests.create') ? 'active' : '' }}">
+                <i class="bi bi-circle"></i><span>Log Request</span>
+            </a>
+        </li>
+        <li>
+            <a href="{{ route('ot-requests.index') }}" class="{{ request()->routeIs('ot-requests.index', 'ot-requests.create') ? 'active' : '' }}">
+                <i class="bi bi-circle"></i><span>Overtime Request</span>
+            </a>
+        </li>
+    </ul>
+</li><!-- End Request Nav -->
 
   <li class="nav-item">
     <a class="nav-link {{ request()->routeIs('file_uploads.index') ? '' : 'collapsed' }}" href="{{ route('file_uploads.index') }}">

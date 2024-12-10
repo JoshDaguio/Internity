@@ -44,10 +44,18 @@ class DailyTimeRecordController extends Controller
 
         $startDate = Carbon::parse($acceptedInternship->start_date);
 
+        $isIrregular = $student->profile->is_irregular && $acceptedInternship->custom_schedule;
+
         // Check if student is irregular
-        if ($student->profile->is_irregular && $acceptedInternship->custom_schedule) {
-            // Use custom schedule for irregular students
-            $schedule = $acceptedInternship->custom_schedule;
+        if ($isIrregular) {
+            $schedule = is_string($acceptedInternship->custom_schedule)
+                ? json_decode($acceptedInternship->custom_schedule, true)
+                : $acceptedInternship->custom_schedule;
+    
+            if (!is_array($schedule)) {
+                throw new \Exception("Invalid custom_schedule format");
+            }
+
             $scheduledDays = array_keys($schedule); // Extract the days based on keys
         } else {
             // Use regular schedule for regular students
@@ -87,7 +95,7 @@ class DailyTimeRecordController extends Controller
         $completionPercentage = $remainingHours > 0 ? ($totalWorkedHours / $remainingHours) * 100 : 100;
 
         // Estimate finish date based on remaining hours
-        $estimatedFinishDate = $this->calculateFinishDate($remainingHours, $startDate, $scheduledDays);
+        $estimatedFinishDate = $this->calculateFinishDate($remainingHours, $startDate, $schedule,  $isIrregular);
 
         return view('daily_time_records.index', compact(
             'student', 'completionPercentage', 'todayRecord', 'latestDailyRecord', 'isScheduledDay', 'totalWorkedHours', 'remainingHours', 'estimatedFinishDate', 'currentDateTime', 'internshipHours', 'acceptedInternship', 'penaltiesAwarded'
@@ -95,23 +103,62 @@ class DailyTimeRecordController extends Controller
     }
 
 
-    
-    private function calculateFinishDate($remainingHours, $startDate, $scheduledDays)
+    private function calculateFinishDate($remainingHours, $startDate, $schedule, $isIrregular = false)
     {
-        $estimatedDays = ceil($remainingHours / 8);
-        // $date = Carbon::parse($startDate);
-        $date = Carbon::now();  // Start from today
-        $daysWorked = 0;
+        $date = $startDate; // Start calculation from the provided start date
+        $hoursRemaining = $remainingHours;
     
-        while ($daysWorked < $estimatedDays) {
-            if (in_array($date->format('l'), $scheduledDays)) {
-                $daysWorked++;
+        $dailyWorkHours = [];
+    
+        if ($isIrregular) {
+            // Irregular student: Use custom_schedule for daily hours
+            foreach ($schedule as $day => $times) {
+                // Validate format for each day's schedule
+                if (is_array($times) && isset($times['start'], $times['end'])) {
+                    try {
+                        $start = Carbon::createFromTimeString($times['start']);
+                        $end = Carbon::createFromTimeString($times['end']);
+                        $dailyWorkHours[$day] = abs($end->diffInHours($start)); // Calculate daily work hours
+                    } catch (\Exception $e) {
+                        throw new \Exception("Invalid time format for day: $day");
+                    }
+                } else {
+                    throw new \Exception("Invalid custom_schedule format for day: $day");
+                }
             }
+        } else {
+            // Regular student: Use standard schedule with start_time and end_time
+            if (!isset($schedule['onsite_days'], $schedule['remote_days'], $schedule['start_time'], $schedule['end_time'])) {
+                throw new \Exception("Invalid regular schedule format");
+            }
+    
+            $start = Carbon::createFromTimeString($schedule['start_time']);
+            $end = Carbon::createFromTimeString($schedule['end_time']);
+            $dailyHours = abs($end->diffInHours($start));
+    
+            // Combine onsite and remote days into one list of working days
+            $workingDays = array_merge($schedule['onsite_days'], $schedule['remote_days']);
+            $dailyWorkHours = array_fill_keys($workingDays, $dailyHours);
+        }
+    
+        // Loop through days to decrement hoursRemaining
+        while ($hoursRemaining > 0) {
+            $dayOfWeek = $date->format('l'); // Get the current day of the week
+    
+            if (isset($dailyWorkHours[$dayOfWeek])) {
+                // Deduct hours worked for the current day
+                $hoursToday = $dailyWorkHours[$dayOfWeek];
+                $hoursRemaining -= $hoursToday;
+            }
+    
+            // Move to the next day
             $date->addDay();
         }
     
-        return $date;
+        return $date; // Return the Carbon object
     }
+    
+    
 
     public function logTime(Request $request)
     {
@@ -152,6 +199,7 @@ class DailyTimeRecordController extends Controller
     
         $dayOfWeek = Carbon::now()->format('l');
         $startTime = $acceptedInternship->start_time;
+        $endTime = $acceptedInternship->end_time; // Regular end time
     
         if ($student->profile->is_irregular && $acceptedInternship->custom_schedule) {
             $customSchedule = is_array($acceptedInternship->custom_schedule) 
@@ -160,8 +208,15 @@ class DailyTimeRecordController extends Controller
     
             if (isset($customSchedule[$dayOfWeek])) {
                 $startTime = $customSchedule[$dayOfWeek]['start'];
+                $endTime = $customSchedule[$dayOfWeek]['end'];
             }
         }
+
+        // Convert custom_schedule times to 24-hour format for comparison
+        $currentTime24 = Carbon::createFromFormat('h:i A', $currentTime)->format('H:i');
+        $startTime24 = Carbon::createFromFormat('H:i', $startTime)->format('H:i');
+        $endTime24 = Carbon::createFromFormat('H:i', $endTime)->format('H:i');
+
     
         $isLate = ($type === 'morning_in') && Carbon::parse($currentTime)->gt(Carbon::parse($startTime));
         $lateMinutes = $isLate ? Carbon::parse($currentTime)->diffInMinutes(Carbon::parse($startTime), false) : 0;
@@ -174,6 +229,12 @@ class DailyTimeRecordController extends Controller
         $logTimes = $dailyRecord->log_times ? json_decode($dailyRecord->log_times, true) : [];
     
         if (!isset($logTimes[$type])) {
+            // Cap the logged time at end time if it's afternoon_out
+            if ($type === 'afternoon_out' && Carbon::parse($currentTime24)->gt(Carbon::parse($endTime24))) {
+                $currentTime = Carbon::parse($endTime24)->format('h:i A'); // Save capped time in 12-hour format
+            }
+
+
             $logTimes[$type] = $currentTime;
             $dailyRecord->log_times = json_encode($logTimes);
             $dailyRecord->save();
@@ -281,37 +342,28 @@ class DailyTimeRecordController extends Controller
         $totalWorkedHours = $dailyRecords->sum('total_hours_worked');
         $remainingHours = $latestDailyRecord ? $latestDailyRecord->remaining_hours : $internshipHours->hours;
 
-        // Fetch the schedule
-        $schedule = $acceptedInternship->schedule;
+        // Calculate total worked hours
+        $totalWorkedHours = $dailyRecords->sum('total_hours_worked');
 
-        // Initialize $scheduledDays as an empty array in case it's not set later
-        $scheduledDays = [];
+        // Handle schedule logic (custom_schedule or regular schedule)
+        $isIrregular = $student->profile->is_irregular && $acceptedInternship->custom_schedule;
+        if ($isIrregular) {
+            $schedule = is_string($acceptedInternship->custom_schedule)
+                ? json_decode($acceptedInternship->custom_schedule, true)
+                : $acceptedInternship->custom_schedule;
 
-        // If the schedule is not an array (i.e., it's stored as JSON), decode it
-        if (!is_array($schedule)) {
-            $schedule = json_decode($schedule, true);
-        }
-
-        // Check if the student is irregular and if there is a custom schedule
-        if ($student->profile->is_irregular && $acceptedInternship->custom_schedule) {
-            $customSchedule = $acceptedInternship->custom_schedule;
-
-            // If custom schedule is not an array, decode it
-            if (!is_array($customSchedule)) {
-                $schedule = json_decode($customSchedule, true);
-            } else {
-                $schedule = $customSchedule; // Use the custom schedule directly
+            if (!is_array($schedule)) {
+                throw new \Exception("Invalid custom_schedule format");
             }
 
-            // Extract the days from the custom schedule
-            $scheduledDays = array_keys($schedule);
-
+            $scheduledDays = array_keys($schedule); // Extract the days from custom schedule
         } else {
-            // Handle Hybrid schedules
+            $schedule = json_decode($acceptedInternship->schedule, true);
+
+            // Determine scheduled days for regular students
             if ($acceptedInternship->work_type === 'Hybrid') {
                 $scheduledDays = array_merge($schedule['onsite_days'], $schedule['remote_days']);
             } else {
-                // For On-site or Remote, use the standard 'days' array
                 $scheduledDays = $schedule['days'] ?? [];
             }
         }
@@ -378,7 +430,7 @@ class DailyTimeRecordController extends Controller
 
 
         // Estimate the finish date
-        $estimatedFinishDate = $this->calculateFinishDate($remainingHours, $currentDate, $scheduledDays);
+        $estimatedFinishDate = $this->calculateFinishDate($remainingHours, $startDate, $schedule, $isIrregular);
 
         return view('daily_time_records.reports', compact(
             'penaltiesAwarded', 'completionPercentage','totalWorkedHours', 'penalties', 'student', 'acceptedInternship', 'internshipHours', 'filteredRecords', 'schedule', 'currentDate', 'startDate', 'selectedMonth', 'scheduledDays', 'remainingHours', 'estimatedFinishDate', 'filteredDates', 'monthsRange', 'monthlyHours', 'monthlyPenalties'
@@ -431,37 +483,25 @@ class DailyTimeRecordController extends Controller
             $completionPercentage = 100; // Consider the internship completed if remaining hours are 0
         }
 
-        // Fetch the schedule
-        $schedule = $acceptedInternship->schedule;
+        // Handle schedule logic (custom_schedule or regular schedule)
+        $isIrregular = $student->profile->is_irregular && $acceptedInternship->custom_schedule;
+        if ($isIrregular) {
+            $schedule = is_string($acceptedInternship->custom_schedule)
+                ? json_decode($acceptedInternship->custom_schedule, true)
+                : $acceptedInternship->custom_schedule;
 
-        // Initialize $scheduledDays as an empty array in case it's not set later
-        $scheduledDays = [];
-
-        // If the schedule is not an array (i.e., it's stored as JSON), decode it
-        if (!is_array($schedule)) {
-            $schedule = json_decode($schedule, true);
-        }
-
-        // Check if the student is irregular and if there is a custom schedule
-        if ($student->profile->is_irregular && $acceptedInternship->custom_schedule) {
-            $customSchedule = $acceptedInternship->custom_schedule;
-
-            // If custom schedule is not an array, decode it
-            if (!is_array($customSchedule)) {
-                $schedule = json_decode($customSchedule, true);
-            } else {
-                $schedule = $customSchedule; // Use the custom schedule directly
+            if (!is_array($schedule)) {
+                throw new \Exception("Invalid custom_schedule format");
             }
 
-            // Extract the days from the custom schedule
-            $scheduledDays = array_keys($schedule);
-
+            $scheduledDays = array_keys($schedule); // Extract the days from custom schedule
         } else {
-            // Handle Hybrid schedules
+            $schedule = json_decode($acceptedInternship->schedule, true);
+
+            // Determine scheduled days for regular students
             if ($acceptedInternship->work_type === 'Hybrid') {
                 $scheduledDays = array_merge($schedule['onsite_days'], $schedule['remote_days']);
             } else {
-                // For On-site or Remote, use the standard 'days' array
                 $scheduledDays = $schedule['days'] ?? [];
             }
         }
@@ -530,7 +570,7 @@ class DailyTimeRecordController extends Controller
         // $completionPercentage = ($totalWorkedHours / $remainingHours) * 100;
 
         // Estimate the finish date
-        $estimatedFinishDate = $this->calculateFinishDate($remainingHours, $currentDate, $scheduledDays);
+        $estimatedFinishDate = $this->calculateFinishDate($remainingHours, $startDate, $schedule, $isIrregular);
 
         return view('daily_time_records.student-dtr', compact(
             'totalWorkedHours','completionPercentage', 'penaltiesAwarded', 'penalties', 'student', 'acceptedInternship', 'internshipHours', 'filteredRecords', 'schedule', 'currentDate', 'startDate', 'selectedMonth', 'scheduledDays', 'remainingHours', 'estimatedFinishDate', 'filteredDates', 'monthsRange', 'monthlyHours', 'monthlyPenalties'

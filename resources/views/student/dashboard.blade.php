@@ -144,7 +144,7 @@
           <div class="col-md-12">
             <div class="card" style="height: 480px;">
               <div class="card-body" style="display: flex; flex-direction: column; height: 100%;">
-                <h5 class="card-title">Calendar</h5>
+                <h5 class="card-title">Internship Calendar</h5>
                 <div id="calendar" style="flex-grow: 1; overflow-y: auto;"></div>
               </div>
             </div>
@@ -254,7 +254,8 @@
           <div class="card">
             <div class="card-body" style="min-height: 200px;">
               <h5 class="card-title">Penalties Gained</h5>
-              <table class="table">
+              @forelse($penaltiesGained as $penalty)
+                <table class="table">
                   <thead>
                       <tr>
                           <th>Penalty</th>
@@ -262,15 +263,14 @@
                       </tr>
                   </thead>
                   <tbody>
-                  @forelse($penaltiesGained as $penalty)
                       <tr>
                         <td>{{ $penalty->penalty->violation }}</td>
                         <td>{{ $penalty->penalty_hours }} hrs</td>
                       </tr>
-                  @empty
-                      <p class="text-center"><strong>No penalties gained.</strong></p>
-                  @endforelse
                 </table>
+                @empty
+                    <p class="text-center"><strong>No penalties gained.</strong></p>
+                @endforelse
               </div>
             </div>
             <!-- End Penalties Gained -->
@@ -296,12 +296,6 @@
                         title: 'Start',
                         start: '{{ $startDate->format("Y-m-d") }}',
                         backgroundColor: 'green'
-                    },
-                    // Estimated finish date (purple)
-                    {
-                        title: 'Est. Finish',
-                        start: '{{ $estimatedFinishDate->format("Y-m-d") }}',
-                        backgroundColor: 'purple'
                     },
                     // Submitted reports (blue)
                     @foreach($reports as $report)
@@ -334,7 +328,7 @@
                 ],
                 validRange: {
                     start: '{{ $startDate->format("Y-m-d") }}',
-                    end: '{{ $estimatedFinishDate->endOfMonth()->format("Y-m-d") }}' // Adjusted to end of month
+                    end: '{{ \Carbon\Carbon::now()->addMonth(1)->startOfMonth()->format("Y-m-d") }}'
                 },
                 dateClick: function(info) {
                     var currentDate = '{{ $currentDate->format("Y-m-d") }}';
