@@ -68,17 +68,34 @@ class CompanyController extends Controller
                 ->first();
             
             $internshipHours = InternshipHours::where('course_id', $student->course_id)->first();
-            $totalWorkedHours = $dailyRecords->sum('total_hours_worked');
-            $latestDailyRecord = $dailyRecords->sortByDesc('log_date')->first();
-            $remainingHours = $latestDailyRecord ? $latestDailyRecord->remaining_hours : 0;
+            // $totalWorkedHours = $dailyRecords->sum('total_hours_worked');
+            // $latestDailyRecord = $dailyRecords->sortByDesc('log_date')->first();
+            // $remainingHours = $latestDailyRecord ? $latestDailyRecord->remaining_hours : 0;
     
-            $student->totalWorkedHours = $totalWorkedHours;
-            $student->remainingHours = $remainingHours;
-            $student->completionPercentage = $remainingHours > 0 
-                ? ($totalWorkedHours / ($totalWorkedHours + $remainingHours)) * 100 
-                : 100;
+            // $student->totalWorkedHours = $totalWorkedHours;
+            // $student->remainingHours = $remainingHours;
+            // $student->completionPercentage = $remainingHours > 0 
+            //     ? ($totalWorkedHours / ($totalWorkedHours + $remainingHours)) * 100 
+            //     : 100;
 
-            $student->hasInternship = true;
+            // $student->hasInternship = true;
+
+             // Calculate total worked hours
+             $totalWorkedHours = $dailyRecords->sum('total_hours_worked');
+
+             // Determine remaining hours based on the latest DTR or fallback to the total internship hours
+             $remainingHours = $latestDailyRecord ? $latestDailyRecord->remaining_hours : ($internshipHours->hours ?? 0);
+
+             if ($remainingHours > 0) {
+                 $student->completionPercentage = ($totalWorkedHours / $remainingHours) * 100;
+             } else {
+                 // If remaining hours are 0, consider the internship completed
+                 $student->completionPercentage = 100;
+             }
+
+             $student->totalWorkedHours = $totalWorkedHours;
+             $student->remainingHours = $remainingHours;
+             $student->hasInternship = true;
     
             // Check if the student is actively interning (remaining hours > 0)
             if ($remainingHours > 0) {
