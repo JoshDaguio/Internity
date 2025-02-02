@@ -214,10 +214,10 @@ class DailyTimeRecordController extends Controller
             }
         }
 
-        // Convert custom_schedule times to 24-hour format for comparison
-        $currentTime24 = Carbon::createFromFormat('h:i A', $currentTime)->format('H:i');
-        $startTime24 = Carbon::createFromFormat('H:i', $startTime)->format('H:i');
-        $endTime24 = Carbon::createFromFormat('H:i', $endTime)->format('H:i');
+        // // Convert custom_schedule times to 24-hour format for comparison
+        // $currentTime24 = Carbon::createFromFormat('h:i A', $currentTime)->format('H:i');
+        // $startTime24 = Carbon::createFromFormat('H:i', $startTime)->format('H:i');
+        // $endTime24 = Carbon::createFromFormat('H:i', $endTime)->format('H:i');
 
     
         $isLate = ($type === 'morning_in') && Carbon::parse($currentTime)->gt(Carbon::parse($startTime));
@@ -232,8 +232,8 @@ class DailyTimeRecordController extends Controller
     
         if (!isset($logTimes[$type])) {
             // Cap the logged time at end time if it's afternoon_out
-            if ($type === 'afternoon_out' && Carbon::parse($currentTime24)->gt(Carbon::parse($endTime24))) {
-                $currentTime = Carbon::parse($endTime24)->format('h:i A'); // Save capped time in 12-hour format
+            if ($type === 'afternoon_out' && Carbon::parse($currentTime)->gt(Carbon::parse($endTime))) {
+                $currentTime = Carbon::parse($endTime)->format('h:i A'); // Save capped time in 12-hour format
             }
 
 
@@ -241,19 +241,34 @@ class DailyTimeRecordController extends Controller
             $dailyRecord->log_times = json_encode($logTimes);
             $dailyRecord->save();
     
+            // // Calculate morning and afternoon work hours
+            // $morningWork = isset($logTimes['morning_in'], $logTimes['morning_out'])
+            //     ? Carbon::parse($logTimes['morning_in'])->diffInHours(Carbon::parse($logTimes['morning_out']), false)
+            //     : 0;
+    
+            // $afternoonWork = isset($logTimes['afternoon_in'], $logTimes['afternoon_out'])
+            //     ? Carbon::parse($logTimes['afternoon_in'])->diffInHours(Carbon::parse($logTimes['afternoon_out']), false)
+            //     : 0;
+    
+            // // Check for continuous session without break
+            // $totalWorkHours = isset($logTimes['morning_in'], $logTimes['afternoon_out']) && !isset($logTimes['morning_out'], $logTimes['afternoon_in'])
+            //     ? Carbon::parse($logTimes['morning_in'])->diffInHours(Carbon::parse($logTimes['afternoon_out']), false)
+            //     : $morningWork + $afternoonWork;
+
             // Calculate morning and afternoon work hours
             $morningWork = isset($logTimes['morning_in'], $logTimes['morning_out'])
-                ? Carbon::parse($logTimes['morning_in'])->diffInHours(Carbon::parse($logTimes['morning_out']), false)
+                ? Carbon::parse($logTimes['morning_in'])->diffInMinutes(Carbon::parse($logTimes['morning_out']), false) / 60
                 : 0;
-    
+
             $afternoonWork = isset($logTimes['afternoon_in'], $logTimes['afternoon_out'])
-                ? Carbon::parse($logTimes['afternoon_in'])->diffInHours(Carbon::parse($logTimes['afternoon_out']), false)
+                ? Carbon::parse($logTimes['afternoon_in'])->diffInMinutes(Carbon::parse($logTimes['afternoon_out']), false) / 60
                 : 0;
-    
+
             // Check for continuous session without break
             $totalWorkHours = isset($logTimes['morning_in'], $logTimes['afternoon_out']) && !isset($logTimes['morning_out'], $logTimes['afternoon_in'])
-                ? Carbon::parse($logTimes['morning_in'])->diffInHours(Carbon::parse($logTimes['afternoon_out']), false)
+                ? max(0, abs(Carbon::parse($logTimes['morning_in'])->diffInMinutes(Carbon::parse($logTimes['afternoon_out']), false)) / 60 - 1) // Deduct 1 hour for break, and ensure the result is positive
                 : $morningWork + $afternoonWork;
+
     
             // Update total hours worked and calculate remaining hours based only on new hours worked
             $previousWorkHours = $dailyRecord->total_hours_worked;

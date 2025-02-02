@@ -707,7 +707,9 @@ class AdminController extends Controller
                     try {
                         $start = Carbon::createFromTimeString($times['start']);
                         $end = Carbon::createFromTimeString($times['end']);
-                        $dailyWorkHours[$day] = abs($end->diffInHours($start)); // Calculate daily work hours
+                        $dailyOfficeHours = abs($end->diffInHours($start));
+    
+                        $dailyHours = $dailyOfficeHours - 1;     
                     } catch (\Exception $e) {
                         throw new \Exception("Invalid time format for day: $day");
                     }
