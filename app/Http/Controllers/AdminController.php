@@ -694,7 +694,7 @@ class AdminController extends Controller
 
     private function calculateFinishDate($remainingHours, $startDate, $schedule, $isIrregular = false)
     {
-        $date = $startDate; // Start calculation from the provided start date
+        $date = Carbon::now();
         $hoursRemaining = $remainingHours;
     
         $dailyWorkHours = [];
@@ -734,10 +734,10 @@ class AdminController extends Controller
         while ($hoursRemaining > 0) {
             $dayOfWeek = $date->format('l'); // Get the current day of the week
     
-            if (isset($dailyWorkHours[$dayOfWeek])) {
-                // Deduct hours worked for the current day
-                $hoursToday = $dailyWorkHours[$dayOfWeek];
-                $hoursRemaining -= $hoursToday;
+            // Only work Monday to Friday
+            if (in_array($dayOfWeek, ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'])) {
+                // Deduct 8 hours for the current working day
+                $hoursRemaining -= $dailyHours;
             }
     
             // Move to the next day
