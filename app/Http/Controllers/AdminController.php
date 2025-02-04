@@ -499,6 +499,7 @@ class AdminController extends Controller
                 $student->totalWorkedHours = $totalWorkedHours;
                 $student->remainingHours = $remainingHours;
                 $student->hasInternship = true;
+                $student->internshipHours = $internshipHours->hours;
 
                 // Determine evaluation status based on `EvaluationRecipient`
                 if ($remainingHours == 0) { // Internship completed
@@ -673,6 +674,7 @@ class AdminController extends Controller
             $student->remainingHours = $remainingHours;
             $student->estimatedFinishDate = $this->calculateFinishDate($remainingHours, $startDate, $schedule, $isIrregular);
             $student->hasInternship = true;
+            $student->internshipHours = $internshipHours->hours;
         } else {
             // Default values if no internship is found
             $student->completionPercentage = 0;

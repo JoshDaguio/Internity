@@ -320,7 +320,7 @@
                     <h5 class="card-title">Internship Details</h5>
                     @if ($student->acceptedInternship)
                         @if($student->remainingHours > 0)
-                            <p><strong><i class="bi bi-hourglass-split"></i> Total Hours:</strong> {{ $student->totalWorkedHours }} / {{ $student->remainingHours }} hrs <strong>({{ round($student->completionPercentage, 2) }}%)</strong></p>
+                            <p><strong><i class="bi bi-hourglass-split"></i> Total Hours:</strong> {{ $student->totalWorkedHours }} / {{ $student->internshipHours }} hrs <strong>({{ round($student->completionPercentage, 2) }}%)</strong></p>
                         @else
                             <p><span class="badge bg-success"><strong><i class="bi bi-check-circle"></i> Internship Hours Completed</strong></span></p>
                         @endif

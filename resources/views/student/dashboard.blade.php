@@ -151,7 +151,7 @@
           </div>
 
           <div class="col-md-12">
-            <div class="card mb-3" style="max-height: 480px; min-height: 480px;">
+            <div class="card mb-3">
               <div class="card-body">
                   <h5 class="card-title">Total Hours Worked Per Month</h5>
                   <a href="{{ route('dtr.index') }}" class="btn btn-primary btn-sm mb-3"><i class="bi bi-clock"></i> Login</a>
