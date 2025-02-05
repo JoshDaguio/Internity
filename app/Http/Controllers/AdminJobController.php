@@ -9,6 +9,7 @@ use App\Models\AcceptedInternship;
 use App\Models\Application;
 use App\Models\SkillTag;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 
 class AdminJobController extends Controller
 {
@@ -111,9 +112,37 @@ class AdminJobController extends Controller
 
         // Sync skill tags with the job
         $job->skillTags()->sync($request->input('skill_tags', []));
+        
+        // Call the new function to update accepted internships
+        $this->updateAcceptedInternships($job);
 
         return redirect()->route('admin.jobs.index')->with('success', 'Job updated successfully.');
     }
+
+    public function updateAcceptedInternships(Job $job)
+    {
+        // Fetch all accepted internships for this job
+        $acceptedInternships = AcceptedInternship::where('job_id', $job->id)->get();
+
+        foreach ($acceptedInternships as $internship) {
+            // Decode the schedule from the job to update in accepted internship
+            // Decode the schedule JSON from the job
+            $schedule = json_decode($job->schedule, true);
+
+            // Convert time to 24-hour format for start_time and end_time
+            $startTime = Carbon::createFromFormat('H:i', $schedule['start_time'])->format('H:i');
+            $endTime = Carbon::createFromFormat('H:i', $schedule['end_time'])->format('H:i');
+
+            // Now update the schedule for the accepted internship as you need it
+            $internship->update([
+                'schedule' => $job->schedule, 
+                'work_type' => $job->work_type,
+                'start_time' => $startTime, // Use 24-hour format
+                'end_time' => $endTime, // Use 24-hour format
+            ]);
+        }
+    }
+
 
     public function destroy(Job $job)
     {
