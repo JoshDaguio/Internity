@@ -111,6 +111,7 @@
         const tasksContainer = document.getElementById('tasks-container');
         const newTask = document.createElement('div');
         newTask.classList.add('task');
+        newTask.setAttribute('id', `task_${taskCount}`);
         newTask.innerHTML = `
             <div class="form-floating mb-3">
                 <textarea name="tasks[${taskCount}][task_description]" id="task_description_${taskCount}" class="form-control" placeholder="Task Description" required></textarea>
@@ -130,10 +131,36 @@
                     </div>
                 </div>
             </div>
+            <div class="text-end mb-2">
+                <button type="button" class="btn btn-danger remove-task btn-sm" onclick="removeTask(${taskCount})">Remove Task</button>
+            </div>
         `;
         tasksContainer.appendChild(newTask);
         taskCount++;
+        updateRemoveButtons();
     });
+
+    function removeTask(taskId) {
+        const taskElement = document.getElementById(`task_${taskId}`);
+        if (taskElement) {
+            taskElement.remove();
+            updateRemoveButtons();
+        }
+    }
+
+    function updateRemoveButtons() {
+        const taskElements = document.querySelectorAll('.task');
+        const removeButtons = document.querySelectorAll('.remove-task');
+        
+        if (taskElements.length === 1) {
+            removeButtons.forEach(button => button.style.display = 'none');
+        } else {
+            removeButtons.forEach(button => button.style.display = 'inline-block');
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', updateRemoveButtons);
+
 </script>
 
 @endsection
