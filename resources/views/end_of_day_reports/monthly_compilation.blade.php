@@ -81,7 +81,7 @@
                                             $hours = intdiv($task->time_spent, 60);
                                             $minutes = $task->time_spent % 60;
                                         @endphp
-                                        - {{ $task->task_description }} ({{ $hours > 0 ? $hours . ' hrs ' : '' }}{{ $minutes > 0 ? $minutes . ' mins' : '' }})<br><br>
+                                        - {{ $task->task_description }} <b>({{ $hours > 0 ? $hours . ' hrs ' : '' }}{{ $minutes > 0 ? $minutes . ' mins' : '' }})</b><br><br>
                                     @endforeach
                                 </td>
                                 <td>{{ $report->key_successes }}</td>
