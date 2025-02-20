@@ -19,62 +19,111 @@
             margin-top: 5px;
             font-size: 16px;
         }
-        .report-table {
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+        }
+        .table {
             width: 100%;
             border-collapse: collapse;
             margin-bottom: 20px;
             margin-top: 20px;
         }
-        .report-table th, .report-table td {
+        .table th, .table td {
             border: 1px solid #ddd;
             padding: 8px;
             text-align: left;
         }
-        .report-table th {
+        .table th {
+            background-color:rgb(112, 112, 112);
+            color: #fff;
+            width: 30%;
+        }
+        .table-secondary {
             background-color: #f2f2f2;
-            color: #333;
+            font-weight: bold;
+            width: 30%;
+        }
+        .page-break {
+            page-break-before: always;
+        }
+        .late{
+            color: #B30600;
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
-
-    <h2>{{ $studentName }}</h2>
-    <h1>{{ \Carbon\Carbon::create()->month($selectedMonth)->format('F') }} {{ $currentYear }} - Monthly Report</h1>
-
     @if(!$reports->isEmpty())
         @foreach($reports as $report)
+            <div class="page-break"></div>
+            <h1>{{ \Carbon\Carbon::create()->month($selectedMonth)->format('F') }} {{ $currentYear }} - Monthly Report</h1>
+
+            <h2>Name: {{ $studentName }}</h2>
+            <h2>Company: {{ $acceptedInternship->company->name }}</h2>
+            <h2>Course: {{ $user->course->course_code }}</h2>            
             <h4>{{ \Carbon\Carbon::parse($report->submission_for_date)->format('F d, Y') }} Report</h4>
-            <h4>Date Submitted: {{ \Carbon\Carbon::parse($report->date_submitted)->format('F d, Y') }} | Late: {{ $report->is_late ? 'Yes' : 'No' }}</h4>
-            <table class="report-table">
-                <thead>
-                    <tr>
-                        <th>Task Description</th>
-                        <th>Time Spent</th>
-                        <th>Key Successes</th>
-                        <th>Main Challenges</th>
-                        <th>Plans for Tomorrow</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($report->tasks as $index => $task)
+            <h4>Date Submitted: {{ \Carbon\Carbon::parse($report->date_submitted)->format('F d, Y') }}</h4>
+            
+            <!-- Tasks Completed Table -->
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead class="table-dark">
                         <tr>
-                            <td>{{ $task->task_description }}</td>
-                            <td>{{ intdiv($task->time_spent, 60) }} hrs {{ $task->time_spent % 60 }} mins</td>
-                            @if($index === 0)
-                                <td rowspan="{{ count($report->tasks) }}">{{ $report->key_successes }}</td>
-                                <td rowspan="{{ count($report->tasks) }}">{{ $report->main_challenges }}</td>
-                                <td rowspan="{{ count($report->tasks) }}">{{ $report->plans_for_tomorrow }}</td>
-                            @endif
+                            <th>Task Completed</th>
+                            <th>Time Spent</th>
                         </tr>
-                    @endforeach
-                </tbody>
+                    </thead>
+                    <tbody>
+                        @foreach($report->tasks as $task)
+                            @php
+                                $hours = floor($task->time_spent / 60);
+                                $minutes = $task->time_spent % 60;
+                                $displayTime = ($hours > 0 ? $hours . ' hour(s) ' : '') . ($minutes > 0 ? $minutes . ' minute(s)' : '');
+                            @endphp
+                            <tr>
+                                <td>{{ $task->task_description }}</td>
+                                <td>{{ $displayTime }}</td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Additional Report Information -->
+            <table class="table mt-4">
+                <tr>
+                    <th class="table-secondary">Successes:</th>
+                    <td>{{ $report->key_successes }}</td>
+                </tr>
+                <tr>
+                    <th class="table-secondary">Challenges:</th>
+                    <td>{{ $report->main_challenges }}</td>
+                </tr>
+                <tr>
+                    <th class="table-secondary">Plans:</th>
+                    <td>{{ $report->plans_for_tomorrow }}</td>
+                </tr>
+                <tr>
+                    <th class="table-secondary">Submission:</th>
+                    <td>{{ \Carbon\Carbon::parse($report->submission_for_date)->format('F d, Y') }}</td>
+                </tr>
+                <tr>
+                    <th class="table-secondary">Submitted:</th>
+                    <td>{{ \Carbon\Carbon::parse($report->date_submitted)->format('F d, Y') }}</td>
+                </tr>
+                @if($report->is_late)
+                <tr>
+                    <th class="table-secondary">Late:</th>
+                    <td class="late">Yes</td>
+                </tr>
+                @endif
             </table>
-            <br>
         @endforeach
     @else
         <p>No reports submitted for this month.</p>
     @endif
-
+    
     <!-- Display Missing Submissions -->
     @if(!$missingDates->isEmpty())
         <h3>Missing Submissions for this month:</h3>
@@ -86,6 +135,5 @@
     @else
         <p>All submissions are up-to-date for this month.</p>
     @endif
-
 </body>
 </html>

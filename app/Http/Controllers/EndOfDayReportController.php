@@ -517,7 +517,7 @@ class EndOfDayReportController extends Controller
         $profile = Auth::user()->profile;
         $studentName = $profile->last_name . ', ' . $profile->first_name;
    
-        $pdf = Pdf::loadView('end_of_day_reports.pdf.monthly_compilation', compact('reports', 'selectedMonth', 'currentYear', 'studentName', 'missingDates'));
+        $pdf = Pdf::loadView('end_of_day_reports.pdf.monthly_compilation', compact('reports', 'selectedMonth', 'currentYear', 'studentName', 'missingDates', 'acceptedInternship' ,'user'));
         $fileName = "{$studentName}_{$selectedMonth}_{$currentYear}_Monthly_Report.pdf";
 
         // Store the PDF file
