@@ -76,7 +76,7 @@ class EndOfDayReportController extends Controller
         }
 
         $reports = EndOfDayReport::where('student_id', $user->id)
-            ->whereMonth('date_submitted', $selectedMonth)
+            // ->whereMonth('date_submitted', $selectedMonth)
             ->get();
 
         // Count late submissions

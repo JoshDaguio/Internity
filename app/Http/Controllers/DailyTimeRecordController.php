@@ -91,8 +91,10 @@ class DailyTimeRecordController extends Controller
         $totalWorkedHours = DailyTimeRecord::where('student_id', $student->id)->sum('total_hours_worked');
         $remainingHours = $latestDailyRecord ? $latestDailyRecord->remaining_hours : $internshipHours->hours - $totalWorkedHours;
 
+        $totalHours = $internshipHours->hours;
+
         // Calculate completion percentage
-        $completionPercentage = $remainingHours > 0 ? ($totalWorkedHours / $remainingHours) * 100 : 100;
+        $completionPercentage = $remainingHours > 0 ? ($totalWorkedHours / $totalHours) * 100 : 100;
 
         // Estimate finish date based on remaining hours
         $estimatedFinishDate = $this->calculateFinishDate($remainingHours, $startDate, $schedule,  $isIrregular);
@@ -442,15 +444,17 @@ class DailyTimeRecordController extends Controller
             $monthStart->addDay();
         }
 
+        $totalHours = $internshipHours->hours;
+
         // Calculate completion percentage
-        $completionPercentage = $remainingHours > 0 ? ($totalWorkedHours / $remainingHours) * 100 : 100;
+        $completionPercentage = $remainingHours > 0 ? ($totalWorkedHours / $totalHours) * 100 : 100;
 
 
         // Estimate the finish date
         $estimatedFinishDate = $this->calculateFinishDate($remainingHours, $startDate, $schedule, $isIrregular);
 
         return view('daily_time_records.reports', compact(
-            'penaltiesAwarded', 'completionPercentage','totalWorkedHours', 'penalties', 'student', 'acceptedInternship', 'internshipHours', 'filteredRecords', 'schedule', 'currentDate', 'startDate', 'selectedMonth', 'scheduledDays', 'remainingHours', 'estimatedFinishDate', 'filteredDates', 'monthsRange', 'monthlyHours', 'monthlyPenalties'
+            'penaltiesAwarded', 'completionPercentage','totalHours','totalWorkedHours', 'penalties', 'student', 'acceptedInternship', 'internshipHours', 'filteredRecords', 'schedule', 'currentDate', 'startDate', 'selectedMonth', 'scheduledDays', 'remainingHours', 'estimatedFinishDate', 'filteredDates', 'monthsRange', 'monthlyHours', 'monthlyPenalties'
         ));
     }
 
