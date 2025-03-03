@@ -347,8 +347,8 @@ class EndOfDayReportController extends Controller
 
         // Get submission dates for the selected month
         $submissionDates = EndOfDayReport::where('student_id', $studentId)
-            ->whereBetween('date_submitted', [$startOfMonth->format('Y-m-d'), $endOfMonth->format('Y-m-d')])
-            ->pluck('date_submitted')
+            ->whereBetween('submission_for_date', [$startOfMonth->format('Y-m-d'), $endOfMonth->format('Y-m-d')])
+            ->pluck('submission_for_date')
             ->map(function ($date) {
                 return Carbon::parse($date)->format('Y-m-d');
             });

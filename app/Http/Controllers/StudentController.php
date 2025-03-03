@@ -60,7 +60,7 @@ class StudentController extends Controller
         // Reports for current month
         $selectedMonth = $request->input('month', $currentDate->month);
         $reports = EndOfDayReport::where('student_id', $student->id)
-            ->whereMonth('date_submitted', $selectedMonth)
+            // ->whereMonth('date_submitted', $selectedMonth)
             ->get();
 
         // Missing dates calculation if remaining hours are above zero
