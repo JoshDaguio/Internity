@@ -515,10 +515,10 @@ class EndOfDayReportController extends Controller
         $missingDates = $this->getMissingMonthlySubmissionDates($user->id, $startOfMonth, $endOfMonth, $scheduleDays);
 
         $profile = Auth::user()->profile;
-        $studentName = $profile->last_name . ', ' . $profile->first_name;
+        $studentName = $profile->first_name . ' ' . $profile->last_name;
    
         $pdf = Pdf::loadView('end_of_day_reports.pdf.monthly_compilation', compact('reports', 'selectedMonth', 'currentYear', 'studentName', 'missingDates', 'acceptedInternship' ,'user'));
-        $fileName = "{$studentName}_{$selectedMonth}_{$currentYear}_Monthly_Report.pdf";
+        $fileName = "{$profile->last_name}_{$selectedMonth}_{$currentYear}_Monthly_Report.pdf";
 
         // Store the PDF file
         $filePath = "monthly_reports/{$user->id}/eod/{$fileName}";

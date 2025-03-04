@@ -639,7 +639,9 @@ class DailyTimeRecordController extends Controller
         $dailyRecords = DailyTimeRecord::where('student_id', $student->id)
             ->whereMonth('log_date', $request->input('month'))
             ->get();
-    
+
+        $totalWorkedHours = $dailyRecords->sum('total_hours_worked');
+
         // Filter the logs by month and selected month
         $selectedMonth = $request->input('month', $currentDate->month);
         $filteredRecords = $dailyRecords->filter(function ($record) use ($selectedMonth) {
@@ -689,7 +691,8 @@ class DailyTimeRecordController extends Controller
             'totalAbsences' => $totalAbsences,
             'totalTardiness' => $totalTardiness,
             'totalMakeupHours' => $totalMakeupHours,
-            'month' => Carbon::createFromDate(null, $request->input('month'))->format('F')
+            'month' => Carbon::createFromDate(null, $request->input('month'))->format('F'),
+            'totalWorkedHours' => $totalWorkedHours
         ]);
 
         $fileName = 'DTR-Report-' . $student->profile->first_name . '-' . Carbon::createFromDate(null, $selectedMonth)->format('F') . '.pdf';

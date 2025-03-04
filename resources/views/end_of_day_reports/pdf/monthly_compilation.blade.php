@@ -51,6 +51,26 @@
             color: #B30600;
             font-weight: bold;
         }
+
+        .signature-container { 
+            display: table;
+            width: 100%;
+            margin-top: 30px;
+        }
+
+        .signature-line { 
+            display: table-cell;
+            width: 45%; 
+            text-align: center; 
+            vertical-align: bottom; 
+            padding: 0 20px;
+        }
+
+        .line { 
+            border-top: 1px solid black; 
+            width: 100%; 
+            margin-top: 30px; 
+        }
     </style>
 </head>
 <body>
@@ -119,6 +139,17 @@
                 </tr>
                 @endif
             </table>
+
+            <div class="signature-container">
+                <div class="signature-line">
+                    <div class="line"></div>
+                    <p><b>Ma. Joyce V. Macaspac, MIT</b></p>
+                </div>
+                <div class="signature-line">
+                    <div class="line"></div>
+                    <p><b>{{ $studentName }}</b></p>
+                </div>
+            </div>
         @endforeach
     @else
         <p>No reports submitted for this month.</p>
