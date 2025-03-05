@@ -669,7 +669,7 @@ class AdminController extends Controller
             // Determine remaining hours based on the latest DTR or fallback to the total internship hours
             $remainingHours = $latestDailyRecord ? $latestDailyRecord->remaining_hours : ($internshipHours->hours ?? 0);
     
-            $student->completionPercentage = $remainingHours > 0 ? ($totalWorkedHours / $remainingHours) * 100 : 100;
+            $student->completionPercentage = $internshipHours->hours > 0 ? ($totalWorkedHours / $internshipHours->hours) * 100 : 100;
             $student->totalWorkedHours = $totalWorkedHours;
             $student->remainingHours = $remainingHours;
             $student->estimatedFinishDate = $this->calculateFinishDate($remainingHours, $startDate, $schedule, $isIrregular);
